@@ -1,0 +1,105 @@
+
+*{
+  font-family: "Calibri",  sans-serif !important;
+}
+
+.main_login{
+  background-image: url('../src/assets/Images/login-bg.jpg');
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  padding: 40px 0px;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /* Centers content vertically */
+  align-items: center; /* Centers content horizontally */
+  box-sizing: border-box; /* Includes padding in the height calculation */
+  overflow: hidden; 
+}
+
+@media (max-width: 768px) {
+  .main_login {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-attachment: scroll; 
+      background-position: center;
+      height: 100vh;
+  }
+}
+
+.main_container{
+  background-color: white;
+  height: 100vh;
+  width: 80% !important;
+  border-radius: 12px;
+  font-weight: 400;
+
+}
+.main_container_changepassword{
+  border-radius: 12px;
+  font-weight: 400;
+  width: 80% !important;
+  margin-top: 30px;
+}
+@media (max-width: 768px) {
+  .main_container {
+     height: 670px;
+     width: 90% !important;
+  }
+}
+.middle_container{
+  padding: 40px;
+}
+@media (max-width: 768px) {
+  .middle_container{
+      padding: 40px 10px 40px 10px;
+  }
+}
+.input_form:hover{
+  border: 0px !important;
+}
+.input_form:focus-visible{
+  outline: none !important;
+}
+.custom-placeholder::placeholder{
+  padding: 0px 0px !important;
+  opacity: 1;
+  font-size: 14px;
+}
+.button_signin{
+  background-color: #727477  !important;
+  text-transform: capitalize !important;
+  padding: 10px 0px;
+}
+.forgot_pass{
+  text-decoration: none !important;
+  font-size: 12px !important;
+}
+.buttons{
+  border: 1px solid #e0e6eb !important;
+  /* padding: 10px 0px !important; */
+  border-radius: 10px !important;
+  color: #0a2540 !important;
+  text-transform: capitalize !important;
+}
+.buttons.active{
+  background-color: lightgray !important;
+  color: rgb(3, 3, 3) !important;
+}
+.check_box{
+  padding: 15px 0px !important;
+}
+.tabs-all{
+  background-color: #635bff;
+}
+.middle{
+  border-radius: 12px;
+     border: 1px solid #e0e6eb;
+     padding: 20px 20px !important;
+ }
+.chnage_pass{
+  padding-left: 0px !important;
+  padding-top: 0px !important;
+}
