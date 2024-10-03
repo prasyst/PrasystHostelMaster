@@ -111,22 +111,6 @@ const PropertyMaster = () => {
     }
   }, [location]);
 
-  const handleInputChange = (event) => {
-    const { name, value } = event.target;
-    setFormData(prevData => ({
-      ...prevData,
-      [name]: value,
-
-    }));
-
-    if (name === 'property') {
-      setFormData(prevState => ({
-        ...prevState,
-        state: ''
-      }));
-    }
-  };
-
   const fetchPropertyData = async (id, flag) => {
     try {
       const response = await axios.post(`${process.env.REACT_APP_API_URL}PropertyMst/RetrivePropertyMst`, {
@@ -167,6 +151,22 @@ const PropertyMaster = () => {
     } catch (error) {
       console.error('Error fetching property data:', error);
       toast.error('Error fetching property data. Please try again.');
+    }
+  };
+
+  const handleInputChange = (event) => {
+    const { name, value } = event.target;
+    setFormData(prevData => ({
+      ...prevData,
+      [name]: value,
+
+    }));
+
+    if (name === 'property') {
+      setFormData(prevState => ({
+        ...prevState,
+        state: ''
+      }));
     }
   };
 
@@ -955,7 +955,7 @@ const PropertyMaster = () => {
                 <NavigateNextIcon />
               </Button>
             </Grid>
-            <Typography sx={{ color: 'red' }}variant="h5">Property Master</Typography>
+            <Typography sx={{ color: 'red' }} variant="h5">Property Master</Typography>
             <Grid sx={{ display: 'flex', justifyContent: 'end' }}>
               <Button
                 variant="contained"
