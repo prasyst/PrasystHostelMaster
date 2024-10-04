@@ -12,7 +12,7 @@ import { Breadcrumbs, Link, Typography, Box, Button, TextField } from '@mui/mate
 import { useNavigate } from 'react-router-dom';
 
 const columns = [
-  { id: 'companyName', label: 'Company Name', minWidth: 100 },
+  { id: 'coName', label: 'Company Name', minWidth: 100 },
   { id: 'branchName', label: 'Branch Name', minWidth: 100 },
   { id: 'propName', label: 'PropName', minWidth: 170 },
   { id: 'sqFt', label: 'SqFt', minWidth: 100 },
@@ -56,7 +56,7 @@ export default function PropertyTable() {
       if (response.data.status === 0) {
         const formattedData = response.data.data.map(property => ({
           ...property,
-          companyName: property.companyName || '',
+          coName: property.coName || '',
           branchName: property.branchName || '',
           propName: property.propName || '',
           sqFt: property.sqFt || '',
