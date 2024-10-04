@@ -955,7 +955,7 @@ const PropertyMaster = () => {
                 <NavigateNextIcon />
               </Button>
             </Grid>
-            <Typography sx={{ color: 'Blue' }} variant="h5">Property Master</Typography>
+            <Typography sx={{ color: 'Pink' }} variant="h5">Property Master</Typography>
             <Grid sx={{ display: 'flex', justifyContent: 'end' }}>
               <Button
                 variant="contained"
