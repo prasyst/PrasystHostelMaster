@@ -47,7 +47,7 @@ const ARAP = () => {
                   style={{ width: '100px', height: '100px', borderRadius: '50%' }} 
                 />
                 <Box sx={{ textAlign: 'center', marginTop: 1 }}>
-                  <Link to='#'>Vendros & Creditors</Link>
+                  <Link to='/partymaster'>Vendros & Creditors</Link>
                 </Box>
               </Item>
             </Grid>

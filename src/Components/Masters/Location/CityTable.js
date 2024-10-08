@@ -42,8 +42,8 @@ export default function CityTable() {
       if (response.data.status === 0) {
         const formattedData = response.data.data.map(city => ({
           ...city,
-          zone: city.zoneName || 'N/A', 
-          state: city.stateName || 'N/A',
+          zone: city.zoneName || '', 
+          state: city.stateName || '',
           country:city.countryName
         }));
         setRows(formattedData);

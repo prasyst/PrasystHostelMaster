@@ -38,8 +38,8 @@ export default function WingTable() {
       if (response.data.status === 0) {
         const formattedData = response.data.data.map(wing => ({
           ...wing,
-          wingName: wing.wingName || 'N/A',
-          remark: wing.remark || 'N/A'
+          wingName: wing.wingName || '',
+          remark: wing.remark || ''
         }));
         setRows(formattedData);
         console.log('data:', response);

@@ -40,8 +40,8 @@ export default function RoomBedTypeTable() {
       if (response.data.status === 0) {
         const formattedData = response.data.data.map(roomBedType => ({
           ...roomBedType,
-          roomBedTypeName: roomBedType.roomBedTypeName || 'N/A',
-          remark: roomBedType.remark || 'N/A'
+          roomBedTypeName: roomBedType.roomBedTypeName || '',
+          remark: roomBedType.remark || ''
         }));
         setRows(formattedData);
         console.log('data:', response);

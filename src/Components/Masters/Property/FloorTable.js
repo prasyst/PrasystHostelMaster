@@ -38,8 +38,8 @@ export default function FloorTable() {
       if (response.data.status === 0) {
         const formattedData = response.data.data.map(floor => ({
           ...floor,
-          floorName: floor.floorName || 'N/A',
-          remark: floor.remark || 'N/A'
+          floorName: floor.floorName || '',
+          remark: floor.remark || ''
         }));
         setRows(formattedData);
         console.log('data', response);

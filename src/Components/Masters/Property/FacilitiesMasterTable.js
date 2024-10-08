@@ -40,8 +40,8 @@ export default function FacilitiesMasterTable() {
       if (response.data.status === 0) {
         const formattedData = response.data.data.map(fac => ({
           ...fac,
-          facName: fac.facName || 'N/A',
-          facDesc: fac.facDesc || 'N/A',
+          facName: fac.facName || '',
+          facDesc: fac.facDesc || '',
           remark: fac.remark 
         }));
         setRows(formattedData);

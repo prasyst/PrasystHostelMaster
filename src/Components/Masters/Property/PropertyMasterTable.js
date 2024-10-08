@@ -1,4 +1,4 @@
-import  React,{useState,useEffect} from 'react';
+import React,{useState,useEffect} from 'react';
 import axios from 'axios';
 import Paper from '@mui/material/Paper';
 import Table from '@mui/material/Table';
@@ -12,26 +12,22 @@ import { Breadcrumbs, Link, Typography, Box, Button, TextField } from '@mui/mate
 import { useNavigate } from 'react-router-dom';
 
 const columns = [
-  { id: 'coName', label: 'Company Name', minWidth: 100 },
+  // { id: 'coName', label: 'Company', minWidth: 100 },
   { id: 'branchName', label: 'Branch Name', minWidth: 100 },
   { id: 'propName', label: 'PropName', minWidth: 170 },
   { id: 'sqFt', label: 'SqFt', minWidth: 100 },
   { id: 'pinCode', label: 'Pincode', minWidth: 100 },
-  { id: 'areaName', label: 'Area', minWidth: 100 },
-  // { id: 'cityName', label: 'City', minWidth: 100 },
-  // { id: 'stateName', label: 'State', minWidth: 100 },
-  // { id: 'countryName', label: 'Country', minWidth: 100 },
+  // { id: 'areaName', label: 'Area', minWidth: 100 },
+  { id: 'cityName', label: 'City', minWidth: 100 },
   { id: 'propEmail', label: 'PropEmail', minWidth: 100 },
   { id: 'propTel', label: 'PropTel', minWidth: 100 },
   { id: 'propTypName', label: 'PropTypName', minWidth: 100 },
   { id: 'propMob', label: 'PropMob', minWidth: 100 },
   { id: 'totalRooms', label: 'TotalRooms', minWidth: 100 },
   { id: 'totalBeds', label: 'TotalBeds', minWidth: 100 },
-  // { id: 'propImg', label: 'PropImage', minWidth: 100 },
   { id: 'hodEmpName', label: 'HodEmp Name', minWidth: 100 },
   { id: 'wardenEmpName', label: 'WardenEmp Name', minWidth: 100 },
   { id: 'propAdd', label: 'PropAddress', minWidth: 100 },
-  // { id: 'propGPSLoc', label: 'PropGPSLoc', minWidth: 100 },
 ];
 
 export default function PropertyTable() {
@@ -56,26 +52,22 @@ export default function PropertyTable() {
       if (response.data.status === 0) {
         const formattedData = response.data.data.map(property => ({
           ...property,
-          coName: property.coName || '',
+          // coName: property.coName || '',
           branchName: property.branchName || '',
           propName: property.propName || '',
           sqFt: property.sqFt || '',
           pinCode: property.pinCode || '',
-          areaName: property.areaName || '',
-          // cityName: property.cityName || '',
-          // stateName: property.stateName || '',
-          // countryName: property.countryName || '',
+          // areaName: property.areaName || '',
+          cityName: property.cityName || '',
           propEmail: property.propEmail || '',
           propTel: property.propTel || '',
           propTypName: property.propTypName || '',
           propMob: property.propMob || '',
           totalRooms: property.totalRooms || '',
           totalBeds: property.totalBeds || '',
-          // propImg: property.propImg || '',
           hodEmpName: property.hodEmpName || '',
           wardenEmpName: property.wardenEmpName || '',
           propAdd: property.propAdd
-          // propGPSLoc: property.propGPSLoc
         }));
         setRows(formattedData);
         console.log('data', response);

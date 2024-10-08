@@ -74,6 +74,8 @@ const StepperForm = () => {
   const [currentResidentId, setCurrentResidentId] = useState(null);
   const [isFormDisabled, setIsFormDisabled] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
+  const [photo, setPhoto] = useState('');
+  const [file, setFile] = useState(null);
   const [areaOptions, setAreaOptions] = useState([]);
 
 
@@ -112,7 +114,7 @@ const StepperForm = () => {
           PinId: residentData.pinId ? residentData.pinId.toString() : '',
           PermanentAddr: residentData.permanentAddr || '',
           CurrentAddr: residentData.currentAddr || '',
-          Photo: residentData.photo || '',
+          photo: residentData.photo || '',
           altMobile: residentData.altMob || '',
           EmgMob: residentData.emgMob || '',
           RelationTitle: residentData.relationTitle || '',
@@ -136,11 +138,11 @@ const StepperForm = () => {
       } else if (response.data.status === 1 && response.data.responseStatusCode === 2) {
         toast.info(response.data.message);
       } else {
-        toast.error('Failed to fetch city data');
+        toast.error('Failed to fetch rasident data');
       }
     } catch (error) {
-      console.error('Error fetching city data:', error);
-      toast.error('Error fetching city data. Please try again.');
+      console.error('Error fetching rasident data:', error);
+      toast.error('Error fetching rasident data. Please try again.');
     }
   };
 
@@ -157,7 +159,7 @@ const StepperForm = () => {
     PinId: '',
     PermanentAddr: '',
     CurrentAddr: '',
-    Photo: '',
+    photo: '',
     altMobile: '',
     EmgMob: '',
     RelationTitle: '',
@@ -374,7 +376,7 @@ const getPartyBill=async()=>{
       PinId: parseInt(formData.PinId) || 1,
       PermanentAddr: formData.PermanentAddr || '',
       CurrentAddr: formData.CurrentAddr || '',
-      Photo: formData.Photo || "photo",
+      photo: formData.photo || "photo",
       AltMob: formData.altMobile || '',
       EmgMob: formData.EmgMob || '',
       RelationTitle: formData.RelationTitle || '',
@@ -440,7 +442,7 @@ const getPartyBill=async()=>{
       PinId: '',
       PermanentAddr: '',
       CurrentAddr: '',
-      Photo: '',
+      photo: '',
       altMobile: '',
       EmgMob: '',
       RelationTitle: '',
@@ -462,7 +464,7 @@ const getPartyBill=async()=>{
 
     setActiveStep(0);
     setErrors({});
-    setSelectedImage(null);
+    setPhoto('');
 
     toast.info("Form cleared for new entry");
   };
@@ -518,15 +520,38 @@ const getPartyBill=async()=>{
     navigate('/masters/residenttable')
   };
 
-  const [selectedImage, setSelectedImage] = useState(null);
-
   // Handle file input change
   const handleImageChange = (event) => {
     const file = event.target.files[0];
     if (file) {
-      setSelectedImage(URL.createObjectURL(file));
+      const reader = new FileReader();
+
+      // Use a Promise to handle the file reading
+      const readFileAsBase64 = (file) => {
+        return new Promise((resolve, reject) => {
+          reader.onloadend = () => {
+            resolve(reader.result); // This will be the Base64 string
+          };
+          reader.onerror = reject;
+          reader.readAsDataURL(file);
+        });
+      };
+
+      // Read the file and update the state
+      readFileAsBase64(file)
+        .then(base64String => {
+          setFormData(prevData => ({
+            ...prevData,
+            photo: base64String
+          }));
+        })
+        .catch(err => {
+          console.error('Error reading file:', err);
+          toast.error('Error reading file. Please try again.');
+        });
     }
   };
+
   const handleAreaChange = async (e) => {
     const selectedArea = e.target.value;
     setFormData(prevState => ({ ...prevState, area: selectedArea }));
@@ -760,9 +785,9 @@ const getPartyBill=async()=>{
                         overflow="hidden"
                         position="relative"
                       >
-                        {selectedImage ? (
+                        {formData.photo ? (
                           <img
-                            src={selectedImage}
+                            src={formData.photo}
                             alt="Uploaded Preview"
                             style={{
                               width: '100%',

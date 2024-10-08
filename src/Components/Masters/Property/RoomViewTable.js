@@ -38,8 +38,8 @@ export default function RoomViewTable() {
       if (response.data.status === 0) {
         const formattedData = response.data.data.map(roomView => ({
           ...roomView,
-          roomViewNAme: roomView.roomViewNAme || 'N/A',
-          remark: roomView.remark || 'N/A'
+          roomViewNAme: roomView.roomViewNAme || '',
+          remark: roomView.remark || ''
         }));
         setRows(formattedData);
         console.log("data" , response);

@@ -39,7 +39,7 @@ export default function ZoneTable() {
       if (response.data.status === 0) {
         const formattedData = response.data.data.map(zone => ({
           ...zone,
-          zone: zone.zoneName || 'N/A',
+          zone: zone.zoneName || '',
         }));
         setRows(formattedData);
       } else {

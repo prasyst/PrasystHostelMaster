@@ -63,10 +63,11 @@ const PropertyMaster = () => {
   const [isEditMode, setIsEditMode] = useState(false);
   const [isViewMode, setIsViewMode] = useState(false);
   const location = useLocation();
-  const [currentId, setCurrentId] = useState(null);
   const [currentPropId, setCurrentPropId] = useState(null);
   const [hods, setHods] = useState([]);
   const [sites, setSites] = useState([]);
+  const [propImg, setPropImg] = useState('');
+  const [file, setFile] = useState(null);
   const [companies, setCompanies] = useState([]);
   const [wardens, setWardens] = useState([]);
   const [area, setArea] = useState([]);
@@ -78,8 +79,8 @@ const PropertyMaster = () => {
   const [propId, setPropId] = useState()
   const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
   const [formData, setFormData] = useState({
-    coName: '',
-    branch: '',
+    companyName: '',
+    branchName: '',
     propName: '',
     sqFt: '',
     pinCode: '',
@@ -96,7 +97,8 @@ const PropertyMaster = () => {
     propImg: '',
     hodEmpName: '',
     wardenEmpName: '',
-    propAdd: ''
+    propAdd: '',
+    propGPSLoc: ''
   });
   const navigate = useNavigate()
 
@@ -121,15 +123,13 @@ const PropertyMaster = () => {
       if (response.data.status === 0 && response.data.responseStatusCode === 1) {
         const propertyData = response.data.data[0];
         setFormData({
-          coName: propertyData.coName,
-          branch: propertyData.branch,
+          companyName: propertyData.companyName,
+          branchName: propertyData.cobrMstId.toString(),
           propName: propertyData.propName,
           sqFt: propertyData.sqFt,
-          pinCode: propertyData.pinCode,
+          pinCode: propertyData.pinId.toString(),
           areaName: propertyData.areaName,
-          cityName: propertyData.cityName,
-          stateName: propertyData.stateName,
-          countryName: propertyData.countryName,
+          cityName: propertyData.cityId.toString(),
           propEmail: propertyData.propEmail,
           propTel: propertyData.propTel,
           propTypName: propertyData.propTypeId.toString(),
@@ -137,9 +137,10 @@ const PropertyMaster = () => {
           totalRooms: propertyData.totalRooms,
           totalBeds: propertyData.totalBeds,
           propImg: propertyData.propImg,
-          hodEmpName: propertyData.hodEmpName,
-          wardenEmpName: propertyData.wardenEmpName,
-          propAdd: propertyData.propAdd
+          hodEmpName: propertyData.hodEmpId.toString(),
+          wardenEmpName: propertyData.wardenEmpId.toString(),
+          propAdd: propertyData.propAdd,
+          propGPSLoc: propertyData.propGPSLoc
         })
         setIsFormDisabled(true);
         setCurrentPropId(propertyData.propId);
@@ -223,11 +224,11 @@ const PropertyMaster = () => {
       }
     };
 
-    if (formData.coName) {
-      fetchBranch(formData.coName);
+    if (formData.companyName) {
+      fetchBranch(formData.companyName);
     }
 
-  }, [formData.coName]);
+  }, [formData.companyName]);
 
   useEffect(() => {
     const fetchArea = async (pinCode) => {
@@ -339,15 +340,18 @@ const PropertyMaster = () => {
 
     try {
       const payload = {
-        coName: formData.coName,
-        branch: formData.branch,
+        companyName: parseInt(formData.companyName),
+        cobrMstId: parseInt(formData.branchName),
         propName: formData.propName,
         sqFt: formData.sqFt,
-        pinCode: formData.pinCode,
-        areaName: formData.areaName,
-        cityName: formData.cityName,
-        stateName: formData.stateName,
-        countryName: formData.countryName,
+        pinId: parseInt(formData.pinId),
+        pinId: parseInt(formData.pinCode),
+        // pincode: formData.pincode,
+        // areaName: formData.areaName,
+        cityId: parseInt(formData.cityName) || 1,
+        // cityName: formData.cityName,
+        // stateName: formData.stateName,
+        // countryName: formData.countryName,
         propEmail: formData.propEmail,
         propTel: formData.propTel,
         propTypeId: parseInt(formData.propTypName),
@@ -355,10 +359,10 @@ const PropertyMaster = () => {
         totalRooms: formData.totalRooms,
         totalBeds: formData.totalBeds,
         propImg: formData.propImg,
-        hodEmpName: formData.hodEmpName,
-        wardenEmpName: formData.wardenEmpName,
+        hodEmpId: parseInt(formData.hodEmpName),
+        wardenEmpId: parseInt(formData.wardenEmpName),
         propAdd: formData.propAdd,
-        status: "1"
+        propGPSLoc: formData.propGPSLoc
       };
 
       let response;
@@ -408,8 +412,8 @@ const PropertyMaster = () => {
     setMode('add');
     setIsFormDisabled(false);
     setFormData({
-      coName: '',
-      branch: '',
+      companyName: '',
+      branchName: '',
       propName: '',
       sqFt: '',
       pinCode: '',
@@ -426,7 +430,8 @@ const PropertyMaster = () => {
       propImg: '',
       hodEmpName: '',
       wardenEmpName: '',
-      propAdd: ''
+      propAdd: '',
+      propGPSLoc: ''
     });
     setCurrentPropId(null);
   };
@@ -443,7 +448,7 @@ const PropertyMaster = () => {
 
   const resetForm = () => {
     setFormData({
-      coName: '',
+      companyName: '',
       branch: '',
       propName: '',
       sqFt: '',
@@ -461,7 +466,8 @@ const PropertyMaster = () => {
       propImg: '',
       hodEmpName: '',
       wardenEmpName: '',
-      propAdd: ''
+      propAdd: '',
+      propGPSLoc: ''
     });
     setCurrentPropId(null);
     setMode('view');
@@ -493,12 +499,34 @@ const PropertyMaster = () => {
     }
   };
 
-  const [selectedImage, setSelectedImage] = useState(null);
-
   const handleImageChange = (event) => {
     const file = event.target.files[0];
     if (file) {
-      setSelectedImage(URL.createObjectURL(file));
+      const reader = new FileReader();
+      
+      // Use a Promise to handle the file reading
+      const readFileAsBase64 = (file) => {
+        return new Promise((resolve, reject) => {
+          reader.onloadend = () => {
+            resolve(reader.result); // This will be the Base64 string
+          };
+          reader.onerror = reject;
+          reader.readAsDataURL(file);
+        });
+      };
+  
+      // Read the file and update the state
+      readFileAsBase64(file)
+        .then(base64String => {
+          setFormData(prevData => ({
+            ...prevData,
+            propImg: base64String
+          }));
+        })
+        .catch(err => {
+          console.error('Error reading file:', err);
+          toast.error('Error reading file. Please try again.');
+        });
     }
   };
 
@@ -519,18 +547,18 @@ const PropertyMaster = () => {
                             <Grid container spacing={2}>
                               <Grid item xs={12} md={6} className='form_field'>
                                 <FormControl variant="filled" fullWidth className="custom-select">
-                                  <InputLabel id="coName-select-label">Company Name</InputLabel>
+                                  <InputLabel id="companyName-select-label">Company Name</InputLabel>
                                   <Select
-                                    labelId="coName-select-label"
-                                    id="coName-select"
-                                    name="coName"
-                                    value={formData.coName}
+                                    labelId="companyName-select-label"
+                                    id="companyName-select"
+                                    name="companyName"
+                                    value={formData.companyName}
                                     onChange={handleInputChange}
                                     className="custom-textfield"
                                   >
-                                    {companies.map((coName) => (
-                                      <MenuItem key={coName.id} value={coName.id}>
-                                        {coName.name}
+                                    {companies.map((companyName) => (
+                                      <MenuItem key={companyName.id} value={companyName.id}>
+                                        {companyName.name}
                                       </MenuItem>
                                     ))}
                                   </Select>
@@ -663,9 +691,9 @@ const PropertyMaster = () => {
                         overflow="hidden"
                         position="relative"
                       >
-                        {selectedImage ? (
+                        {formData.propImg ? (
                           <img
-                            src={selectedImage}
+                            src={formData.propImg}
                             alt="Uploaded Preview"
                             style={{
                               width: '100%',
@@ -1013,12 +1041,12 @@ const PropertyMaster = () => {
             </Stepper>
           </Grid>
 
-          {activeStep === 1 ? (<>
+          {/* {activeStep === 1 ? (<>
             <Paper sx={{ width: '90%', overflow: 'hidden', margin: '0px 0px 0px 50px', border: '1px solid lightgray' }}>
 
             </Paper>
           </>) : ('')
-          }
+          } */}
 
           <Grid item xs={12}>
             {renderStepContent(activeStep)}
