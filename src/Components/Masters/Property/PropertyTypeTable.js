@@ -39,8 +39,8 @@ export default function PropertyTypeTable() {
       if (response.data.status === 0) {
         const formattedData = response.data.data.map(propertyType => ({
           ...propertyType,
-          PropType: propertyType.propType || 'N/A',
-          PropType_Desc: propertyType.propType_Desc || 'N/A',
+          PropType: propertyType.propType || '',
+          PropType_Desc: propertyType.propType_Desc || '',
           Remark: propertyType.remark
         }));
         setRows(formattedData);

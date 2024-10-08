@@ -64,7 +64,8 @@ const EmployeeMaster = () => {
   const [isEditMode, setIsEditMode] = useState(false);
   const [isFormDisabled, setIsFormDisabled] = useState(true);
   const [empId, setEmpId] = useState(null);
-  const [photo, setPhoto] = useState([]);
+  const [photo, setPhoto] = useState('');
+  const [file, setFile] = useState(null);
   const [types, setTypes] = useState([]);
   const [empTypeNames, setEmpTypeNames] = useState([]);
   const location = useLocation();
@@ -86,13 +87,31 @@ const EmployeeMaster = () => {
   const handleFileChange = (event) => {
     const file = event.target.files[0];
     if (file) {
-      const imageUrl = URL.createObjectURL(file);
-      setFormData({ ...formData, photo: imageUrl });
-      // setFormData((prevData) => ({
-      //   ...prevData,
-      //   photo: imageUrl,
-      // }));
-      setPhoto(imageUrl);
+      const reader = new FileReader();
+      
+      // Use a Promise to handle the file reading
+      const readFileAsBase64 = (file) => {
+        return new Promise((resolve, reject) => {
+          reader.onloadend = () => {
+            resolve(reader.result); // This will be the Base64 string
+          };
+          reader.onerror = reject;
+          reader.readAsDataURL(file);
+        });
+      };
+  
+      // Read the file and update the state
+      readFileAsBase64(file)
+        .then(base64String => {
+          setFormData(prevData => ({
+            ...prevData,
+            photo: base64String
+          }));
+        })
+        .catch(err => {
+          console.error('Error reading file:', err);
+          toast.error('Error reading file. Please try again.');
+        });
     }
   };
 
@@ -185,7 +204,7 @@ const EmployeeMaster = () => {
       }));
     }
 
-    if (name === 'employeeType' && value !== '') {
+    if (name === 'employee' && value !== '') {
       setTimeout(() => {
         currentAddrRef.current.focus();
       }, 100000);

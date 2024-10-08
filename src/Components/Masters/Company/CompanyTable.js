@@ -44,9 +44,9 @@ export default function CompanyTable() {
         const formattedData = response.data.data.map(company => ({
           ...company,
           companyId:company.coMstId,
-          companyName: company.coName || 'N/A', 
+          companyName: company.coName || '', 
           gstin: company.gstin,
-          cityName:company.cityName || 'N/A',
+          cityName:company.cityName || '',
           cobr_GSTIN:company.cobr_GSTIN
         }));
         console.log('for',formattedData)

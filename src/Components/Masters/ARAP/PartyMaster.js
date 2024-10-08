@@ -30,7 +30,7 @@ import { ConfirmDialog } from '../../ReusablePopup/CustomModel';
 import { Formik, Form, Field } from 'formik';
 import * as Yup from 'yup';
 
-const steps = ['Company Details', 'Branch Details'];
+const steps = ['Vendor Details', 'Branch Details'];
 const CustomStepConnector = styled(StepConnector)(({ theme }) => ({
   '& .MuiStepConnector-line': {
     borderColor: '#e0e0e0',
@@ -60,7 +60,7 @@ const CustomStepLabel = styled(StepLabel)({
     marginTop: '5px',
   },
 });
-const Company = () => {
+const PartyMaster = () => {
   const [activeStep, setActiveStep] = useState(0);
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
   const [isAdding, setIsAdding] = useState(false);
@@ -84,19 +84,19 @@ const Company = () => {
   const [isAddingBranch, setIsAddingBranch] = useState(false);
   const [isEditingBranch, setIsEditingBranch] = useState(false);
   const [isBranchEditDeleteEnabled, setIsBranchEditDeleteEnabled] = useState(false);
- 
+
   const [selectedBranchIndex, setSelectedBranchIndex] = useState(null);
 
 
   const handleAddClick = () => {
-    setIsAdding(true); 
+    setIsAdding(true);
   };
 
   const handleImageUpload = (event) => {
     const file = event.target.files[0];
     if (file) {
       const reader = new FileReader();
-      
+
       // Use a Promise to handle the file reading
       const readFileAsBase64 = (file) => {
         return new Promise((resolve, reject) => {
@@ -107,7 +107,7 @@ const Company = () => {
           reader.readAsDataURL(file);
         });
       };
-  
+
       // Read the file and update the state
       readFileAsBase64(file)
         .then(base64String => {
@@ -127,7 +127,7 @@ const Company = () => {
     const file = event.target.files[0];
     if (file) {
       const reader = new FileReader();
-      
+
       // Use a Promise to handle the file reading
       const readFileAsBase64 = (file) => {
         return new Promise((resolve, reject) => {
@@ -138,7 +138,7 @@ const Company = () => {
           reader.readAsDataURL(file);
         });
       };
-  
+
       // Read the file and update the state
       readFileAsBase64(file)
         .then(base64String => {
@@ -178,7 +178,7 @@ const Company = () => {
     remark1: '',
     remark2: '',
     workAddress: '',
-    
+
   });
   const [branches, setBranches] = useState([]);
   const [currentBranch, setCurrentBranch] = useState({
@@ -220,8 +220,8 @@ const Company = () => {
       if (response.data.status === 0 && response.data.responseStatusCode === 1) {
         const company = response.data.data.CoMstList[0];
         const branches = response.data.data.CoMstList[0].CobrMstList;
-        console.log('com',company)
-        console.log('br',branches)
+        console.log('com', company)
+        console.log('br', branches)
         setFormData({
           CoMstId: company.CoMstId,
           companyCode: company.CoMstId,
@@ -249,10 +249,10 @@ const Company = () => {
           remark2: company.Remark2,
           workAddress: company.WorkAddr,
         })
-       
+
         setBranches(branches.map((branch) => ({
           branchCode: branch.CobrMstId,
-          companyName: company.CoName, 
+          companyName: company.CoName,
           branchName: branch.CobrName,
           shortName: branch.CobrAbrv,
           gstNo: branch.GSTIN,
@@ -281,29 +281,29 @@ const Company = () => {
           gstNo: branch.GSTIN,
           pinCode: branch.PinID,
           branchAddress: branch.CobrAdd,
-          state: 'N/A' 
+          state: 'N/A'
         })));
         const mainBranch = branches.find(branch => branch.MainBranch === "0") || branches[0];
-      setCurrentBranch({
-        branchCode: mainBranch.CobrMstId,
-        branchName: mainBranch.CobrName,
-        shortName: mainBranch.CobrAbrv,
-        gstNo: mainBranch.GSTIN,
-        jurisdiction: mainBranch.CityId,
-        branchAddress: mainBranch.CobrAdd,
-        emailID: mainBranch.CobrEmail,
-        telNo: mainBranch.CobrTel,
-        website: mainBranch.Website,
-        ieCode: mainBranch.IeCode,
-        msmeNo: mainBranch.MsmeNo,
-        msmeCat: mainBranch.MsmeCat,
-        msmeType: mainBranch.MsmeType,
-        pinCode: mainBranch.PinID,
-        remark1: mainBranch.Remark1,
-        remark2: mainBranch.Remark2,
-      });
+        setCurrentBranch({
+          branchCode: mainBranch.CobrMstId,
+          branchName: mainBranch.CobrName,
+          shortName: mainBranch.CobrAbrv,
+          gstNo: mainBranch.GSTIN,
+          jurisdiction: mainBranch.CityId,
+          branchAddress: mainBranch.CobrAdd,
+          emailID: mainBranch.CobrEmail,
+          telNo: mainBranch.CobrTel,
+          website: mainBranch.Website,
+          ieCode: mainBranch.IeCode,
+          msmeNo: mainBranch.MsmeNo,
+          msmeCat: mainBranch.MsmeCat,
+          msmeType: mainBranch.MsmeType,
+          pinCode: mainBranch.PinID,
+          remark1: mainBranch.Remark1,
+          remark2: mainBranch.Remark2,
+        });
         setIsFormDisabled(true);
-        console.log('CobrName',branches)
+        console.log('CobrName', branches)
         setCompanyId(company.CoMstId);
       } else if (response.data.status === 1 && response.data.responseStatusCode === 2) {
         toast.info(response.data.message);
@@ -353,23 +353,23 @@ const Company = () => {
   }, [location]);
 
   const handleNext = () => {
-    if (activeStep === 0) {  
+    if (activeStep === 0) {
       const companyBranch = {
         branchCode: formData.companyCode || '',
         companyName: formData.companyName,
-        branchName: formData.companyName, 
+        branchName: formData.companyName,
         gstNo: formData.gstNo,
         PinCode: formData.pinCode,
         branchAddress: formData.regAddress,
-        state: '', 
+        state: '',
       };
       // setTableData(branches);
       // const mainBranch = branches.find(branch => branch.branchCode === formData.companyCode);
       // setSelectedBranch(mainBranch);
       // setIsMainBranchSelected(true);
-       setTableData([companyBranch]);
+      setTableData([companyBranch]);
       setBranches([companyBranch]);
-      console.log('company',companyBranch)
+      console.log('company', companyBranch)
       setSelectedBranch(companyBranch);
       setIsMainBranchSelected(true);
       setIsAddButtonEnabled(true);
@@ -413,14 +413,14 @@ const Company = () => {
     setIsAddingBranch(true);
     setIsConfirmEnabled(true);
     setIsEditingBranch(false);
-    
+
     // Enable only Confirm and Cancel buttons
     setIsAddButtonEnabled(false);
     setIsConfirmCancelEnabled(true);
   };
   const handleSubmit = async () => {
     let payload;
-  
+
     const companyData = {
       DBFLAG: companyId ? "U" : "I",
       CoMstId: companyId || 0,
@@ -449,7 +449,7 @@ const Company = () => {
       WorkAddr: formData.workAddress || "",
       Status: formData.Status || "1",
     };
-  
+
     const branchesData = branches.map((branch) => ({
       DBFLAG: branch.branchCode ? "U" : "I",
       CobrMstId: branch.branchCode || 0,
@@ -472,17 +472,17 @@ const Company = () => {
       Status: branch.Status || "1",
       MainBranch: branch.branchCode === formData.companyCode ? "1" : "0",
     }));
-  
+
     payload = {
       ...companyData,
       cobrMstList: branchesData,
     };
-  
+
     console.log("submissionData", payload);
     let jsonData = JSON.stringify(payload).replace(/\\/g, '\\\\').replace(/\"/g, '\\"');
     jsonData = '"' + jsonData + '"';
     console.log("jsonData", jsonData);
-  
+
     try {
       const response = await axios.post(
         'http://43.230.196.21/api/CoMst/ManageCompanyBranch',
@@ -495,7 +495,7 @@ const Company = () => {
       );
       console.log('Submission successful:', response.data);
       toast.success(response.data.message);
-  
+
       if (isEditing) {
         setIsEditing(false);
         setMode('view');
@@ -514,141 +514,7 @@ const Company = () => {
       toast.error('Error submitting form');
     }
   };
-  // const handleSubmit = async () => {
-    
-  //   if (isEditing) {
-  //     const payload = {
-  //       comstid: companyId,
-  //       CoName: formData.companyName,
-  //       CoAbrv: formData.shortName,
-  //       GSTIN: formData.gstNo,
-  //       CityId: parseInt(formData.jurisdiction) || 1,
-        
-  //     };
 
-  //     try {
-  //       const response = await axios.post('http://43.230.196.21/api/CoMst_Cobr/UpdateCoMst_CobrMst', payload);
-  //       if (response.data.status === 0 && response.data.responseStatusCode === 1) {
-  //         toast.success('Company data updated successfully');
-  //         setIsEditing(false);
-  //         setMode('view');
-  //         setIsFormDisabled(true);
-  //         // Optionally, refresh the data after update
-  //         fetchCompanyData(companyId);
-  //       } else {
-  //         toast.error(response.data.message || 'Failed to update company data');
-  //       }
-  //     } catch (error) {
-  //       console.error('Error updating company data:', error);
-  //       toast.error('Error updating company data. Please try again.');
-  //     }
-  //   } else {
-  //     const companyData = {
-  //       DBFLAG: "I",
-  //       MainBranch:'1',
-  //       CoName: formData.companyName,
-  //       CoAbrv: formData.shortName,
-  //       GSTIN: formData.gstNo,
-  //       CityId: parseInt(formData.jurisdiction) || 1,
-  //       CoRegAdd: formData.regAddress || "",
-  //       CoPan: formData.panN || "",
-  //       CoTan: formData.tanNo || "",
-  //       CoCin: formData.cinNo || "",
-  //       CoEmail: formData.emailID || "",
-  //       CoTel: formData.telNo || "",
-  //       CoMob: formData.CoMob || "",
-  //       Website: formData.website || "",
-  //       IeCode: formData.ieCode || "",
-  //       TdsCircle: formData.tdsCircle || "",
-  //       TdsPerson: formData.tdsPerson || "",
-  //       Designation: formData.designation || "",
-  //       MsmeNo: formData.msmeNo || "",
-  //       MsmeCat: formData.msmeCat || "",
-  //       MsmeType: formData.msmeType || "",
-  //       PinID: formData.pinCode || "",
-  //       Remark1: formData.remark1 || "",
-  //       Remark2: formData.remark2 || "",
-  //       WorkAddr: formData.workAddress || "",
-  //       Status: formData.Status || "1",
-  //     };
-    
-  //     const mainBranchData = {
-  //       DBFLAG: "I",
-  //       CobrName: formData.companyName ,
-  //       CobrAbrv: formData.shortName,
-  //       GSTIN: formData.gstNo,
-  //       CityId: parseInt(formData.jurisdiction) || 1,
-  //       CobrAdd: formData.regAddress,
-  //       CobrEmail: formData.emailID,
-  //       CobrTel: formData.telNo,
-  //       CobrMob: formData.CoMob || '',
-  //       Website: formData.website,
-  //       IeCode: formData.ieCode,
-  //       MsmeNo: formData.msmeNo,
-  //       MsmeCat: formData.msmeCat,
-  //       MsmeType: formData.msmeType,
-  //       PinID: formData.pinCode,
-  //       Remark1: formData.remark1,
-  //       Remark2: formData.remark2,
-  //       Status: "1",
-  //       MainBranch: "0"  
-  //     };
-  
-  //     // Prepare other branches data
-  //     const otherBranchesData = branches.slice(1).map(branch => ({
-  //       DBFLAG: "I",
-  //       CobrName: branch.branchName,
-  //       CobrAbrv: branch.shortName,
-  //       GSTIN: branch.gstNo,
-  //       CityId: parseInt(branch.jurisdiction) || 1,
-  //       CobrAdd: branch.branchAddress,
-  //       CobrEmail: branch.emailID,
-  //       CobrTel: branch.telNo,
-  //       CobrMob: branch.CoMob || '',
-  //       Website: branch.website,
-  //       IeCode: branch.ieCode,
-  //       MsmeNo: branch.msmeNo,
-  //       MsmeCat: branch.msmeCat,
-  //       MsmeType: branch.msmeType,
-  //       PinID: branch.pinCode,
-  //       Remark1: branch.remark1,
-  //       Remark2: branch.remark2,
-  //       Status: branch.Status || "1",
-  //       MainBranch: "1" 
-  //     }));
-  //  console.log('co',companyData)
-  //  console.log('cobr',[mainBranchData,...otherBranchesData])
-  //     const payload = {
-  //       ...companyData,
-  //       cobrMstList: [mainBranchData, ...otherBranchesData]
-  //     };
-    
-  //     // const payload = {
-  //     //   ...companyData,
-  //     //   cobrMstList: branchData
-  //     // };
-  //     console.log('submissionData', payload)
-  //     let jsonData = JSON.stringify(payload)
-  //       .replace(/\\/g, '\\\\')
-  //       .replace(/\"/g, '\\"');
-  
-  //     jsonData = '"' + jsonData + '"';
-  //     console.log('jsonData', jsonData)
-  //     try {
-  //       const response = await axios.post('http://43.230.196.21/api/CoMst/ManageCompanyBranch', jsonData, {
-  //         headers: {
-  //           'Content-Type': 'application/json',
-  //         },
-  //       });
-  //       console.log('Submission successful:', response.data);
-  //       toast.success(response.data.message);
-  //     } catch (error) {
-  //       console.error('Error submitting form:', error);
-  //       toast.error('Error submitting form');
-  //     }
-  //   }
-  
-  // };
   const handleAdd = () => {
     setMode('add');
     setIsFormDisabled(false)
@@ -727,7 +593,7 @@ const Company = () => {
       try {
         const response = await axios.post(`http://43.230.196.21/api/CoMst_Cobr/RetriveCobrMst`, {
           CobrMstId: selectedBranch.branchCode,
-        Flag: "D"
+          Flag: "D"
         });
         if (response.data.status === 0) {
           toast.success('Branch deleted successfully');
@@ -763,44 +629,6 @@ const Company = () => {
   const handleExit = () => {
     navigate('/masters/companytable')
   };
-  // const handleConfirmBranch = () => {
-  //   setIsAdding(false);
-  //   const newBranch = {
-  //     branchCode: currentBranch.branchCode,
-  //     companyName: formData.companyName,
-  //     branchName: currentBranch.branchName,
-  //     gstNo: currentBranch.gstNo,
-  //     pinCode: currentBranch.pinCode,
-  //     branchAddress: currentBranch.branchAddress,
-  //     state: 'N/A' // You might want to add a state field to your form
-  //   };
-
-  //   setTableData(prev => [...prev, newBranch]);
-  //   setBranches(prev => [...prev, currentBranch]);
-
-  //   // Reset currentBranch for next entry
-  //   setCurrentBranch({
-  //     branchCode: '',
-  //     branchName: '',
-  //     shortName: '',
-  //     gstNo: '',
-  //     jurisdiction: '',
-  //     branchAddress: '',
-  //     emailID: '',
-  //     telNo: '',
-  //     website: '',
-  //     ieCode: '',
-  //     msmeNo: '',
-  //     msmeCat: '',
-  //     msmeType: '',
-  //     pinCode: '',
-  //     remark1: '',
-  //     remark2: '',
-  //     bankDetails1: '',
-  //     bankDetails2: '',
-  //   });
-  // };
-  // const isFormDisabled = mode === 'view';
 
   const columns = [
     { id: 'branchCode', label: 'Br_Code', minWidth: 50 },
@@ -818,7 +646,7 @@ const Company = () => {
       setBranches(prev => [...prev, newBranch]);
     } else if (mode === 'edit') {
       console.log(setIsEditing(true))
-      const updatedBranches = branches.map(branch => 
+      const updatedBranches = branches.map(branch =>
         branch.branchCode === currentBranch.branchCode ? currentBranch : branch
       );
       setBranches(updatedBranches);
@@ -849,12 +677,12 @@ const Company = () => {
       bankDetails1: '',
       bankDetails2: '',
     });
-    
+
     // Reset button states
     setIsAddButtonEnabled(true);
     setIsConfirmCancelEnabled(false);
   };
-   const handleCancelBranch = () => {
+  const handleCancelBranch = () => {
     setMode('view');
     setIsFormDisabled(true);
     setSelectedBranch(null);
@@ -910,7 +738,7 @@ const Company = () => {
                               fullWidth
                               label={
                                 <span>
-                                  Company Name <span style={{ color: 'red' }}>*</span>
+                                  Party Name <span style={{ color: 'red' }}>*</span>
                                 </span>
                               }
                               name="companyName"
@@ -924,7 +752,7 @@ const Company = () => {
                           <Grid item xs={12} md={3}>
                             <TextField
                               fullWidth
-                              label="Short Name"
+                              label="Alt Code"
                               name="shortName"
                               value={formData.shortName || ''}
                               onChange={handleInputChange}
@@ -938,7 +766,7 @@ const Company = () => {
                               fullWidth
                               label={
                                 <span>
-                                  jurisdiction <span style={{ color: 'red' }}>*</span>
+                                  Abrv <span style={{ color: 'red' }}>*</span>
                                 </span>
                               }
                               name="jurisdiction"
@@ -950,113 +778,83 @@ const Company = () => {
                             />
                           </Grid>
                         </Grid>
+
+                        
+
+                      <Grid item display="flex">
+
+                      <Box>
                         <Grid container spacing={2}>
-                          <Grid item xs={12} md={3}>
+                          <Grid item xs={12} md={4} lg={4}>
                             <TextField
                               fullWidth
-                              label="PAN No"
-                              name="panN"
-                              value={formData.panN || ''}
+                              label="Address"
+                              name="propAdd"
+                              value={formData.propAdd}
                               onChange={handleInputChange}
+                              multiline
+                              rows={2}
                               variant="filled"
                               disabled={isFormDisabled}
                               className="custom-textfield"
+                              sx={{
+                                '& .MuiInputBase-root': {
+                                  height: '100px',
+                                  width: '340px'
+                                },
+                                '& .MuiInputBase-input': {
+                                  resize: 'vertical',
+                                },
+                                '& .MuiFilledInput-root': {
+                                  '&:hover': {
+                                    backgroundColor: 'transparent',
+                                  },
+                                  '&.Mui-focused': {
+                                    backgroundColor: 'transparent',
+                                  },
+                                },
+                              }}
                             />
                           </Grid>
-                          <Grid item xs={12} md={3}>
+                          <Grid item xs={12} md={4} lg={4}>
                             <TextField
                               fullWidth
-                              label="GST No"
-                              name="gstNo"
-                              value={formData.gstNo}
+                              label="Address"
+                              name="propAdd"
+                              value={formData.propAdd}
                               onChange={handleInputChange}
+                              multiline
+                              rows={2}
                               variant="filled"
                               disabled={isFormDisabled}
                               className="custom-textfield"
+                              sx={{
+                                '& .MuiInputBase-root': {
+                                  height: '100px',
+                                  width: '340px'
+                                },
+                                '& .MuiInputBase-input': {
+                                  resize: 'vertical',
+                                },
+                                '& .MuiFilledInput-root': {
+                                  '&:hover': {
+                                    backgroundColor: 'transparent',
+                                  },
+                                  '&.Mui-focused': {
+                                    backgroundColor: 'transparent',
+                                  },
+                                },
+                              }}
                             />
                           </Grid>
-                          <Grid item xs={12} md={3}>
-                            <TextField
-                              fullWidth
-                              label="CIN No"
-                              name="cinNo"
-                              value={formData.cinNo || ''}
-                              onChange={handleInputChange}
-                              variant="filled"
-                              disabled={isFormDisabled}
-                              className="custom-textfield"
-                            />
-                          </Grid>
-                          <Grid item xs={12} md={3}>
-                            <TextField
-                              fullWidth
-                              label="TAN No"
-                              name="tanNo"
-                              value={formData.tanNo || ''}
-                              onChange={handleInputChange}
-                              variant="filled"
-                              disabled={isFormDisabled}
-                              className="custom-textfield"
-                            />
-                          </Grid>
-                        </Grid>
-                        <Grid item lg={12} md={12} xs={12}>
-                          {/* <Grid container spacing={3}> */}
-                          <Box display="flex" flexDirection="column" gap={2}>
-                            <Grid container spacing={3}>
-                              <Grid item xs={12} md={3}>
-                                <TextField
-                                  fullWidth
-                                  label="IE Code"
-                                  name="ieCode"
-                                  value={formData.ieCode}
-                                  onChange={handleInputChange}
-                                  variant="filled"
-                                  disabled={isFormDisabled}
-                                  className="custom-textfield"
-                                />
-                              </Grid>
-                              <Grid item xs={12} md={3}>
-                                <TextField
-                                  fullWidth
-                                  label="TDS Circle"
-                                  name="tdsCircle"
-                                  value={formData.tdsCircle}
-                                  onChange={handleInputChange}
-                                  variant="filled"
-                                  disabled={isFormDisabled}
-                                  className="custom-textfield"
-                                />
-                              </Grid>
-                              <Grid item xs={12} md={3}>
-                                <TextField
-                                  fullWidth
-                                  label="TDS Person"
-                                  name="tdsPerson"
-                                  value={formData.tdsPerson}
-                                  onChange={handleInputChange}
-                                  variant="filled"
-                                  disabled={isFormDisabled}
-                                  className="custom-textfield"
-                                />
-                              </Grid>
-                              <Grid item xs={12} md={3}>
-                                <TextField
-                                  fullWidth
-                                  label="Designation"
-                                  name="designation"
-                                  value={formData.designation}
-                                  onChange={handleInputChange}
-                                  variant="filled"
-                                  disabled={isFormDisabled}
-                                  className="custom-textfield"
-                                />
-                              </Grid>
-                            </Grid>
-                          </Box>
                         </Grid>
                       </Box>
+
                     </Grid>
+                        
+                      </Box>
+                    </Grid>
+                    
                     <Grid item lg={4} md={4} xs={12} display="flex" alignItems="center" justifyContent="center">
                       <Box
                         display="flex"
@@ -1069,7 +867,7 @@ const Company = () => {
                         height={170}
                         overflow="hidden"
                         position="relative"
-                        sx={{ cursor: 'pointer' }} 
+                        sx={{ cursor: 'pointer' }}
                       >
                         {formData.photo ? (
                           <img
@@ -1083,38 +881,33 @@ const Company = () => {
                           />
                         ) : (
                           <Typography variant="body2" color="textSecondary">
-                            Browse
+                            Photo
                           </Typography>
                         )}
 
-                        {/* Hidden input element */}
                         <input
                           type="file"
                           accept="image/*"
                           onChange={handleImageUpload}
                           style={{
                             position: 'absolute',
-                            top: 0,left: 0,width: '100%',height: '100%',
-                            opacity: 0, // Make it invisible
-                            cursor: 'pointer', // Ensure the cursor indicates it's clickable
+                            top: 0, left: 0, width: '100%', height: '100%',
+                            opacity: 0,
+                            cursor: 'pointer',
                           }}
                         />
                       </Box>
                     </Grid>
-                    <Grid item lg={12} md={12} xs={12}>
-                      <Box display="flex" flexDirection="column" gap={2}>
-                        <Grid container spacing={3}>
-                        </Grid>
-                      </Box>
-                    </Grid>
-                    <Grid item lg={12} md={12} xs={12}>
+
+
+                    {/* <Grid item lg={12} md={12} xs={12}>
 
                       <Box display="flex" flexDirection="column" gap={2}>
                         <Grid container spacing={3}>
-                          <Grid item xs={12} md={4}>
+                          <Grid item xs={12} md={2}>
                             <TextField
                               fullWidth
-                              label="Email ID"
+                              label="GST No"
                               name="emailID"
                               value={formData.emailID || ''}
                               onChange={handleInputChange}
@@ -1123,10 +916,10 @@ const Company = () => {
                               className="custom-textfield"
                             />
                           </Grid>
-                          <Grid item xs={12} md={4}>
+                          <Grid item xs={12} md={2}>
                             <TextField
                               fullWidth
-                              label="Tel No"
+                              label="PAN No"
                               name="telNo"
                               value={formData.telNo || ''}
                               onChange={handleInputChange}
@@ -1135,12 +928,24 @@ const Company = () => {
                               className="custom-textfield"
                             />
                           </Grid>
-                          <Grid item xs={12} md={4}>
+                          <Grid item xs={12} md={2}>
                             <TextField
                               fullWidth
-                              label="Website"
+                              label="TAN No"
                               name="website"
                               value={formData.website}
+                              onChange={handleInputChange}
+                              variant="filled"
+                              disabled={isFormDisabled}
+                              className="custom-textfield"
+                            />
+                          </Grid>
+                          <Grid item xs={12} md={2}>
+                            <TextField
+                              fullWidth
+                              label="IE Code"
+                              name="telNo"
+                              value={formData.telNo || ''}
                               onChange={handleInputChange}
                               variant="filled"
                               disabled={isFormDisabled}
@@ -1150,16 +955,16 @@ const Company = () => {
                         </Grid>
                       </Box>
 
-                    </Grid>
+                    </Grid> */}
 
-                    <Grid item lg={12} md={12} xs={12}>
+                    {/* <Grid item lg={12} md={12} xs={12}>
 
                       <Box display="flex" flexDirection="column" gap={2}>
                         <Grid container spacing={3}>
-                          <Grid item xs={12} md={4}>
+                          <Grid item xs={12} md={2}>
                             <TextField
                               fullWidth
-                              label="MSME No"
+                              label="Tel No"
                               name="msmeNo"
                               value={formData.msmeNo}
                               onChange={handleInputChange}
@@ -1168,10 +973,10 @@ const Company = () => {
                               className="custom-textfield"
                             />
                           </Grid>
-                          <Grid item xs={12} md={4}>
+                          <Grid item xs={12} md={2}>
                             <TextField
                               fullWidth
-                              label="MSME Cat"
+                              label="Email"
                               name="msmeCat"
                               value={formData.msmeCat}
                               onChange={handleInputChange}
@@ -1180,10 +985,22 @@ const Company = () => {
                               className="custom-textfield"
                             />
                           </Grid>
-                          <Grid item xs={12} md={4}>
+                          <Grid item xs={12} md={2}>
                             <TextField
                               fullWidth
-                              label="MSME Type"
+                              label="Contact Person"
+                              name="msmeType"
+                              value={formData.msmeType}
+                              onChange={handleInputChange}
+                              variant="filled"
+                              disabled={isFormDisabled}
+                              className="custom-textfield"
+                            />
+                          </Grid>
+                          <Grid item xs={12} md={2}>
+                            <TextField
+                              fullWidth
+                              label="Mobile No"
                               name="msmeType"
                               value={formData.msmeType}
                               onChange={handleInputChange}
@@ -1195,42 +1012,238 @@ const Company = () => {
                         </Grid>
                       </Box>
 
+                    </Grid> */}
+
+                    <Grid item lg={8} md={8} xs={12}>
+                      <Box display="flex" flexDirection="column" gap={2}>
+                        <Grid item lg={12} md={12} xs={12}>
+                          {/* <Grid container spacing={3}> */}
+                          <Box display="flex" flexDirection="column" gap={2}>
+                            <Grid container spacing={2}>
+                              <Grid item xs={12} md={3}>
+                                <TextField
+                                  fullWidth
+                                  label="GST No"
+                                  name="totalRooms"
+                                  value={formData.totalRooms}
+                                  onChange={handleInputChange}
+                                  variant="filled"
+                                  disabled={isFormDisabled}
+                                  className="custom-textfield"
+                                />
+                              </Grid>
+                              <Grid item xs={12} md={3}>
+                                <TextField
+                                  fullWidth
+                                  label="PAN No"
+                                  name="totalBeds"
+                                  value={formData.totalBeds}
+                                  onChange={handleInputChange}
+                                  variant="filled"
+                                  disabled={isFormDisabled}
+                                  className="custom-textfield"
+                                />
+                              </Grid>
+                              <Grid item xs={12} md={3}>
+                                <TextField
+                                  fullWidth
+                                  label="TAN No"
+                                  name="totalBeds"
+                                  value={formData.totalBeds}
+                                  onChange={handleInputChange}
+                                  variant="filled"
+                                  disabled={isFormDisabled}
+                                  className="custom-textfield"
+                                />
+                              </Grid>
+                              <Grid item xs={12} md={3}>
+                                <TextField
+                                  fullWidth
+                                  label="IE Code"
+                                  name="totalBeds"
+                                  value={formData.totalBeds}
+                                  onChange={handleInputChange}
+                                  variant="filled"
+                                  disabled={isFormDisabled}
+                                  className="custom-textfield"
+                                />
+                              </Grid>
+                            </Grid>
+                          </Box>
+
+                        </Grid>
+                        <Grid container spacing={2}>
+                              <Grid item xs={12} md={3}>
+                                <TextField
+                                  fullWidth
+                                  label="Tel No"
+                                  name="totalBeds"
+                                  value={formData.totalBeds}
+                                  onChange={handleInputChange}
+                                  variant="filled"
+                                  disabled={isFormDisabled}
+                                  className="custom-textfield"
+                                />
+                              </Grid>
+                              <Grid item xs={12} md={3}>
+                                <TextField
+                                  fullWidth
+                                  label="Email"
+                                  name="totalBeds"
+                                  value={formData.totalBeds}
+                                  onChange={handleInputChange}
+                                  variant="filled"
+                                  disabled={isFormDisabled}
+                                  className="custom-textfield"
+                                />
+                              </Grid>
+                              <Grid item xs={12} md={3}>
+                                <TextField
+                                  fullWidth
+                                  label="Contact Person"
+                                  name="totalBeds"
+                                  value={formData.totalBeds}
+                                  onChange={handleInputChange}
+                                  variant="filled"
+                                  disabled={isFormDisabled}
+                                  className="custom-textfield"
+                                />
+                              </Grid>
+                              <Grid item xs={12} md={3}>
+                                <TextField
+                                  fullWidth
+                                  label="Mobile No"
+                                  name="totalBeds"
+                                  value={formData.totalBeds}
+                                  onChange={handleInputChange}
+                                  variant="filled"
+                                  disabled={isFormDisabled}
+                                  className="custom-textfield"
+                                />
+                              </Grid>
+                        </Grid>
+
+                      </Box>
+                    </Grid>
+
+                    <Grid item display="flex" alignItems="center" justifyContent="center">
+
+                      <Box>
+                        <Grid container spacing={1}>
+                          <Grid item xs={12} md={12} lg={12}>
+                            <TextField
+                              fullWidth
+                              label="Address"
+                              name="propAdd"
+                              value={formData.propAdd}
+                              onChange={handleInputChange}
+                              multiline
+                              rows={2}
+                              variant="filled"
+                              disabled={isFormDisabled}
+                              className="custom-textfield"
+                              sx={{
+                                '& .MuiInputBase-root': {
+                                  height: '100px',
+                                  width: '340px'
+                                },
+                                '& .MuiInputBase-input': {
+                                  resize: 'vertical',
+                                },
+                                '& .MuiFilledInput-root': {
+                                  '&:hover': {
+                                    backgroundColor: 'transparent',
+                                  },
+                                  '&.Mui-focused': {
+                                    backgroundColor: 'transparent',
+                                  },
+                                },
+                              }}
+                            />
+                          </Grid>
+
+                        </Grid>
+                      </Box>
+
                     </Grid>
 
                     <Grid item lg={12} md={12} xs={12}>
 
                       <Box display="flex" flexDirection="column" gap={2}>
-                        <Grid container spacing={3}>
+                        <Grid container spacing={2}>
                           <Grid item xs={12} md={4}>
-                            <TextField
-                              fullWidth
-                              label="Pin Code"
-                              name="pinCode"
-                              value={formData.pinCode || ''}
-                              onChange={handleInputChange}
-                              variant="filled"
-                              disabled={isFormDisabled}
-                              className="custom-textfield"
-                            />
+                            <Grid container alignItems="center" spacing={2} sx={{ paddingLeft: '9px' }}>
+                              <Grid item>
+                                <FormLabel component="legend">GST Reg</FormLabel>
+                              </Grid>
+
+                              <Grid item>
+                                <FormControl component="fieldset">
+                                  <RadioGroup
+                                    aria-label="gender"
+                                    name="gender"
+                                    value={formData.gender}
+                                    onChange={handleInputChange}
+                                    row
+                                  >
+                                    <FormControlLabel
+                                      value="male"
+                                      control={<Radio sx={{ '& .MuiSvgIcon-root': { fontSize: 18 } }} />}
+                                      label="RD"
+                                      className="custom-textfield"
+                                      disabled={isFormDisabled}
+                                    />
+                                    <FormControlLabel
+                                      value="female"
+                                      control={<Radio sx={{ '& .MuiSvgIcon-root': { fontSize: 18 } }} />}
+                                      label="URD"
+                                      className="custom-textfield"
+                                      disabled={isFormDisabled}
+                                    />
+                                    <FormControlLabel
+                                      value="others"
+                                      control={<Radio sx={{ '& .MuiSvgIcon-root': { fontSize: 18 } }} />}
+                                      label="Composition"
+                                      className="custom-textfield"
+                                      disabled={isFormDisabled}
+                                    />
+                                  </RadioGroup>
+                                </FormControl>
+                              </Grid>
+                            </Grid>
+
+                          </Grid>
+                          <Grid item xs={12} md={4} className='form_field'>
+                            <FormControl variant="filled" fullWidth className="custom-select">
+                              <InputLabel id="areaName-select-label">Party Type</InputLabel>
+                              <Select
+                                labelId="areaName-select-label"
+                                id="areaName-select"
+                                name="areaName"
+                                value={formData.areaName}
+                                onChange={handleInputChange}
+                                className="custom-textfield"
+                              >
+                                {/* {area.length > 0 ? (
+                                  area.map((areaItem) => (
+                                    <MenuItem key={areaItem.id} value={areaItem.name}>
+                                      {areaItem.name}
+                                    </MenuItem>
+                                  ))
+                                ) : (
+                                  <MenuItem value="" disabled>
+                                    No areas available
+                                  </MenuItem>
+                                )} */}
+                              </Select>
+                            </FormControl>
                           </Grid>
                           <Grid item xs={12} md={4}>
                             <TextField
                               fullWidth
-                              label="Remark1"
-                              name="remark1"
-                              value={formData.remark1}
-                              onChange={handleInputChange}
-                              variant="filled"
-                              disabled={isFormDisabled}
-                              className="custom-textfield"
-                            />
-                          </Grid>
-                          <Grid item xs={12} md={4}>
-                            <TextField
-                              fullWidth
-                              label="Remark2"
-                              name="remark2"
-                              value={formData.remark2}
+                              label="GL-Control A/C"
+                              name="remark"
+                              value={formData.remark}
                               onChange={handleInputChange}
                               variant="filled"
                               disabled={isFormDisabled}
@@ -1241,72 +1254,96 @@ const Company = () => {
                       </Box>
 
                     </Grid>
-
                     <Grid item lg={12} md={12} xs={12}>
 
                       <Box display="flex" flexDirection="column" gap={2}>
-                        <Grid container spacing={3}>
-                          <Grid item xs={12} md={6} lg={6}>
-                            <TextField
-                              fullWidth
-                              label="Reg Address"
-                              name="regAddress"
-                              value={formData.regAddress || ''}
-                              onChange={handleInputChange}
-                              multiline
-                              rows={2}
-                              variant="filled"
-                              disabled={isFormDisabled}
-                              className="custom-textfield"
-                              sx={{
-                                '& .MuiInputBase-root': {
-                                  height: '115px',
-                                },
-                                '& .MuiInputBase-input': {
-                                  resize: 'vertical',
-                                },
-                                '& .MuiFilledInput-root': {
-                                  '&:hover': {
-                                    backgroundColor: 'transparent',
-                                  },
-                                  '&.Mui-focused': {
-                                    backgroundColor: 'transparent',
-                                  },
-                                },
-                              }}
-                            />
+                        <Grid container spacing={2}>
+                          <Grid item xs={12} md={3}>
+                            <Grid container alignItems="center" spacing={2} sx={{ paddingLeft: '9px' }}>
+                              <Grid item>
+                                <FormLabel component="legend">MSME Reg</FormLabel>
+                              </Grid>
+
+                              <Grid item>
+                                <FormControl component="fieldset">
+                                  <RadioGroup
+                                    aria-label="gender"
+                                    name="gender"
+                                    value={formData.gender}
+                                    onChange={handleInputChange}
+                                    row
+                                  >
+                                    <FormControlLabel
+                                      value="male"
+                                      control={<Radio sx={{ '& .MuiSvgIcon-root': { fontSize: 18 } }} />}
+                                      label="Yes"
+                                      className="custom-textfield"
+                                      disabled={isFormDisabled}
+                                    />
+                                    <FormControlLabel
+                                      value="female"
+                                      control={<Radio sx={{ '& .MuiSvgIcon-root': { fontSize: 18 } }} />}
+                                      label="No"
+                                      className="custom-textfield"
+                                      disabled={isFormDisabled}
+                                    />
+                                  </RadioGroup>
+                                </FormControl>
+                              </Grid>
+                            </Grid>
+
                           </Grid>
-                          <Grid item xs={12} md={6} lg={6}>
+
+                          <Grid item xs={12} md={3}>
                             <TextField
                               fullWidth
-                              label="Work Address"
-                              name="workAddress"
-                              value={formData.workAddress || ''}
+                              label="MSME No"
+                              name="remark"
+                              value={formData.remark}
                               onChange={handleInputChange}
-                              multiline
-                              rows={2}
                               variant="filled"
                               disabled={isFormDisabled}
                               className="custom-textfield"
-                              sx={{
-                                '& .MuiInputBase-root': {
-                                  height: '115px',
-                                },
-                                '& .MuiInputBase-input': {
-                                  resize: 'vertical',
-                                },
-                                '& .MuiFilledInput-root': {
-                                  '&:hover': {
-                                    backgroundColor: 'transparent',
-                                  },
-                                  '&.Mui-focused': {
-                                    backgroundColor: 'transparent',
-                                  },
-                                },
-                              }}
                             />
                           </Grid>
 
+                          <Grid item xs={12} md={3} className='form_field'>
+                            <FormControl variant="filled" fullWidth className="custom-select">
+                              <InputLabel id="areaName-select-label">MSME Trade</InputLabel>
+                              <Select
+                                labelId="areaName-select-label"
+                                id="areaName-select"
+                                name="areaName"
+                                value={formData.areaName}
+                                onChange={handleInputChange}
+                                className="custom-textfield"
+                              >
+                                {/* {area.length > 0 ? (
+                                  area.map((areaItem) => (
+                                    <MenuItem key={areaItem.id} value={areaItem.name}>
+                                      {areaItem.name}
+                                    </MenuItem>
+                                  ))
+                                ) : (
+                                  <MenuItem value="" disabled>
+                                    No areas available
+                                  </MenuItem>
+                                )} */}
+                              </Select>
+                            </FormControl>
+                          </Grid>
+                          <Grid item xs={12} md={3}>
+                            <TextField
+                              fullWidth
+                              label="MSME Class"
+                              name="remark"
+                              value={formData.remark}
+                              onChange={handleInputChange}
+                              variant="filled"
+                              disabled={isFormDisabled}
+                              className="custom-textfield"
+                            />
+                          </Grid>
                         </Grid>
                       </Box>
 
@@ -1695,7 +1732,7 @@ const Company = () => {
   };
 
   const handleStepClick = (step) => {
-    if (mode === 'view' ) {
+    if (mode === 'view') {
       setActiveStep(step);
     }
   };
@@ -1728,7 +1765,7 @@ const Company = () => {
                 <NavigateNextIcon />
               </Button>
             </Grid>
-            <Typography variant="h5">Company Master</Typography>
+            <Typography variant="h5">Vendor Master</Typography>
             <Grid sx={{ display: 'flex', justifyContent: 'end' }}>
               <Button
                 variant="contained"
@@ -1771,7 +1808,7 @@ const Company = () => {
           <Grid item xs={12} >
             <Stepper activeStep={activeStep} connector={<CustomStepConnector />} alternativeLabel>
               {steps.map((label, index) => (
-                <Step key={label} onClick={() => handleStepClick(index)} style={{ cursor: mode === 'view'  ? 'pointer' : 'default' }}>
+                <Step key={label} onClick={() => handleStepClick(index)} style={{ cursor: mode === 'view' ? 'pointer' : 'default' }}>
                   <CustomStepLabel
                     sx={{ mt: 0, pt: 0 }}
                     StepIconComponent={(props) => (
@@ -1842,16 +1879,16 @@ const Company = () => {
             </Paper>
             <Grid item xs={12} md={12} lg={12} className='form_title' sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '5px' }}>
 
-                <Grid xs={12} md={12} lg={12}>
+              <Grid xs={12} md={12} lg={12}>
                 <Button
                   variant="contained"
                   size="small"
                   sx={{ backgroundColor: '#7c3aed' }}
 
-                // disabled={mode === 'view'}
-                onClick={handleBranchAdd}
-             
-          disabled={!isAddButtonEnabled}
+                  // disabled={mode === 'view'}
+                  onClick={handleBranchAdd}
+
+                  disabled={!isAddButtonEnabled}
                 >
                   <AddIcon />
                 </Button>
@@ -1860,7 +1897,7 @@ const Company = () => {
                   size="small"
                   sx={{ backgroundColor: '#7c3aed', margin: '0px 10px' }}
                   onClick={handleBranchEdit}
-                  
+
                   // disabled={mode === 'view' || mode ===''}
                   disabled={!isBranchEditDeleteEnabled}
 
@@ -1881,37 +1918,37 @@ const Company = () => {
                 >
                   <DeleteIcon />
                 </Button>
-                </Grid>
-                   <Grid xs={6} md={12}>
-                   <Button
-                     variant="contained"
-                     size="small"
-                     sx={{ backgroundColor: '#7c3aed' }}
-                     onClick={handleConfirmBranch}
-                     disabled={!isConfirmCancelEnabled}
-                   >
-                     Confirm
-                   </Button>
-                   <Button
-                     variant="contained"
-                     size="small"
-                     sx={{ backgroundColor: '#7c3aed', margin: '0px 10px' }}
-                     onClick={handleCancelBranch}
+              </Grid>
+              <Grid xs={6} md={12}>
+                <Button
+                  variant="contained"
+                  size="small"
+                  sx={{ backgroundColor: '#7c3aed' }}
+                  onClick={handleConfirmBranch}
+                  disabled={!isConfirmCancelEnabled}
+                >
+                  Confirm
+                </Button>
+                <Button
+                  variant="contained"
+                  size="small"
+                  sx={{ backgroundColor: '#7c3aed', margin: '0px 10px' }}
+                  onClick={handleCancelBranch}
 
-                    //  disabled={mode === 'view' || mode ===''}
-                    disabled={!isConfirmCancelEnabled}
+                  //  disabled={mode === 'view' || mode ===''}
+                  disabled={!isConfirmCancelEnabled}
 
-                   >
-                    Cancel
-                   </Button>
-                   
-                   </Grid>
+                >
+                  Cancel
+                </Button>
 
               </Grid>
-              <Grid>
 
-              </Grid>
-     
+            </Grid>
+            <Grid>
+
+            </Grid>
+
           </>) : ('')
           }
           <Grid item xs={12}>
@@ -1961,4 +1998,4 @@ const Company = () => {
   );
 };
 
-export default Company;
+export default PartyMaster;

@@ -38,8 +38,8 @@ export default function RoomTypeTable() {
       if (response.data.status === 0) {
         const formattedData = response.data.data.map(roomType => ({
           ...roomType,
-          roomTypeName: roomType.roomTypeName || 'N/A',
-          remark: roomType.remark || 'N/A'
+          roomTypeName: roomType.roomTypeName || '',
+          remark: roomType.remark || ''
         }));
         setRows(formattedData);
       } else {

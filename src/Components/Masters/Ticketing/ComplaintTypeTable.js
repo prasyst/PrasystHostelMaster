@@ -12,9 +12,9 @@ import { Breadcrumbs, Link, Typography, Box, Button, TextField } from '@mui/mate
 import { useNavigate } from 'react-router-dom';
 
 const columns = [
-  { id: 'compTypeName', label: 'CompTypeName', minWidth: 100 },
-  { id: 'compTypeAbrv', label: 'CompTypeAbrv', minWidth: 100 },
-  { id: 'compTypeRemark', label: 'CompTypeRemark', minWidth: 100 }
+  { id: 'compTypeName', label: 'ComplaintType', minWidth: 100 },
+  { id: 'compTypeAbrv', label: 'Abrv', minWidth: 100 },
+  { id: 'compTypeRemark', label: 'Remark', minWidth: 100 }
 ];
 
 export default function ComplaintTypeTable() {
@@ -133,7 +133,7 @@ export default function ComplaintTypeTable() {
             Add New Record
           </Button>
         </Box>
-        <Paper sx={{ width: '39%', overflow: 'hidden', margin: '0px 0px 0px 50px', border:'1px solid lightgray' }}>
+        <Paper sx={{ width: '44.5%', overflow: 'hidden', margin: '0px 0px 0px 50px', border:'1px solid lightgray' }}>
           <TableContainer sx={{ maxHeight: 450 }}>
             <Table stickyHeader aria-label="sticky table">
             <TableHead>
@@ -160,7 +160,7 @@ export default function ComplaintTypeTable() {
                         onChange={(e) => handleSearchChange(column.id, e.target.value)}
                         sx={{ mt: 1 ,margin:'0px' ,'& .MuiOutlinedInput-input': {
                          padding: '2px 6px',
-                         width: '125px'  
+                         width: '147px'  
                          },}}
 
                       />

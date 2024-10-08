@@ -14,6 +14,8 @@ import { useNavigate } from 'react-router-dom';
 const columns = [
   { id: 'amenityName', label: 'Amenity', minWidth: 170 },
   { id: 'amenity_Desc', label: 'Desc', minWidth: 170 },
+  { id: 'wing', label: 'Wings', minWidth: 170 },
+  { id: 'floor', label: 'Floors', minWidth: 170 },
   { id: 'remark', label: 'Remark', minWidth: 170 }
 ];
 
@@ -42,7 +44,9 @@ export default function AmenityMasterTable() {
           ...amenity,
           amenityName: amenity.amenityName || '',
           amenity_Desc: amenity.amenity_Desc || '',
-          remark: amenity.remark
+          wing: amenity.wing || '',
+          floor: amenity.floor || '',
+          remark: amenity.remark || ''
         }));
         setRows(formattedData);
         console.log('resp:', response);
@@ -134,7 +138,7 @@ export default function AmenityMasterTable() {
             Add New Record
           </Button>
         </Box>
-        <Paper sx={{ width: '54%', overflow: 'hidden', margin: '0px 0px 0px 50px', border:'1px solid lightgray' }}>
+        <Paper sx={{ width: '67.8%', overflow: 'hidden', margin: '0px 0px 0px 50px', border:'1px solid lightgray' }}>
           <TableContainer sx={{ maxHeight: 450 }}>
             <Table stickyHeader aria-label="sticky table">
             <TableHead>

@@ -40,7 +40,7 @@ export default function StateTable() {
       if (response.data.status === 0) {
         const formattedData = response.data.data.map(state => ({
           ...state,
-          state: state.stateName || 'N/A',
+          state: state.stateName || '',
           country:state.countryName
         }));
         setRows(formattedData);

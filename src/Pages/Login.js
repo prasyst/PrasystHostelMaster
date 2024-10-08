@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Container, Box, Grid, TextField, Button, Typography, Checkbox, Link } from '@mui/material';
 import hostel2 from '../assets/Images/hostel2.jpg';
-import logo from '../assets/Images/logo111.PNG'
+import logo from '../assets/Images/logo111.PNG';
 import PhoneAndroidIcon from '@mui/icons-material/PhoneAndroid';
 import AssignmentIndIcon from '@mui/icons-material/AssignmentInd';
 import { useNavigate } from 'react-router-dom';

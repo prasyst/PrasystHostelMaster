@@ -12,10 +12,10 @@ import { Breadcrumbs, Link, Typography, Box, Button, TextField } from '@mui/mate
 import { useNavigate } from 'react-router-dom';
 
 const columns = [
-  { id: 'compTypeName', label: 'CompTypeName', minWidth: 100 },
-  { id: 'compName', label: 'CompName', minWidth: 100 },
-  { id: 'compAbrv', label: 'CompAbrv', minWidth: 100 },
-  { id: 'compRemark', label: 'CompRemark', minWidth: 100 }
+  { id: 'compTypeName', label: 'ComplaintType', minWidth: 100 },
+  { id: 'compName', label: 'ComplaintName', minWidth: 100 },
+  { id: 'compAbrv', label: 'Abrv', minWidth: 100 },
+  { id: 'compRemark', label: 'Remark', minWidth: 100 }
 ];
 
 export default function ComplaintTable() {
@@ -135,14 +135,14 @@ export default function ComplaintTable() {
             Add New Record
           </Button>
         </Box>
-        <Paper sx={{ width: '52%', overflow: 'hidden', margin: '0px 0px 0px 50px', border:'1px solid lightgray' }}>
+        <Paper sx={{ width: '62.5%', overflow: 'hidden', margin: '0px 0px 0px 50px', border:'1px solid lightgray' }}>
           <TableContainer sx={{ maxHeight: 450 }}>
             <Table stickyHeader aria-label="sticky table">
             <TableHead>
                 <TableRow
                   sx={{ 
                     '& > th': { 
-                      padding: '2px  10px 2px  10px' 
+                      padding: '2px  10px 2px  10px'
                     }
                   }}
                 >
@@ -162,7 +162,7 @@ export default function ComplaintTable() {
                         onChange={(e) => handleSearchChange(column.id, e.target.value)}
                         sx={{ mt: 1 ,margin:'0px' ,'& .MuiOutlinedInput-input': {
                          padding: '2px 6px',
-                         width: '125px'  
+                         width: '155px'  
                          },}}
 
                       />

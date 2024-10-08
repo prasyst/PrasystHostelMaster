@@ -38,7 +38,7 @@ export default function RoomTypeFacilitiesLinkTable() {
       if (response.data.status === 0) {
         const formattedData = response.data.data.map(facility => ({
           ...facility,
-          roomId: facility.roomId || 'N/A',
+          roomId: facility.roomId || '',
           facilityId: facility.facilityId
         }));
         setRows(formattedData);

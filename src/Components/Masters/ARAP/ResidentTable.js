@@ -49,9 +49,9 @@ export default function ResidentTable() {
       if (response.data.status === 0) {
         const formattedData = response.data.data.map(resident => ({
           ...resident,
-          firstName: resident.firstName || 'N/A', 
-          middleName: resident.midName || 'N/A',
-          lastName: resident.lastName || 'N/A',
+          firstName: resident.firstName || '', 
+          middleName: resident.midName || '',
+          lastName: resident.lastName || '',
           country: resident.countryName,
           gender:resident.gender,
           email:resident.email,
