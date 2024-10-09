@@ -95,7 +95,7 @@ export default function SemesterMasterTable() {
     navigate('/semester', { state: { semesterId ,mode: 'view'}} );
   };
   const handleLocationclick=()=>{
-    navigate('/masters/people')
+    navigate('/masters/arap')
   }
 
   return (
@@ -114,7 +114,7 @@ export default function SemesterMasterTable() {
             <Link onClick={handleHomeClick} className="text-d-none" underline="hover" color="inherit" sx={{cursor:'pointer'}}>
               Home
             </Link>
-            <Typography color="text.primary" onClick={handleLocationclick} sx={{cursor:'pointer'}}>AR/AP</Typography>
+            <Typography color="text.primary" onClick={handleLocationclick} sx={{cursor:'pointer'}}>ARAP</Typography>
             <Typography color="text.primary">Semester Master</Typography>
           </Breadcrumbs>
 

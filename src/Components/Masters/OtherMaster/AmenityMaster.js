@@ -26,6 +26,7 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
+import { FloorAutocomplete } from '../../../Components/AutoComplete/AutoComplete'
 
 const CustomTextField = styled(TextField)(({ theme }) => ({
   '& .MuiFilledInput-root': {
@@ -46,8 +47,8 @@ const AmenityMaster = () => {
   const [formData, setFormData] = useState({
     amenityName: '',
     amenity_Desc: '',
-    wing: '',
     floor: '',
+    areaSqFt: '',
     remark: '',
     photo: ''
   });
@@ -75,7 +76,7 @@ const AmenityMaster = () => {
 
   const amenityNameRef = useRef(null);
   const amenity_DescRef = useRef(null);
-  const wingRef = useRef(null);
+  const areaSqFtRef = useRef(null);
   const floorRef = useRef(null);
   const remarkRef = useRef(null);
 
@@ -149,8 +150,8 @@ const AmenityMaster = () => {
           amenityName: amenityData.amenityName,
           amenity_Desc: amenityData.amenity_Desc,
           remark: amenityData.remark,
-          wing: amenityData.wingId.toString(),
           floor: amenityData.floorId.toString(),
+          areaSqFt: amenityData.areaSqFt,
           photo: amenityData.photo || ''
         });
         setIsFormDisabled(true);
@@ -165,6 +166,24 @@ const AmenityMaster = () => {
       toast.error('Error fetching AmenityMaster data. Please try again.');
     }
   };
+
+  useEffect(() => {
+    const fetchFloors = async () => {
+      try {
+        const response = await axios.post(`${process.env.REACT_APP_API_URL}FloorMst/getFloorMstdrp`);
+        if (response.data.status === 0 && response.data.responseStatusCode === 1) {
+          setFloors(response.data.data);
+        } else {
+          toast.error('Failed to fetch Floors');
+        }
+      } catch (error) {
+        console.error('Error fetching Floors:', error);
+        toast.error('Error fetching Floors. Please try again.');
+      }
+    };
+
+    fetchFloors();
+  }, []);
 
   const handlePrevious = async () => {
     if (currentAmenityId && currentAmenityId > 1) {
@@ -205,9 +224,9 @@ const AmenityMaster = () => {
       if (event.target === amenityNameRef.current) {
         amenity_DescRef.current.focus();
       } else if (event.target === amenity_DescRef.current){
-        wingRef.current.focus();
-      }else if (event.target === wingRef.current){
         floorRef.current.focus();
+      }else if (event.target === floorRef.current){
+        areaSqFtRef.current.focus();
       }else {
         remarkRef.current.focus();
       }
@@ -227,12 +246,12 @@ const AmenityMaster = () => {
       setError(prev => ({ ...prev, amenityName: false }));
     }
 
-    if (!formData.amenity_Desc) {
-      toast.error('Amenity_Desc is required');
-      setError(prev => ({ ...prev, amenity_Desc: true }));
+    if (!formData.floor) {
+      toast.error('Floor is required');
+      setError(prev => ({ ...prev, floor: true }));
       hasError = true;
     } else {
-      setError(prev => ({ ...prev, amenity_Desc: false }));
+      setError(prev => ({ ...prev, floor: false }));
     }
 
     if (hasError) {
@@ -243,8 +262,8 @@ const AmenityMaster = () => {
       const payload = {
         amenityName: formData.amenityName,
         amenity_Desc: formData.amenity_Desc,
-        wingId: parseInt(formData.wing),
         floorId: parseInt(formData.floor),
+        areaSqFt: formData.areaSqFt,
         remark: formData.remark,
         photo: formData?.photo || '',
         status: "1"
@@ -301,7 +320,7 @@ const AmenityMaster = () => {
       amenityName: '',
       amenity_Desc: '',
       remark: '',
-      wing: '',
+      areaSqFt: '',
       floor: '',
       photo: ''
     });
@@ -327,7 +346,7 @@ const AmenityMaster = () => {
       amenityName: '',
       amenity_Desc: '',
       remark: '',
-      wing: '',
+      areaSqFt: '',
       floor: '',
       photo: ''
     });
@@ -466,7 +485,7 @@ const AmenityMaster = () => {
                       <TextField
                         id="amenity_Desc"
                         name="amenity_Desc"
-                        label="Amenity Desc"
+                        label="Description"
                         variant="filled"
                         fullWidth
                         className="custom-textfield"
@@ -485,41 +504,13 @@ const AmenityMaster = () => {
               </Grid>
               <Grid container spacing={2}>
                 <Grid item xs={12} md={6} lg={6} className='form_field'>
-                  <FormControl variant="filled" fullWidth className="custom-select">
-                    <InputLabel id="wing-select-label">Wings</InputLabel>
-                    <Select
-                      labelId="wing-select-label"
-                      id="wing-select"
-                      name="wing"
-                      value={formData.wing}
-                      onChange={handleInputChange}
-                      className="custom-textfield"
-                    >
-                      {wings.map((wing) => (
-                        <MenuItem key={wing.id} value={wing.id}>
-                          {wing.name}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
-                  {/* <WingAutocomplete
-                    wings={wings}
-                    value={wings.find(wing => wing.id == formData.wing) || null}
-                    onChange={handleInputChange}
-                    disabled={isFormDisabled}
-                    error={error.wing}
-                    helperText={error.wing ? '' : ''}
-                    ref={wingRef}
-                    onKeyDown={handleKeyPress}
-                  /> */}
-                </Grid>
-                <Grid item xs={12} md={6} lg={6} className='form_field'>
-                  <FormControl variant="filled" fullWidth className="custom-select">
+                  {/* <FormControl variant="filled" fullWidth className="custom-select">
                     <InputLabel id="floor-select-label">Floors</InputLabel>
                     <Select
                       labelId="floor-select-label"
                       id="floor-select"
                       name="floor"
+                      // disabled={isFormDisabled}
                       value={formData.floor}
                       onChange={handleInputChange}
                       className="custom-textfield"
@@ -530,8 +521,8 @@ const AmenityMaster = () => {
                         </MenuItem>
                       ))}
                     </Select>
-                  </FormControl>
-                  {/* <FloorAutocomplete
+                  </FormControl> */}
+                  <FloorAutocomplete
                     floors={floors}
                     value={floors.find(floor => floor.id == formData.floor) || null}
                     onChange={handleInputChange}
@@ -540,9 +531,26 @@ const AmenityMaster = () => {
                     helperText={error.floor ? '' : ''}
                     ref={floorRef}
                     onKeyDown={handleKeyPress}
-                  /> */}
+                  />
                 </Grid>
                 <Grid item xs={12} md={6} lg={6}>
+                  <TextField
+                    id="areaSqFt"
+                    name="areaSqFt"
+                    label="AreaSqFt"
+                    variant="filled"
+                    fullWidth
+                    className="custom-textfield"
+                    value={formData.areaSqFt}
+                    onChange={handleInputChange}
+                    disabled={isFormDisabled}
+                    error={error.areaSqFt}
+                    helperText={error.areaSqFt && ""}
+                    inputRef={areaSqFtRef}
+                    onKeyDown={handleKeyPress}
+                  />
+                </Grid>
+                <Grid item xs={12} md={12} lg={12}>
                   <TextField
                     id="remark"
                     name="remark"
@@ -599,6 +607,7 @@ const AmenityMaster = () => {
             <input
               accept="image/*"
               style={{ display: 'none' }}
+              disabled={isFormDisabled}
               id="upload-photo"
               type="file"
               onChange={handleFileChange}

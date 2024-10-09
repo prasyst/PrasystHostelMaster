@@ -97,7 +97,7 @@ export default function CourseMasterTable() {
     navigate('/course', { state: { courseId ,mode: 'view'}} );
   };
   const handleLocationclick=()=>{
-    navigate('/masters/people')
+    navigate('/masters/arap')
   }
 
   return (
@@ -116,7 +116,7 @@ export default function CourseMasterTable() {
             <Link onClick={handleHomeClick} className="text-d-none" underline="hover" color="inherit" sx={{cursor:'pointer'}}>
               Home
             </Link>
-            <Typography color="text.primary" onClick={handleLocationclick} sx={{cursor:'pointer'}}>AR/AP</Typography>
+            <Typography color="text.primary" onClick={handleLocationclick} sx={{cursor:'pointer'}}>ARAP</Typography>
             <Typography color="text.primary">Course Master</Typography>
           </Breadcrumbs>
 
