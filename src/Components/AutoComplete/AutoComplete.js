@@ -284,5 +284,47 @@ const EmpTypeAutocomplete = React.forwardRef(({ types, value, onChange, disabled
   }
 );
 
+const FloorAutocomplete = React.forwardRef(({ floors, value, onChange, disabled, error, helperText, onKeyDown }, ref) => {
+  return (
+    <FormControl fullWidth>
+      <Autocomplete
+        id="floor-autocomplete"
+        options={floors}
+        getOptionLabel={(option) => option.name}
+        value={value}
+        onChange={(event, newValue) => {
+          onChange({
+            target: {
+              name: 'floor',
+              value: newValue ? newValue.id : ''
+            }
+          });
+        }}
+        renderInput={(params) => (
+          <TextField
+            {...params}
+            label={
+              <span>
+                Select Floors <span style={{ color: 'red' }}>*</span>
+              </span>
+            }
+            variant="filled"
+            className="custom-textfield"
+            error={!!error}
+            helperText={helperText}
+            inputRef={ref}
+            onKeyDown={onKeyDown}
+          />
+        )}
+        disabled={disabled}
+        className="custom-select"
+      
+
+      />
+    </FormControl>
+  );
+  }
+);
+
 export { CountryAutocomplete, StateAutocomplete, ZoneAutocomplete, CityAutocomplete, 
-         InstituteAutocomplete, CourseAutocomplete, EmpTypeAutocomplete };
+         InstituteAutocomplete, CourseAutocomplete, EmpTypeAutocomplete, FloorAutocomplete };

@@ -123,6 +123,24 @@ const PartyMaster = () => {
     }
   };
 
+  const changeHandler = (event) => {
+    const { name, value } = event.target;
+    setFormData(prevData => ({
+      ...prevData,
+      [name]: value,
+      gstReg: event.target.value
+    }));
+  };
+
+  const inputChangeHandler = (event) => {
+    const { name, value } = event.target;
+    setFormData(prevData => ({
+      ...prevData,
+      [name]: value,
+      msmeReg: event.target.value
+    }));
+  };
+
   const handleFileChange = (event) => {
     const file = event.target.files[0];
     if (file) {
@@ -178,7 +196,8 @@ const PartyMaster = () => {
     remark1: '',
     remark2: '',
     workAddress: '',
-
+    gstReg: 'RD',
+    msmeReg: 'no'
   });
   const [branches, setBranches] = useState([]);
   const [currentBranch, setCurrentBranch] = useState({
@@ -779,82 +798,125 @@ const PartyMaster = () => {
                           </Grid>
                         </Grid>
 
-                        
-
-                      <Grid item display="flex">
-
-                      <Box>
                         <Grid container spacing={2}>
-                          <Grid item xs={12} md={4} lg={4}>
-                            <TextField
-                              fullWidth
-                              label="Address"
-                              name="propAdd"
-                              value={formData.propAdd}
-                              onChange={handleInputChange}
-                              multiline
-                              rows={2}
-                              variant="filled"
-                              disabled={isFormDisabled}
-                              className="custom-textfield"
-                              sx={{
-                                '& .MuiInputBase-root': {
-                                  height: '100px',
-                                  width: '340px'
-                                },
-                                '& .MuiInputBase-input': {
-                                  resize: 'vertical',
-                                },
-                                '& .MuiFilledInput-root': {
-                                  '&:hover': {
-                                    backgroundColor: 'transparent',
-                                  },
-                                  '&.Mui-focused': {
-                                    backgroundColor: 'transparent',
-                                  },
-                                },
-                              }}
-                            />
-                          </Grid>
-                          <Grid item xs={12} md={4} lg={4}>
-                            <TextField
-                              fullWidth
-                              label="Address"
-                              name="propAdd"
-                              value={formData.propAdd}
-                              onChange={handleInputChange}
-                              multiline
-                              rows={2}
-                              variant="filled"
-                              disabled={isFormDisabled}
-                              className="custom-textfield"
-                              sx={{
-                                '& .MuiInputBase-root': {
-                                  height: '100px',
-                                  width: '340px'
-                                },
-                                '& .MuiInputBase-input': {
-                                  resize: 'vertical',
-                                },
-                                '& .MuiFilledInput-root': {
-                                  '&:hover': {
-                                    backgroundColor: 'transparent',
-                                  },
-                                  '&.Mui-focused': {
-                                    backgroundColor: 'transparent',
-                                  },
-                                },
-                              }}
-                            />
-                          </Grid>
-                        </Grid>
-                      </Box>
+                          <Grid item lg={12} md={12} xs={12}>
+                            <Box display="flex" gap={2}>
+                          <Grid item lg={8} md={8} xs={12}>
+                            <Box display="flex" flexDirection="column" gap={2}>
+  
+                                  <Grid container spacing={2}>
+                                    <Grid item xs={12} md={6}>
+                                      <TextField
+                                        fullWidth
+                                        label="Pincode"
+                                        name="totalRooms"
+                                        value={formData.totalRooms}
+                                        onChange={handleInputChange}
+                                        variant="filled"
+                                        disabled={isFormDisabled}
+                                        className="custom-textfield"
+                                      />
+                                    </Grid>
+                                    <Grid item xs={12} md={6} className='form_field'>
+                                      <FormControl variant="filled" fullWidth className="custom-select">
+                                        <InputLabel id="areaName-select-label">Area</InputLabel>
+                                        <Select
+                                          labelId="areaName-select-label"
+                                          id="areaName-select"
+                                          name="areaName"
+                                          value={formData.areaName}
+                                          onChange={handleInputChange}
+                                          className="custom-textfield"
+                                        >
+                                          {/* {area.length > 0 ? (
+                                  area.map((areaItem) => (
+                                    <MenuItem key={areaItem.id} value={areaItem.name}>
+                                      {areaItem.name}
+                                    </MenuItem>
+                                  ))
+                                ) : (
+                                  <MenuItem value="" disabled>
+                                    No areas available
+                                  </MenuItem>
+                                )} */}
+                                        </Select>
+                                      </FormControl>
+                                    </Grid>
+                                  </Grid>
+                                
+                              <Grid container spacing={2}>
+                                <Grid item xs={12} md={6}>
+                                  <TextField
+                                    fullWidth
+                                    label="City"
+                                    name="totalBeds"
+                                    value={formData.totalBeds}
+                                    onChange={handleInputChange}
+                                    variant="filled"
+                                    disabled={isFormDisabled}
+                                    className="custom-textfield"
+                                  />
+                                </Grid>
+                                <Grid item xs={12} md={6}>
+                                  <TextField
+                                    fullWidth
+                                    label="State"
+                                    name="totalBeds"
+                                    value={formData.totalBeds}
+                                    onChange={handleInputChange}
+                                    variant="filled"
+                                    disabled={isFormDisabled}
+                                    className="custom-textfield"
+                                  />
+                                </Grid>
 
+                              </Grid>
+
+                            </Box>
+                          </Grid>
+                          <Grid item spacing={1}>
+                            <Grid item xs={12} md={4} lg={4}>
+                              <TextField
+                                fullWidth
+                                label="Address"
+                                name="propAdd"
+                                value={formData.propAdd}
+                                onChange={handleInputChange}
+                                multiline
+                                rows={2}
+                                variant="filled"
+                                disabled={isFormDisabled}
+                                className="custom-textfield"
+                                sx={{
+                                  '& .MuiInputBase-root': {
+                                    height: '112px',
+                                    width: '346px'
+                                  },
+                                  '& .MuiInputBase-input': {
+                                    resize: 'vertical',
+                                  },
+                                  '& .MuiFilledInput-root': {
+                                    '&:hover': {
+                                      backgroundColor: 'transparent',
+                                    },
+                                    '&.Mui-focused': {
+                                      backgroundColor: 'transparent',
+                                    },
+                                  },
+                                }}
+                              />
+                            </Grid>
+                          </Grid>
+                          </Box>
                     </Grid>
-                        
+                        </Grid>
+
                       </Box>
+                      
                     </Grid>
-                    
+
+
+
                     <Grid item lg={4} md={4} xs={12} display="flex" alignItems="center" justifyContent="center">
                       <Box
                         display="flex"
@@ -898,121 +960,6 @@ const PartyMaster = () => {
                         />
                       </Box>
                     </Grid>
-
-
-                    {/* <Grid item lg={12} md={12} xs={12}>
-
-                      <Box display="flex" flexDirection="column" gap={2}>
-                        <Grid container spacing={3}>
-                          <Grid item xs={12} md={2}>
-                            <TextField
-                              fullWidth
-                              label="GST No"
-                              name="emailID"
-                              value={formData.emailID || ''}
-                              onChange={handleInputChange}
-                              variant="filled"
-                              disabled={isFormDisabled}
-                              className="custom-textfield"
-                            />
-                          </Grid>
-                          <Grid item xs={12} md={2}>
-                            <TextField
-                              fullWidth
-                              label="PAN No"
-                              name="telNo"
-                              value={formData.telNo || ''}
-                              onChange={handleInputChange}
-                              variant="filled"
-                              disabled={isFormDisabled}
-                              className="custom-textfield"
-                            />
-                          </Grid>
-                          <Grid item xs={12} md={2}>
-                            <TextField
-                              fullWidth
-                              label="TAN No"
-                              name="website"
-                              value={formData.website}
-                              onChange={handleInputChange}
-                              variant="filled"
-                              disabled={isFormDisabled}
-                              className="custom-textfield"
-                            />
-                          </Grid>
-                          <Grid item xs={12} md={2}>
-                            <TextField
-                              fullWidth
-                              label="IE Code"
-                              name="telNo"
-                              value={formData.telNo || ''}
-                              onChange={handleInputChange}
-                              variant="filled"
-                              disabled={isFormDisabled}
-                              className="custom-textfield"
-                            />
-                          </Grid>
-                        </Grid>
-                      </Box>
-
-                    </Grid> */}
-
-                    {/* <Grid item lg={12} md={12} xs={12}>
-
-                      <Box display="flex" flexDirection="column" gap={2}>
-                        <Grid container spacing={3}>
-                          <Grid item xs={12} md={2}>
-                            <TextField
-                              fullWidth
-                              label="Tel No"
-                              name="msmeNo"
-                              value={formData.msmeNo}
-                              onChange={handleInputChange}
-                              variant="filled"
-                              disabled={isFormDisabled}
-                              className="custom-textfield"
-                            />
-                          </Grid>
-                          <Grid item xs={12} md={2}>
-                            <TextField
-                              fullWidth
-                              label="Email"
-                              name="msmeCat"
-                              value={formData.msmeCat}
-                              onChange={handleInputChange}
-                              variant="filled"
-                              disabled={isFormDisabled}
-                              className="custom-textfield"
-                            />
-                          </Grid>
-                          <Grid item xs={12} md={2}>
-                            <TextField
-                              fullWidth
-                              label="Contact Person"
-                              name="msmeType"
-                              value={formData.msmeType}
-                              onChange={handleInputChange}
-                              variant="filled"
-                              disabled={isFormDisabled}
-                              className="custom-textfield"
-                            />
-                          </Grid>
-                          <Grid item xs={12} md={2}>
-                            <TextField
-                              fullWidth
-                              label="Mobile No"
-                              name="msmeType"
-                              value={formData.msmeType}
-                              onChange={handleInputChange}
-                              variant="filled"
-                              disabled={isFormDisabled}
-                              className="custom-textfield"
-                            />
-                          </Grid>
-                        </Grid>
-                      </Box>
-
-                    </Grid> */}
 
                     <Grid item lg={8} md={8} xs={12}>
                       <Box display="flex" flexDirection="column" gap={2}>
@@ -1073,67 +1020,67 @@ const PartyMaster = () => {
 
                         </Grid>
                         <Grid container spacing={2}>
-                              <Grid item xs={12} md={3}>
-                                <TextField
-                                  fullWidth
-                                  label="Tel No"
-                                  name="totalBeds"
-                                  value={formData.totalBeds}
-                                  onChange={handleInputChange}
-                                  variant="filled"
-                                  disabled={isFormDisabled}
-                                  className="custom-textfield"
-                                />
-                              </Grid>
-                              <Grid item xs={12} md={3}>
-                                <TextField
-                                  fullWidth
-                                  label="Email"
-                                  name="totalBeds"
-                                  value={formData.totalBeds}
-                                  onChange={handleInputChange}
-                                  variant="filled"
-                                  disabled={isFormDisabled}
-                                  className="custom-textfield"
-                                />
-                              </Grid>
-                              <Grid item xs={12} md={3}>
-                                <TextField
-                                  fullWidth
-                                  label="Contact Person"
-                                  name="totalBeds"
-                                  value={formData.totalBeds}
-                                  onChange={handleInputChange}
-                                  variant="filled"
-                                  disabled={isFormDisabled}
-                                  className="custom-textfield"
-                                />
-                              </Grid>
-                              <Grid item xs={12} md={3}>
-                                <TextField
-                                  fullWidth
-                                  label="Mobile No"
-                                  name="totalBeds"
-                                  value={formData.totalBeds}
-                                  onChange={handleInputChange}
-                                  variant="filled"
-                                  disabled={isFormDisabled}
-                                  className="custom-textfield"
-                                />
-                              </Grid>
+                          <Grid item xs={12} md={3}>
+                            <TextField
+                              fullWidth
+                              label="Tel No"
+                              name="totalBeds"
+                              value={formData.totalBeds}
+                              onChange={handleInputChange}
+                              variant="filled"
+                              disabled={isFormDisabled}
+                              className="custom-textfield"
+                            />
+                          </Grid>
+                          <Grid item xs={12} md={3}>
+                            <TextField
+                              fullWidth
+                              label="Email"
+                              name="totalBeds"
+                              value={formData.totalBeds}
+                              onChange={handleInputChange}
+                              variant="filled"
+                              disabled={isFormDisabled}
+                              className="custom-textfield"
+                            />
+                          </Grid>
+                          <Grid item xs={12} md={3}>
+                            <TextField
+                              fullWidth
+                              label="Contact Person"
+                              name="totalBeds"
+                              value={formData.totalBeds}
+                              onChange={handleInputChange}
+                              variant="filled"
+                              disabled={isFormDisabled}
+                              className="custom-textfield"
+                            />
+                          </Grid>
+                          <Grid item xs={12} md={3}>
+                            <TextField
+                              fullWidth
+                              label="Mobile No"
+                              name="totalBeds"
+                              value={formData.totalBeds}
+                              onChange={handleInputChange}
+                              variant="filled"
+                              disabled={isFormDisabled}
+                              className="custom-textfield"
+                            />
+                          </Grid>
                         </Grid>
 
                       </Box>
                     </Grid>
 
-                    <Grid item display="flex" alignItems="center" justifyContent="center">
+                    <Grid item display="flex" alignItems="center">
 
                       <Box>
                         <Grid container spacing={1}>
                           <Grid item xs={12} md={12} lg={12}>
                             <TextField
                               fullWidth
-                              label="Address"
+                              label="Work Address"
                               name="propAdd"
                               value={formData.propAdd}
                               onChange={handleInputChange}
@@ -1180,28 +1127,28 @@ const PartyMaster = () => {
                               <Grid item>
                                 <FormControl component="fieldset">
                                   <RadioGroup
-                                    aria-label="gender"
-                                    name="gender"
-                                    value={formData.gender}
+                                    aria-label="gstReg"
+                                    name="gstReg"
+                                    value={formData.gstReg}
                                     onChange={handleInputChange}
                                     row
                                   >
                                     <FormControlLabel
-                                      value="male"
+                                      value="RD"
                                       control={<Radio sx={{ '& .MuiSvgIcon-root': { fontSize: 18 } }} />}
                                       label="RD"
                                       className="custom-textfield"
                                       disabled={isFormDisabled}
                                     />
                                     <FormControlLabel
-                                      value="female"
+                                      value="URD"
                                       control={<Radio sx={{ '& .MuiSvgIcon-root': { fontSize: 18 } }} />}
                                       label="URD"
                                       className="custom-textfield"
                                       disabled={isFormDisabled}
                                     />
                                     <FormControlLabel
-                                      value="others"
+                                      value="composition"
                                       control={<Radio sx={{ '& .MuiSvgIcon-root': { fontSize: 18 } }} />}
                                       label="Composition"
                                       className="custom-textfield"
@@ -1215,40 +1162,39 @@ const PartyMaster = () => {
                           </Grid>
                           <Grid item xs={12} md={4} className='form_field'>
                             <FormControl variant="filled" fullWidth className="custom-select">
-                              <InputLabel id="areaName-select-label">Party Type</InputLabel>
+                              <InputLabel id="partyType-select-label">Party Type</InputLabel>
                               <Select
-                                labelId="areaName-select-label"
-                                id="areaName-select"
-                                name="areaName"
-                                value={formData.areaName}
+                                labelId="partyType-select-label"
+                                id="partyType-select"
+                                name="partyType"
+                                value={formData.partyType}
                                 onChange={handleInputChange}
                                 className="custom-textfield"
                               >
-                                {/* {area.length > 0 ? (
-                                  area.map((areaItem) => (
-                                    <MenuItem key={areaItem.id} value={areaItem.name}>
-                                      {areaItem.name}
-                                    </MenuItem>
-                                  ))
-                                ) : (
-                                  <MenuItem value="" disabled>
-                                    No areas available
-                                  </MenuItem>
-                                )} */}
+                                <MenuItem value={10}>Supplier/Creditor</MenuItem>
+                                <MenuItem value={20}>Broker</MenuItem>
+                                <MenuItem value={30}>Transporter</MenuItem>
+                                <MenuItem value={40}>Others</MenuItem>
+                                <MenuItem value={50}>All</MenuItem>
                               </Select>
                             </FormControl>
                           </Grid>
-                          <Grid item xs={12} md={4}>
-                            <TextField
-                              fullWidth
-                              label="GL-Control A/C"
-                              name="remark"
-                              value={formData.remark}
-                              onChange={handleInputChange}
-                              variant="filled"
-                              disabled={isFormDisabled}
-                              className="custom-textfield"
-                            />
+                          
+                          <Grid item xs={12} md={4} className='form_field'>
+                            <FormControl variant="filled" fullWidth className="custom-select">
+                              <InputLabel id="glControl-select-label">GL-Control A/C</InputLabel>
+                              <Select
+                                labelId="glControl-select-label"
+                                id="glControl-select"
+                                name="glControl"
+                                value={formData.glControl}
+                                onChange={handleInputChange}
+                                className="custom-textfield"
+                              >
+                                <MenuItem value={10}>Sundry Creditor</MenuItem>
+                                <MenuItem value={20}>Sundry Dater</MenuItem>
+                              </Select>
+                            </FormControl>
                           </Grid>
                         </Grid>
                       </Box>
@@ -1267,21 +1213,21 @@ const PartyMaster = () => {
                               <Grid item>
                                 <FormControl component="fieldset">
                                   <RadioGroup
-                                    aria-label="gender"
-                                    name="gender"
-                                    value={formData.gender}
-                                    onChange={handleInputChange}
+                                    aria-label="msmeReg"
+                                    name="msmeReg"
+                                    value={formData.msmeReg}
+                                    onChange={inputChangeHandler}
                                     row
                                   >
                                     <FormControlLabel
-                                      value="male"
+                                      value="yes"
                                       control={<Radio sx={{ '& .MuiSvgIcon-root': { fontSize: 18 } }} />}
                                       label="Yes"
                                       className="custom-textfield"
                                       disabled={isFormDisabled}
                                     />
                                     <FormControlLabel
-                                      value="female"
+                                      value="no"
                                       control={<Radio sx={{ '& .MuiSvgIcon-root': { fontSize: 18 } }} />}
                                       label="No"
                                       className="custom-textfield"
@@ -1294,17 +1240,22 @@ const PartyMaster = () => {
 
                           </Grid>
 
-                          <Grid item xs={12} md={3}>
-                            <TextField
-                              fullWidth
-                              label="MSME No"
-                              name="remark"
-                              value={formData.remark}
-                              onChange={handleInputChange}
-                              variant="filled"
-                              disabled={isFormDisabled}
-                              className="custom-textfield"
-                            />
+                          <Grid item xs={12} md={3} className='form_field'>
+                            <FormControl variant="filled" fullWidth className="custom-select">
+                              <InputLabel id="areaName-select-label">MSME Act</InputLabel>
+                              <Select
+                                labelId="areaName-select-label"
+                                id="areaName-select"
+                                name="areaName"
+                                value={formData.areaName}
+                                onChange={handleInputChange}
+                                className="custom-textfield"
+                              >
+                                <MenuItem value={10}>Not Register</MenuItem>
+                                <MenuItem value={20}>Mfr</MenuItem>
+                                <MenuItem value={30}>Trader</MenuItem>
+                              </Select>
+                            </FormControl>
                           </Grid>
 
                           <Grid item xs={12} md={3} className='form_field'>
@@ -1318,31 +1269,28 @@ const PartyMaster = () => {
                                 onChange={handleInputChange}
                                 className="custom-textfield"
                               >
-                                {/* {area.length > 0 ? (
-                                  area.map((areaItem) => (
-                                    <MenuItem key={areaItem.id} value={areaItem.name}>
-                                      {areaItem.name}
-                                    </MenuItem>
-                                  ))
-                                ) : (
-                                  <MenuItem value="" disabled>
-                                    No areas available
-                                  </MenuItem>
-                                )} */}
+                                <MenuItem value={10}>Not Register</MenuItem>
+                                <MenuItem value={20}>Goods</MenuItem>
+                                <MenuItem value={30}>Service</MenuItem>
                               </Select>
                             </FormControl>
                           </Grid>
-                          <Grid item xs={12} md={3}>
-                            <TextField
-                              fullWidth
-                              label="MSME Class"
-                              name="remark"
-                              value={formData.remark}
-                              onChange={handleInputChange}
-                              variant="filled"
-                              disabled={isFormDisabled}
-                              className="custom-textfield"
-                            />
+                          <Grid item xs={12} md={3} className='form_field'>
+                            <FormControl variant="filled" fullWidth className="custom-select">
+                              <InputLabel id="areaName-select-label">MSME Class</InputLabel>
+                              <Select
+                                labelId="areaName-select-label"
+                                id="areaName-select"
+                                name="areaName"
+                                value={formData.areaName}
+                                onChange={handleInputChange}
+                                className="custom-textfield"
+                              >
+                                <MenuItem value={30}>Not Register</MenuItem>
+                                <MenuItem value={10}>Medium</MenuItem>
+                                <MenuItem value={20}>Micro/Small</MenuItem>
+                              </Select>
+                            </FormControl>
                           </Grid>
                         </Grid>
                       </Box>
@@ -1362,50 +1310,42 @@ const PartyMaster = () => {
                           <Grid item xs={12} md={6}>
                             <TextField
                               fullWidth
-                              label="Branch Code"
-                              name="branchCode"
-                              value={currentBranch.branchCode}
-                              onChange={handleBranchInputChangeNew}
+                              label={
+                                <span>
+                                  Party Name <span style={{ color: 'red' }}>*</span>
+                                </span>
+                              }
+                              name="companyName"
+                              value={formData.companyName}
+                              onChange={handleInputChange}
                               variant="filled"
                               disabled={isFormDisabled}
                               className="custom-textfield"
                             />
                           </Grid>
-                          <Grid item xs={12} md={6}>
+                          <Grid item xs={12} md={3}>
                             <TextField
                               fullWidth
-                              label="Short Name"
+                              label="Alt Code"
                               name="shortName"
-                              value={currentBranch.shortName}
-                              onChange={handleBranchInputChangeNew}
+                              value={formData.shortName || ''}
+                              onChange={handleInputChange}
                               variant="filled"
                               disabled={isFormDisabled}
                               className="custom-textfield"
                             />
                           </Grid>
-                        </Grid>
-
-                        {/* Branch Name and Jurisdiction */}
-                        <Grid container spacing={2}>
-                          <Grid item xs={12} md={6}>
+                          <Grid item xs={12} md={3}>
                             <TextField
                               fullWidth
-                              label="Branch Name"
-                              name="branchName"
-                              value={currentBranch.branchName}
-                              onChange={handleBranchInputChangeNew}
-                              variant="filled"
-                              disabled={isFormDisabled}
-                              className="custom-textfield"
-                            />
-                          </Grid>
-                          <Grid item xs={12} md={6}>
-                            <TextField
-                              fullWidth
-                              label="Jurisdiction"
+                              label={
+                                <span>
+                                  Abrv <span style={{ color: 'red' }}>*</span>
+                                </span>
+                              }
                               name="jurisdiction"
-                              value={currentBranch.jurisdiction}
-                              onChange={handleBranchInputChangeNew}
+                              value={formData.jurisdiction || ''}
+                              onChange={handleInputChange}
                               variant="filled"
                               disabled={isFormDisabled}
                               className="custom-textfield"
@@ -1413,36 +1353,124 @@ const PartyMaster = () => {
                           </Grid>
                         </Grid>
 
-                        {/* GST No. and IE_Code */}
                         <Grid container spacing={2}>
-                          <Grid item xs={12} md={6}>
-                            <TextField
-                              fullWidth
-                              label="GST No"
-                              name="gstNo"
-                              value={currentBranch.gstNo}
-                              onChange={handleBranchInputChangeNew}
-                              variant="filled"
-                              disabled={isFormDisabled}
-                              className="custom-textfield"
-                            />
-                          </Grid>
-                          <Grid item xs={12} md={6}>
-                            <TextField
-                              fullWidth
-                              label="IE Code"
-                              name="ieCode"
-                              value={currentBranch.ieCode}
-                              onChange={handleBranchInputChangeNew}
-                              variant="filled"
-                              disabled={isFormDisabled}
-                              className="custom-textfield"
-                            />
-                          </Grid>
+                          <Grid item lg={12} md={12} xs={12}>
+                            <Box display="flex" gap={2}>
+                          <Grid item lg={8} md={8} xs={12}>
+                            <Box display="flex" flexDirection="column" gap={2}>
+  
+                                  <Grid container spacing={2}>
+                                    <Grid item xs={12} md={6}>
+                                      <TextField
+                                        fullWidth
+                                        label="Pincode"
+                                        name="totalRooms"
+                                        value={formData.totalRooms}
+                                        onChange={handleInputChange}
+                                        variant="filled"
+                                        disabled={isFormDisabled}
+                                        className="custom-textfield"
+                                      />
+                                    </Grid>
+                                    <Grid item xs={12} md={6} className='form_field'>
+                                      <FormControl variant="filled" fullWidth className="custom-select">
+                                        <InputLabel id="areaName-select-label">Area</InputLabel>
+                                        <Select
+                                          labelId="areaName-select-label"
+                                          id="areaName-select"
+                                          name="areaName"
+                                          value={formData.areaName}
+                                          onChange={handleInputChange}
+                                          className="custom-textfield"
+                                        >
+                                          {/* {area.length > 0 ? (
+                                  area.map((areaItem) => (
+                                    <MenuItem key={areaItem.id} value={areaItem.name}>
+                                      {areaItem.name}
+                                    </MenuItem>
+                                  ))
+                                ) : (
+                                  <MenuItem value="" disabled>
+                                    No areas available
+                                  </MenuItem>
+                                )} */}
+                                        </Select>
+                                      </FormControl>
+                                    </Grid>
+                                  </Grid>
+                                
+                              <Grid container spacing={2}>
+                                <Grid item xs={12} md={6}>
+                                  <TextField
+                                    fullWidth
+                                    label="City"
+                                    name="totalBeds"
+                                    value={formData.totalBeds}
+                                    onChange={handleInputChange}
+                                    variant="filled"
+                                    disabled={isFormDisabled}
+                                    className="custom-textfield"
+                                  />
+                                </Grid>
+                                <Grid item xs={12} md={6}>
+                                  <TextField
+                                    fullWidth
+                                    label="State"
+                                    name="totalBeds"
+                                    value={formData.totalBeds}
+                                    onChange={handleInputChange}
+                                    variant="filled"
+                                    disabled={isFormDisabled}
+                                    className="custom-textfield"
+                                  />
+                                </Grid>
 
+                              </Grid>
+
+                            </Box>
+                          </Grid>
+                          <Grid item spacing={1}>
+                            <Grid item xs={12} md={4} lg={4}>
+                              <TextField
+                                fullWidth
+                                label="Address"
+                                name="propAdd"
+                                value={formData.propAdd}
+                                onChange={handleInputChange}
+                                multiline
+                                rows={2}
+                                variant="filled"
+                                disabled={isFormDisabled}
+                                className="custom-textfield"
+                                sx={{
+                                  '& .MuiInputBase-root': {
+                                    height: '112px',
+                                    width: '346px'
+                                  },
+                                  '& .MuiInputBase-input': {
+                                    resize: 'vertical',
+                                  },
+                                  '& .MuiFilledInput-root': {
+                                    '&:hover': {
+                                      backgroundColor: 'transparent',
+                                    },
+                                    '&.Mui-focused': {
+                                      backgroundColor: 'transparent',
+                                    },
+                                  },
+                                }}
+                              />
+                            </Grid>
+                          </Grid>
+                          </Box>
+                    </Grid>
                         </Grid>
+
                       </Box>
                     </Grid>
+
+
+
                     <Grid item lg={4} md={4} xs={12} display="flex" alignItems="center" justifyContent="center">
                       <Box
                         display="flex"
@@ -1455,11 +1483,11 @@ const PartyMaster = () => {
                         height={170}
                         overflow="hidden"
                         position="relative"
-                        sx={{ cursor: 'pointer' }} // Change cursor to indicate clickable area
+                        sx={{ cursor: 'pointer' }}
                       >
-                        {formData.photos ? (
+                        {formData.photo ? (
                           <img
-                            src={formData.photos}
+                            src={formData.photo}
                             alt="Logo"
                             style={{
                               width: '100%',
@@ -1469,21 +1497,17 @@ const PartyMaster = () => {
                           />
                         ) : (
                           <Typography variant="body2" color="textSecondary">
-                            Browse
+                            Photo
                           </Typography>
                         )}
 
-                        {/* Hidden input element */}
                         <input
                           type="file"
                           accept="image/*"
-                          onChange={handleFileChange}
+                          onChange={handleImageUpload}
                           style={{
                             position: 'absolute',
-                            top: 0,
-                            left: 0,
-                            width: '100%',
-                            height: '100%',
+                            top: 0, left: 0, width: '100%', height: '100%',
                             opacity: 0,
                             cursor: 'pointer',
                           }}
@@ -1491,144 +1515,129 @@ const PartyMaster = () => {
                       </Box>
                     </Grid>
 
-                    <Grid item lg={12} md={12} xs={12}>
-
+                    <Grid item lg={8} md={8} xs={12}>
                       <Box display="flex" flexDirection="column" gap={2}>
-                        <Grid container spacing={3}>
-                          <Grid item xs={12} md={4}>
-                            <TextField
-                              fullWidth
-                              label="Email ID"
-                              name="emailID"
-                              value={currentBranch.emailID || ''}
-                              onChange={handleBranchInputChangeNew}
-                              variant="filled"
-                              disabled={isFormDisabled}
-                              className="custom-textfield"
-                            />
-                          </Grid>
-                          <Grid item xs={12} md={4}>
+                        <Grid item lg={12} md={12} xs={12}>
+                          {/* <Grid container spacing={3}> */}
+                          <Box display="flex" flexDirection="column" gap={2}>
+                            <Grid container spacing={2}>
+                              <Grid item xs={12} md={3}>
+                                <TextField
+                                  fullWidth
+                                  label="GST No"
+                                  name="totalRooms"
+                                  value={formData.totalRooms}
+                                  onChange={handleInputChange}
+                                  variant="filled"
+                                  disabled={isFormDisabled}
+                                  className="custom-textfield"
+                                />
+                              </Grid>
+                              <Grid item xs={12} md={3}>
+                                <TextField
+                                  fullWidth
+                                  label="PAN No"
+                                  name="totalBeds"
+                                  value={formData.totalBeds}
+                                  onChange={handleInputChange}
+                                  variant="filled"
+                                  disabled={isFormDisabled}
+                                  className="custom-textfield"
+                                />
+                              </Grid>
+                              <Grid item xs={12} md={3}>
+                                <TextField
+                                  fullWidth
+                                  label="TAN No"
+                                  name="totalBeds"
+                                  value={formData.totalBeds}
+                                  onChange={handleInputChange}
+                                  variant="filled"
+                                  disabled={isFormDisabled}
+                                  className="custom-textfield"
+                                />
+                              </Grid>
+                              <Grid item xs={12} md={3}>
+                                <TextField
+                                  fullWidth
+                                  label="IE Code"
+                                  name="totalBeds"
+                                  value={formData.totalBeds}
+                                  onChange={handleInputChange}
+                                  variant="filled"
+                                  disabled={isFormDisabled}
+                                  className="custom-textfield"
+                                />
+                              </Grid>
+                            </Grid>
+                          </Box>
+
+                        </Grid>
+                        <Grid container spacing={2}>
+                          <Grid item xs={12} md={3}>
                             <TextField
                               fullWidth
                               label="Tel No"
-                              name="telNo"
-                              value={currentBranch.telNo || ''}
-                              onChange={handleBranchInputChangeNew}
+                              name="totalBeds"
+                              value={formData.totalBeds}
+                              onChange={handleInputChange}
                               variant="filled"
                               disabled={isFormDisabled}
                               className="custom-textfield"
                             />
                           </Grid>
-                          <Grid item xs={12} md={4}>
+                          <Grid item xs={12} md={3}>
                             <TextField
                               fullWidth
-                              label="Website"
-                              name="website"
-                              value={currentBranch.website}
-                              onChange={handleBranchInputChangeNew}
+                              label="Email"
+                              name="totalBeds"
+                              value={formData.totalBeds}
+                              onChange={handleInputChange}
+                              variant="filled"
+                              disabled={isFormDisabled}
+                              className="custom-textfield"
+                            />
+                          </Grid>
+                          <Grid item xs={12} md={3}>
+                            <TextField
+                              fullWidth
+                              label="Contact Person"
+                              name="totalBeds"
+                              value={formData.totalBeds}
+                              onChange={handleInputChange}
+                              variant="filled"
+                              disabled={isFormDisabled}
+                              className="custom-textfield"
+                            />
+                          </Grid>
+                          <Grid item xs={12} md={3}>
+                            <TextField
+                              fullWidth
+                              label="Mobile No"
+                              name="totalBeds"
+                              value={formData.totalBeds}
+                              onChange={handleInputChange}
                               variant="filled"
                               disabled={isFormDisabled}
                               className="custom-textfield"
                             />
                           </Grid>
                         </Grid>
-                      </Box>
 
-                    </Grid>
-                    <Grid item lg={12} md={12} xs={12}>
-                      <Box display="flex" flexDirection="column" gap={2}>
-                        <Grid container spacing={3}>
-                          <Grid item xs={12} md={4}>
-                            <TextField
-                              fullWidth
-                              label="MSME No"
-                              name="msmeNo"
-                              value={currentBranch.msmeNo}
-                              onChange={handleBranchInputChangeNew}
-                              variant="filled"
-                              disabled={isFormDisabled}
-                              className="custom-textfield"
-                            />
-                          </Grid>
-                          <Grid item xs={12} md={4}>
-                            <TextField
-                              fullWidth
-                              label="MSME Cat"
-                              name="msmeCat"
-                              value={currentBranch.msmeCat}
-                              onChange={handleBranchInputChangeNew}
-                              variant="filled"
-                              disabled={isFormDisabled}
-                              className="custom-textfield"
-                            />
-                          </Grid>
-                          <Grid item xs={12} md={4}>
-                            <TextField
-                              fullWidth
-                              label="MSME Type"
-                              name="msmeType"
-                              value={currentBranch.msmeType}
-                              onChange={handleBranchInputChangeNew}
-                              variant="filled"
-                              disabled={isFormDisabled}
-                              className="custom-textfield"
-                            />
-                          </Grid>
-                        </Grid>
                       </Box>
                     </Grid>
-                    <Grid item lg={12} md={12} xs={12}>
-                      <Box display="flex" flexDirection="column" gap={2}>
-                        <Grid container spacing={3}>
-                          <Grid item xs={12} md={4}>
+
+                    <Grid item display="flex" alignItems="center">
+
+                      <Box>
+                        <Grid container spacing={1}>
+                          <Grid item xs={12} md={12} lg={12}>
                             <TextField
                               fullWidth
-                              label="Pin Code"
-                              name="pinCode"
-                              value={currentBranch.pinCode || ''}
-                              onChange={handleBranchInputChangeNew}
-                              variant="filled"
-                              disabled={isFormDisabled}
-                              className="custom-textfield"
-                            />
-                          </Grid>
-                          <Grid item xs={12} md={4}>
-                            <TextField
-                              fullWidth
-                              label="Remark1"
-                              name="remark1"
-                              value={currentBranch.remark1}
-                              onChange={handleBranchInputChangeNew}
-                              variant="filled"
-                              disabled={isFormDisabled}
-                              className="custom-textfield"
-                            />
-                          </Grid>
-                          <Grid item xs={12} md={4}>
-                            <TextField
-                              fullWidth
-                              label="Remark2"
-                              name="remark2"
-                              value={currentBranch.remark2}
-                              onChange={handleBranchInputChangeNew}
-                              variant="filled"
-                              disabled={isFormDisabled}
-                              className="custom-textfield"
-                            />
-                          </Grid>
-                        </Grid>
-                      </Box>
-                    </Grid>
-                    <Grid item lg={12} md={12} xs={12}>
-                      <Box display="flex" flexDirection="column" gap={2}>
-                        <Grid container spacing={3}>
-                          <Grid item xs={12} md={6} lg={4}>
-                            <TextField
-                              fullWidth
-                              label="Address"
-                              name="branchAddress"
-                              value={currentBranch.branchAddress || ''}
-                              onChange={handleBranchInputChangeNew}
+                              label="Work Address"
+                              name="propAdd"
+                              value={formData.propAdd}
+                              onChange={handleInputChange}
                               multiline
                               rows={2}
                               variant="filled"
@@ -1636,37 +1645,8 @@ const PartyMaster = () => {
                               className="custom-textfield"
                               sx={{
                                 '& .MuiInputBase-root': {
-                                  height: '115px',
-                                },
-                                '& .MuiInputBase-input': {
-                                  resize: 'vertical',
-                                },
-                                '& .MuiFilledInput-root': {
-                                  '&:hover': {
-                                    backgroundColor: 'transparent',
-                                  },
-                                  '&.Mui-focused': {
-                                    backgroundColor: 'transparent',
-                                  },
-                                },
-                              }}
-                            />
-                          </Grid>
-                          <Grid item xs={12} md={6} lg={4}>
-                            <TextField
-                              fullWidth
-                              label="Bank Details1"
-                              name="bankDetails1"
-                              value={currentBranch.bankDetails1}
-                              onChange={handleBranchInputChangeNew}
-                              multiline
-                              rows={2}
-                              variant="filled"
-                              disabled={isFormDisabled}
-                              className="custom-textfield"
-                              sx={{
-                                '& .MuiInputBase-root': {
-                                  height: '115px',
+                                  height: '100px',
+                                  width: '340px'
                                 },
                                 '& .MuiInputBase-input': {
                                   resize: 'vertical',
@@ -1683,37 +1663,189 @@ const PartyMaster = () => {
                             />
                           </Grid>
 
-                          <Grid item xs={12} md={6} lg={4}>
-                            <TextField
-                              fullWidth
-                              label="Bank Details2"
-                              name="bankDetails2"
-                              value={currentBranch.bankDetails2}
-                              onChange={handleBranchInputChangeNew}
-                              multiline
-                              rows={2}
-                              variant="filled"
-                              disabled={isFormDisabled}
-                              className="custom-textfield"
-                              sx={{
-                                '& .MuiInputBase-root': {
-                                  height: '115px',
-                                },
-                                '& .MuiInputBase-input': {
-                                  resize: 'vertical',
-                                },
-                                '& .MuiFilledInput-root': {
-                                  '&:hover': {
-                                    backgroundColor: 'transparent',
-                                  },
-                                  '&.Mui-focused': {
-                                    backgroundColor: 'transparent',
-                                  },
-                                },
-                              }}
-                            />
+                        </Grid>
+                      </Box>
+
+                    </Grid>
+
+                    <Grid item lg={12} md={12} xs={12}>
+
+                      <Box display="flex" flexDirection="column" gap={2}>
+                        <Grid container spacing={2}>
+                          <Grid item xs={12} md={4}>
+                            <Grid container alignItems="center" spacing={2} sx={{ paddingLeft: '9px' }}>
+                              <Grid item>
+                                <FormLabel component="legend">GST Reg</FormLabel>
+                              </Grid>
+
+                              <Grid item>
+                                <FormControl component="fieldset">
+                                  <RadioGroup
+                                    aria-label="gstReg"
+                                    name="gstReg"
+                                    value={formData.gstReg}
+                                    onChange={handleInputChange}
+                                    row
+                                  >
+                                    <FormControlLabel
+                                      value="RD"
+                                      control={<Radio sx={{ '& .MuiSvgIcon-root': { fontSize: 18 } }} />}
+                                      label="RD"
+                                      className="custom-textfield"
+                                      disabled={isFormDisabled}
+                                    />
+                                    <FormControlLabel
+                                      value="URD"
+                                      control={<Radio sx={{ '& .MuiSvgIcon-root': { fontSize: 18 } }} />}
+                                      label="URD"
+                                      className="custom-textfield"
+                                      disabled={isFormDisabled}
+                                    />
+                                    <FormControlLabel
+                                      value="composition"
+                                      control={<Radio sx={{ '& .MuiSvgIcon-root': { fontSize: 18 } }} />}
+                                      label="Composition"
+                                      className="custom-textfield"
+                                      disabled={isFormDisabled}
+                                    />
+                                  </RadioGroup>
+                                </FormControl>
+                              </Grid>
+                            </Grid>
+
+                          </Grid>
+                          <Grid item xs={12} md={4} className='form_field'>
+                            <FormControl variant="filled" fullWidth className="custom-select">
+                              <InputLabel id="partyType-select-label">Party Type</InputLabel>
+                              <Select
+                                labelId="partyType-select-label"
+                                id="partyType-select"
+                                name="partyType"
+                                value={formData.partyType}
+                                onChange={handleInputChange}
+                                className="custom-textfield"
+                              >
+                                <MenuItem value={10}>Supplier/Creditor</MenuItem>
+                                <MenuItem value={20}>Broker</MenuItem>
+                                <MenuItem value={30}>Transporter</MenuItem>
+                                <MenuItem value={40}>Others</MenuItem>
+                                <MenuItem value={50}>All</MenuItem>
+                              </Select>
+                            </FormControl>
+                          </Grid>
+                          
+                          <Grid item xs={12} md={4} className='form_field'>
+                            <FormControl variant="filled" fullWidth className="custom-select">
+                              <InputLabel id="glControl-select-label">GL-Control A/C</InputLabel>
+                              <Select
+                                labelId="glControl-select-label"
+                                id="glControl-select"
+                                name="glControl"
+                                value={formData.glControl}
+                                onChange={handleInputChange}
+                                className="custom-textfield"
+                              >
+                                <MenuItem value={10}>Sundry Creditor</MenuItem>
+                                <MenuItem value={20}>Sundry Dater</MenuItem>
+                              </Select>
+                            </FormControl>
+                          </Grid>
+                        </Grid>
+                      </Box>
+
+                    </Grid>
+                    <Grid item lg={12} md={12} xs={12}>
+
+                      <Box display="flex" flexDirection="column" gap={2}>
+                        <Grid container spacing={2}>
+                          <Grid item xs={12} md={3}>
+                            <Grid container alignItems="center" spacing={2} sx={{ paddingLeft: '9px' }}>
+                              <Grid item>
+                                <FormLabel component="legend">MSME Reg</FormLabel>
+                              </Grid>
+
+                              <Grid item>
+                                <FormControl component="fieldset">
+                                  <RadioGroup
+                                    aria-label="msmeReg"
+                                    name="msmeReg"
+                                    value={formData.msmeReg}
+                                    onChange={inputChangeHandler}
+                                    row
+                                  >
+                                    <FormControlLabel
+                                      value="yes"
+                                      control={<Radio sx={{ '& .MuiSvgIcon-root': { fontSize: 18 } }} />}
+                                      label="Yes"
+                                      className="custom-textfield"
+                                      disabled={isFormDisabled}
+                                    />
+                                    <FormControlLabel
+                                      value="no"
+                                      control={<Radio sx={{ '& .MuiSvgIcon-root': { fontSize: 18 } }} />}
+                                      label="No"
+                                      className="custom-textfield"
+                                      disabled={isFormDisabled}
+                                    />
+                                  </RadioGroup>
+                                </FormControl>
+                              </Grid>
+                            </Grid>
+
                           </Grid>
 
+                          <Grid item xs={12} md={3} className='form_field'>
+                            <FormControl variant="filled" fullWidth className="custom-select">
+                              <InputLabel id="areaName-select-label">MSME Act</InputLabel>
+                              <Select
+                                labelId="areaName-select-label"
+                                id="areaName-select"
+                                name="areaName"
+                                value={formData.areaName}
+                                onChange={handleInputChange}
+                                className="custom-textfield"
+                              >
+                                <MenuItem value={10}>Not Register</MenuItem>
+                                <MenuItem value={20}>Mfr</MenuItem>
+                                <MenuItem value={30}>Trader</MenuItem>
+                              </Select>
+                            </FormControl>
+                          </Grid>
+
+                          <Grid item xs={12} md={3} className='form_field'>
+                            <FormControl variant="filled" fullWidth className="custom-select">
+                              <InputLabel id="areaName-select-label">MSME Trade</InputLabel>
+                              <Select
+                                labelId="areaName-select-label"
+                                id="areaName-select"
+                                name="areaName"
+                                value={formData.areaName}
+                                onChange={handleInputChange}
+                                className="custom-textfield"
+                              >
+                                <MenuItem value={10}>Not Register</MenuItem>
+                                <MenuItem value={20}>Goods</MenuItem>
+                                <MenuItem value={30}>Service</MenuItem>
+                              </Select>
+                            </FormControl>
+                          </Grid>
+                          <Grid item xs={12} md={3} className='form_field'>
+                            <FormControl variant="filled" fullWidth className="custom-select">
+                              <InputLabel id="areaName-select-label">MSME Class</InputLabel>
+                              <Select
+                                labelId="areaName-select-label"
+                                id="areaName-select"
+                                name="areaName"
+                                value={formData.areaName}
+                                onChange={handleInputChange}
+                                className="custom-textfield"
+                              >
+                                <MenuItem value={30}>Not Register</MenuItem>
+                                <MenuItem value={10}>Medium</MenuItem>
+                                <MenuItem value={20}>Micro/Small</MenuItem>
+                              </Select>
+                            </FormControl>
+                          </Grid>
                         </Grid>
                       </Box>
 
