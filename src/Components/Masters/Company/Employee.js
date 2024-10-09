@@ -622,6 +622,7 @@ const EmployeeMaster = () => {
             <input
               accept="image/*"
               style={{ display: 'none' }}
+              disabled={isFormDisabled}
               id="upload-photo"
               type="file"
               onChange={handleFileChange}

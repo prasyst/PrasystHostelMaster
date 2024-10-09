@@ -110,7 +110,7 @@ export default function ResidentTable() {
     navigate('/resident', { state: { residentId ,mode: 'view'}} );
   };
   const handleLocationclick=()=>{
-    navigate('/masters/people')
+    navigate('/masters/arap')
   }
 
   return (
@@ -129,7 +129,7 @@ export default function ResidentTable() {
             <Link onClick={handleHomeClick} className="text-d-none" underline="hover" color="inherit" sx={{cursor:'pointer'}}>
               Home
             </Link>
-            <Typography color="text.primary" onClick={handleLocationclick} sx={{cursor:'pointer'}}>People</Typography>
+            <Typography color="text.primary" onClick={handleLocationclick} sx={{cursor:'pointer'}}>ARAP</Typography>
             <Typography color="text.primary">Resident Master</Typography>
           </Breadcrumbs>
 

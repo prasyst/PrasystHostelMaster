@@ -38,8 +38,8 @@ export default function EmployeeTypeTable() {
       if (response.data.status === 0) {
         const formattedData = response.data.data.map(empType => ({
           ...empType,
-          empTypeName: empType.empTypeName || '',
-          remark: empType.remark
+          empTypeName: empType.empTypeName || 'NA',
+          remark: empType.remark || 'NA'
         }));
         setRows(formattedData);
         console.log('data', response);
