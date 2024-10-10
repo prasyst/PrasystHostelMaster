@@ -64,15 +64,12 @@ const Company = () => {
   const [activeStep, setActiveStep] = useState(0);
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
   const [isAdding, setIsAdding] = useState(false);
-  const [rows, setRows] = useState([]);
   const [mode, setMode] = useState('view');
   const [completedSteps, setCompletedSteps] = useState([]);
   const [isFormDisabled, setIsFormDisabled] = useState(true);
   const [companyId, setCompanyId] = useState()
   const location = useLocation();
-  const [photo, setPhoto] = useState('');
-  const [photos, setPhotos] = useState('');
-  const [file, setFile] = useState(null);
+  const [selectedImage, setSelectedImage] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const [editingRow, setEditingRow] = useState(null);
   const [tableData, setTableData] = useState([]);
@@ -84,10 +81,13 @@ const Company = () => {
   const [isAddingBranch, setIsAddingBranch] = useState(false);
   const [isEditingBranch, setIsEditingBranch] = useState(false);
   const [isBranchEditDeleteEnabled, setIsBranchEditDeleteEnabled] = useState(false);
- 
+  const [isMainButtonsDisabled, setIsMainButtonsDisabled] = useState(false);
   const [selectedBranchIndex, setSelectedBranchIndex] = useState(null);
+  const [isFirstRowSelected, setIsFirstRowSelected] = useState(false);
+  const [isAddingNewData, setIsAddingNewData] = useState(true); 
 
 
+console.log('tableData',tableData)
   const handleAddClick = () => {
     setIsAdding(true); 
   };
@@ -95,65 +95,10 @@ const Company = () => {
   const handleImageUpload = (event) => {
     const file = event.target.files[0];
     if (file) {
-      const reader = new FileReader();
-      
-      // Use a Promise to handle the file reading
-      const readFileAsBase64 = (file) => {
-        return new Promise((resolve, reject) => {
-          reader.onloadend = () => {
-            resolve(reader.result); // This will be the Base64 string
-          };
-          reader.onerror = reject;
-          reader.readAsDataURL(file);
-        });
-      };
-  
-      // Read the file and update the state
-      readFileAsBase64(file)
-        .then(base64String => {
-          setFormData(prevData => ({
-            ...prevData,
-            photo: base64String
-          }));
-        })
-        .catch(err => {
-          console.error('Error reading file:', err);
-          toast.error('Error reading file. Please try again.');
-        });
+      const imageUrl = URL.createObjectURL(file);
+      setSelectedImage(imageUrl);
     }
   };
-
-  const handleFileChange = (event) => {
-    const file = event.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      
-      // Use a Promise to handle the file reading
-      const readFileAsBase64 = (file) => {
-        return new Promise((resolve, reject) => {
-          reader.onloadend = () => {
-            resolve(reader.result); // This will be the Base64 string
-          };
-          reader.onerror = reject;
-          reader.readAsDataURL(file);
-        });
-      };
-  
-      // Read the file and update the state
-      readFileAsBase64(file)
-        .then(base64String => {
-          setFormData(prevData => ({
-            ...prevData,
-            photos: base64String
-          }));
-        })
-        .catch(err => {
-          console.error('Error reading file:', err);
-          toast.error('Error reading file. Please try again.');
-        });
-    }
-  };
-
   const [formData, setFormData] = useState({
     companyName: '',
     CoAbrv: '',
@@ -220,8 +165,6 @@ const Company = () => {
       if (response.data.status === 0 && response.data.responseStatusCode === 1) {
         const company = response.data.data.CoMstList[0];
         const branches = response.data.data.CoMstList[0].CobrMstList;
-        console.log('com',company)
-        console.log('br',branches)
         setFormData({
           CoMstId: company.CoMstId,
           companyCode: company.CoMstId,
@@ -274,6 +217,7 @@ const Company = () => {
           dbFlag: branch.DBFLAG,
           telNo: branch.CobrTel
         })));
+        console.log('branches',branches)
         setTableData(branches.map((branch) => ({
           branchCode: branch.CobrMstId,
           companyName: company.CoName,
@@ -302,8 +246,8 @@ const Company = () => {
         remark1: mainBranch.Remark1,
         remark2: mainBranch.Remark2,
       });
+      setIsAddingNewData(false);  
         setIsFormDisabled(true);
-        console.log('CobrName',branches)
         setCompanyId(company.CoMstId);
       } else if (response.data.status === 1 && response.data.responseStatusCode === 2) {
         toast.info(response.data.message);
@@ -354,35 +298,65 @@ const Company = () => {
 
   const handleNext = () => {
     if (activeStep === 0) {  
+      if (!formData.companyName || !formData.jurisdiction || !formData.pinCode) {
+        toast.error("Company Name ,Pincode and Jurisdiction are required fields.");
+        return;
+      }
       const companyBranch = {
         branchCode: formData.companyCode || '',
         companyName: formData.companyName,
         branchName: formData.companyName, 
+        shortName: formData.shortName,
+        jurisdiction: formData.jurisdiction,
         gstNo: formData.gstNo,
-        PinCode: formData.pinCode,
+        ieCode: formData.ieCode,
+        emailID: formData.emailID,
+        telNo: formData.telNo,
+        website: formData.website,
+        msmeNo: formData.msmeNo,
+        msmeCat: formData.msmeCat,
+        msmeType: formData.msmeType,
+        pinCode: formData.pinCode,
+        remark1: formData.remark1,
+        remark2: formData.remark2,
         branchAddress: formData.regAddress,
+        bankDetails1: '', 
+        bankDetails2: '',
         state: '', 
+        // mainBranch: 1,
       };
-      // setTableData(branches);
-      // const mainBranch = branches.find(branch => branch.branchCode === formData.companyCode);
-      // setSelectedBranch(mainBranch);
-      // setIsMainBranchSelected(true);
-       setTableData([companyBranch]);
-      setBranches([companyBranch]);
-      console.log('company',companyBranch)
+      console.log('companyBranch',companyBranch)
+      if (isAddingNewData) {
+      if (!branches.some(branch => branch.branchCode === companyBranch.branchCode)) {
+        setBranches(prevBranches => [...prevBranches, companyBranch]);
+      }
+      
+      setTableData(prevData => {
+        const existingIndex = prevData.findIndex(item => item.branchCode === companyBranch.branchCode);
+        if (existingIndex !== -1) {
+          const newData = [...prevData];
+          newData[existingIndex] = companyBranch;
+          return newData;
+        } else {
+          return [...prevData, companyBranch];
+        }
+      });
       setSelectedBranch(companyBranch);
+      setCurrentBranch(companyBranch);
       setIsMainBranchSelected(true);
       setIsAddButtonEnabled(true);
       setIsConfirmCancelEnabled(false);
     }
-
+    }
     if (activeStep === steps.length - 1) {
       handleSubmit();
     } else {
       setActiveStep((prevActiveStep) => prevActiveStep + 1);
     }
   };
+
   const handleBack = () => {
+    setIsFormDisabled(false)
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
   };
   const handleBranchAdd = () => {
@@ -414,7 +388,6 @@ const Company = () => {
     setIsConfirmEnabled(true);
     setIsEditingBranch(false);
     
-    // Enable only Confirm and Cancel buttons
     setIsAddButtonEnabled(false);
     setIsConfirmCancelEnabled(true);
   };
@@ -423,10 +396,10 @@ const Company = () => {
   
     const companyData = {
       DBFLAG: companyId ? "U" : "I",
-      CoMstId: companyId || 0,
+      // CoMstId: companyId || 0,
       CoName: formData.companyName,
-      CoAbrv: formData.shortName,
-      GSTIN: formData.gstNo,
+      CoAbrv: formData.shortName || '',
+      GSTIN: formData.gstNo || '',
       CityId: parseInt(formData.jurisdiction) || 1,
       CoRegAdd: formData.regAddress || "",
       CoPan: formData.panN || "",
@@ -443,45 +416,44 @@ const Company = () => {
       MsmeNo: formData.msmeNo || "",
       MsmeCat: formData.msmeCat || "",
       MsmeType: formData.msmeType || "",
-      PinID: formData.pinCode || "",
+      PinID: parseInt(formData.pinCode) || 1, //formData.pinCode || "",
       Remark1: formData.remark1 || "",
       Remark2: formData.remark2 || "",
       WorkAddr: formData.workAddress || "",
       Status: formData.Status || "1",
     };
-  
-    const branchesData = branches.map((branch) => ({
-      DBFLAG: branch.branchCode ? "U" : "I",
-      CobrMstId: branch.branchCode || 0,
-      CobrName: branch.branchName,
-      CobrAbrv: branch.shortName,
+    const branchesData = branches.map((branch,index) => ({
+      DBFLAG: branch.branchCode ? "U" : "I",  
+      // CobrMstId: branch.branchCode || 0,
+      // CobrName: branch.branchName || "",
+      CobrName: index === 0 && !branch.branchName ? formData.companyName : branch.branchName || "", 
+      CobrAbrv: branch.shortName || "",
       GSTIN: branch.gstNo,
       CityId: parseInt(branch.jurisdiction) || 1,
-      CobrAdd: branch.branchAddress,
-      CobrEmail: branch.emailID,
-      CobrTel: branch.telNo,
-      CobrMob: branch.CoMob || "",
-      Website: branch.website,
-      IeCode: branch.ieCode,
-      MsmeNo: branch.msmeNo,
-      MsmeCat: branch.msmeCat,
-      MsmeType: branch.msmeType,
-      PinID: branch.pinCode,
-      Remark1: branch.remark1,
-      Remark2: branch.remark2,
-      Status: branch.Status || "1",
-      MainBranch: branch.branchCode === formData.companyCode ? "1" : "0",
-    }));
-  
+      CobrAdd: branch.branchAddress || "",
+      CobrEmail: branch.emailID || "",
+      CobrTel: branch.telNo || "",
+      CobrMob: branch.branchMobile || "",
+      Website: branch.website || "",
+      IeCode: branch.ieCode || "",
+      MsmeNo: branch.msmeNo || "",
+      MsmeCat: branch.msmeCat || "",
+      MsmeType: branch.msmeType || "",
+      PinID: parseInt(branch.pinCode) || 1, //branch.pinC
+      Remark1: branch.remark1 || "",
+      Remark2: branch.remark2 || "",
+      Status: branch.status || "1",  
+      // MainBranch: branch.branchCode === formData.companyCode ? "1" : "0",
+      MainBranch: index === 0 ? "1" : "0",
+    }))
+    console.log('branch',branchesData)
     payload = {
       ...companyData,
       cobrMstList: branchesData,
     };
-  
     console.log("submissionData", payload);
     let jsonData = JSON.stringify(payload).replace(/\\/g, '\\\\').replace(/\"/g, '\\"');
     jsonData = '"' + jsonData + '"';
-    console.log("jsonData", jsonData);
   
     try {
       const response = await axios.post(
@@ -493,163 +465,31 @@ const Company = () => {
           },
         }
       );
-      console.log('Submission successful:', response.data);
       toast.success(response.data.message);
-  
+      setActiveStep(0)
       if (isEditing) {
         setIsEditing(false);
         setMode('view');
         setIsFormDisabled(true);
-        fetchCompanyData(companyId);
+       
       } else {
-        // Handle the case for a new company
         if (response.data.data && response.data.data.CoMstId) {
-          setCompanyId(response.data.data.CoMstId);
+          const newCompanyId = response.data.data.CoMstId;
+          console.log('new', newCompanyId);
+          setCompanyId(newCompanyId);
+          await fetchCompanyData(newCompanyId, 'R');
+          console.log('newCompanyId', newCompanyId);
         }
         setMode('view');
         setIsFormDisabled(true);
       }
     } catch (error) {
-      console.error('Error submitting form:', error);
       toast.error('Error submitting form');
     }
   };
-  // const handleSubmit = async () => {
-    
-  //   if (isEditing) {
-  //     const payload = {
-  //       comstid: companyId,
-  //       CoName: formData.companyName,
-  //       CoAbrv: formData.shortName,
-  //       GSTIN: formData.gstNo,
-  //       CityId: parseInt(formData.jurisdiction) || 1,
-        
-  //     };
 
-  //     try {
-  //       const response = await axios.post('http://43.230.196.21/api/CoMst_Cobr/UpdateCoMst_CobrMst', payload);
-  //       if (response.data.status === 0 && response.data.responseStatusCode === 1) {
-  //         toast.success('Company data updated successfully');
-  //         setIsEditing(false);
-  //         setMode('view');
-  //         setIsFormDisabled(true);
-  //         // Optionally, refresh the data after update
-  //         fetchCompanyData(companyId);
-  //       } else {
-  //         toast.error(response.data.message || 'Failed to update company data');
-  //       }
-  //     } catch (error) {
-  //       console.error('Error updating company data:', error);
-  //       toast.error('Error updating company data. Please try again.');
-  //     }
-  //   } else {
-  //     const companyData = {
-  //       DBFLAG: "I",
-  //       MainBranch:'1',
-  //       CoName: formData.companyName,
-  //       CoAbrv: formData.shortName,
-  //       GSTIN: formData.gstNo,
-  //       CityId: parseInt(formData.jurisdiction) || 1,
-  //       CoRegAdd: formData.regAddress || "",
-  //       CoPan: formData.panN || "",
-  //       CoTan: formData.tanNo || "",
-  //       CoCin: formData.cinNo || "",
-  //       CoEmail: formData.emailID || "",
-  //       CoTel: formData.telNo || "",
-  //       CoMob: formData.CoMob || "",
-  //       Website: formData.website || "",
-  //       IeCode: formData.ieCode || "",
-  //       TdsCircle: formData.tdsCircle || "",
-  //       TdsPerson: formData.tdsPerson || "",
-  //       Designation: formData.designation || "",
-  //       MsmeNo: formData.msmeNo || "",
-  //       MsmeCat: formData.msmeCat || "",
-  //       MsmeType: formData.msmeType || "",
-  //       PinID: formData.pinCode || "",
-  //       Remark1: formData.remark1 || "",
-  //       Remark2: formData.remark2 || "",
-  //       WorkAddr: formData.workAddress || "",
-  //       Status: formData.Status || "1",
-  //     };
-    
-  //     const mainBranchData = {
-  //       DBFLAG: "I",
-  //       CobrName: formData.companyName ,
-  //       CobrAbrv: formData.shortName,
-  //       GSTIN: formData.gstNo,
-  //       CityId: parseInt(formData.jurisdiction) || 1,
-  //       CobrAdd: formData.regAddress,
-  //       CobrEmail: formData.emailID,
-  //       CobrTel: formData.telNo,
-  //       CobrMob: formData.CoMob || '',
-  //       Website: formData.website,
-  //       IeCode: formData.ieCode,
-  //       MsmeNo: formData.msmeNo,
-  //       MsmeCat: formData.msmeCat,
-  //       MsmeType: formData.msmeType,
-  //       PinID: formData.pinCode,
-  //       Remark1: formData.remark1,
-  //       Remark2: formData.remark2,
-  //       Status: "1",
-  //       MainBranch: "0"  
-  //     };
-  
-  //     // Prepare other branches data
-  //     const otherBranchesData = branches.slice(1).map(branch => ({
-  //       DBFLAG: "I",
-  //       CobrName: branch.branchName,
-  //       CobrAbrv: branch.shortName,
-  //       GSTIN: branch.gstNo,
-  //       CityId: parseInt(branch.jurisdiction) || 1,
-  //       CobrAdd: branch.branchAddress,
-  //       CobrEmail: branch.emailID,
-  //       CobrTel: branch.telNo,
-  //       CobrMob: branch.CoMob || '',
-  //       Website: branch.website,
-  //       IeCode: branch.ieCode,
-  //       MsmeNo: branch.msmeNo,
-  //       MsmeCat: branch.msmeCat,
-  //       MsmeType: branch.msmeType,
-  //       PinID: branch.pinCode,
-  //       Remark1: branch.remark1,
-  //       Remark2: branch.remark2,
-  //       Status: branch.Status || "1",
-  //       MainBranch: "1" 
-  //     }));
-  //  console.log('co',companyData)
-  //  console.log('cobr',[mainBranchData,...otherBranchesData])
-  //     const payload = {
-  //       ...companyData,
-  //       cobrMstList: [mainBranchData, ...otherBranchesData]
-  //     };
-    
-  //     // const payload = {
-  //     //   ...companyData,
-  //     //   cobrMstList: branchData
-  //     // };
-  //     console.log('submissionData', payload)
-  //     let jsonData = JSON.stringify(payload)
-  //       .replace(/\\/g, '\\\\')
-  //       .replace(/\"/g, '\\"');
-  
-  //     jsonData = '"' + jsonData + '"';
-  //     console.log('jsonData', jsonData)
-  //     try {
-  //       const response = await axios.post('http://43.230.196.21/api/CoMst/ManageCompanyBranch', jsonData, {
-  //         headers: {
-  //           'Content-Type': 'application/json',
-  //         },
-  //       });
-  //       console.log('Submission successful:', response.data);
-  //       toast.success(response.data.message);
-  //     } catch (error) {
-  //       console.error('Error submitting form:', error);
-  //       toast.error('Error submitting form');
-  //     }
-  //   }
-  
-  // };
   const handleAdd = () => {
+    setActiveStep(0)
     setMode('add');
     setIsFormDisabled(false)
     setFormData({
@@ -698,6 +538,7 @@ const Company = () => {
       dbFlag: '',
     }]);
     setCompanyId(null);
+   setTableData([])
   };
 
   const handleEdit = () => {
@@ -706,6 +547,7 @@ const Company = () => {
     setIsEditing(true);
   };
   const handleCancel = async () => {
+    setActiveStep(0)
     if (mode === 'add') {
       try {
         await fetchCompanyData(1, "L");
@@ -722,26 +564,40 @@ const Company = () => {
       setIsFormDisabled(true);
     }
   };
-  const handleBranchDelete = async () => {
-    if (selectedBranch && !isMainBranchSelected) {
-      try {
-        const response = await axios.post(`http://43.230.196.21/api/CoMst_Cobr/RetriveCobrMst`, {
-          CobrMstId: selectedBranch.branchCode,
-        Flag: "D"
-        });
-        if (response.data.status === 0) {
-          toast.success('Branch deleted successfully');
-          const updatedTableData = tableData.filter(branch => branch.branchCode !== selectedBranch.branchCode);
-          setTableData(updatedTableData);
-          setBranches(updatedTableData);
-          setSelectedBranch(null);
-        } else {
-          toast.error('Failed to delete branch');
-        }
-      } catch (error) {
-        console.error('Error deleting branch:', error);
-        toast.error('Error deleting branch. Please try again.');
-      }
+  const handleBranchDelete = () => {
+    if (selectedBranchIndex !== null && !isFirstRowSelected) {
+      const newTableData = tableData.filter((_, index) => index !== selectedBranchIndex);
+      const newBranches = branches.filter((_, index) => index !== selectedBranchIndex);
+      setTableData(newTableData);
+      setBranches(newBranches);
+      setSelectedBranchIndex(null);
+      setSelectedBranch(null);
+      setCurrentBranch({
+        branchCode: '',
+        branchName: '',
+        shortName: '',
+        gstNo: '',
+        jurisdiction: '',
+        branchAddress: '',
+        emailID: '',
+        telNo: '',
+        website: '',
+        ieCode: '',
+        msmeNo: '',
+        msmeCat: '',
+        msmeType: '',
+        pinCode: '',
+        remark1: '',
+        remark2: '',
+        bankDetails1: '',
+        bankDetails2: '',
+      });
+
+      setIsBranchEditDeleteEnabled(false);
+      setIsAddButtonEnabled(true);
+      toast.success('Branch deleted successfully');
+    } else {
+      toast.error('Please select a branch to delete (excluding the main branch)');
     }
   };
   const handleDelete = () => {
@@ -749,6 +605,7 @@ const Company = () => {
   };
   const handleConfirmDelete = async () => {
     try {
+      
       await fetchCompanyData(companyId, "D");
       toast.success('Data deleted successfully');
       await fetchCompanyData(companyId, "N");
@@ -763,67 +620,34 @@ const Company = () => {
   const handleExit = () => {
     navigate('/masters/companytable')
   };
-  // const handleConfirmBranch = () => {
-  //   setIsAdding(false);
-  //   const newBranch = {
-  //     branchCode: currentBranch.branchCode,
-  //     companyName: formData.companyName,
-  //     branchName: currentBranch.branchName,
-  //     gstNo: currentBranch.gstNo,
-  //     pinCode: currentBranch.pinCode,
-  //     branchAddress: currentBranch.branchAddress,
-  //     state: 'N/A' // You might want to add a state field to your form
-  //   };
-
-  //   setTableData(prev => [...prev, newBranch]);
-  //   setBranches(prev => [...prev, currentBranch]);
-
-  //   // Reset currentBranch for next entry
-  //   setCurrentBranch({
-  //     branchCode: '',
-  //     branchName: '',
-  //     shortName: '',
-  //     gstNo: '',
-  //     jurisdiction: '',
-  //     branchAddress: '',
-  //     emailID: '',
-  //     telNo: '',
-  //     website: '',
-  //     ieCode: '',
-  //     msmeNo: '',
-  //     msmeCat: '',
-  //     msmeType: '',
-  //     pinCode: '',
-  //     remark1: '',
-  //     remark2: '',
-  //     bankDetails1: '',
-  //     bankDetails2: '',
-  //   });
-  // };
-  // const isFormDisabled = mode === 'view';
 
   const columns = [
     { id: 'branchCode', label: 'Br_Code', minWidth: 50 },
     { id: 'companyName', label: 'Company Name', minWidth: 150 },
     { id: 'branchName', label: 'Branch Name', minWidth: 150 },
     { id: 'gstNo', label: 'GSTIN', minWidth: 100 },
-    { id: 'PinCode', label: 'Pincode', minWidth: 100 },
+    { id: 'pinCode', label: 'Pincode', minWidth: 100 },
     { id: 'branchAddress', label: 'City', minWidth: 100 },
     { id: 'state', label: 'State', minWidth: 100 }
   ];
-  const handleConfirmBranch = () => {
+    const handleConfirmBranch = () => {
     if (mode === 'add') {
       const newBranch = { ...currentBranch, companyName: formData.companyName };
       setTableData(prev => [...prev, newBranch]);
       setBranches(prev => [...prev, newBranch]);
-    } else if (mode === 'edit') {
-      console.log(setIsEditing(true))
-      const updatedBranches = branches.map(branch => 
-        branch.branchCode === currentBranch.branchCode ? currentBranch : branch
-      );
-      setBranches(updatedBranches);
-      setTableData(updatedBranches);
+    } else if (mode === 'edit' && selectedBranchIndex !== null) {
+      setTableData(prev => {
+        const newData = [...prev];
+        newData[selectedBranchIndex] = { ...newData[selectedBranchIndex], ...currentBranch };
+        return newData;
+      });
+      setBranches(prev => {
+        const newBranches = [...prev];
+        newBranches[selectedBranchIndex] = { ...newBranches[selectedBranchIndex], ...currentBranch };
+        return newBranches;
+      });
     }
+    
     setMode('view');
     setIsFormDisabled(true);
     setIsAddingBranch(false);
@@ -850,9 +674,10 @@ const Company = () => {
       bankDetails2: '',
     });
     
-    // Reset button states
     setIsAddButtonEnabled(true);
     setIsConfirmCancelEnabled(false);
+    setIsMainButtonsDisabled(true);
+    setSelectedBranchIndex(null);
   };
    const handleCancelBranch = () => {
     setMode('view');
@@ -892,6 +717,8 @@ const Company = () => {
     setIsMainBranchSelected(clickedBranch.branchCode === formData.companyCode);
     setIsBranchEditDeleteEnabled(true);
     setIsAddButtonEnabled(false)
+    setIsFirstRowSelected(index === 0);
+
   };
   const renderStepContent = (step) => {
     return (
@@ -919,6 +746,8 @@ const Company = () => {
                               variant="filled"
                               disabled={isFormDisabled}
                               className="custom-textfield"
+                              // error={!formData.companyName}
+                              helperText={!formData.companyName ? "" : ""}
                             />
                           </Grid>
                           <Grid item xs={12} md={3}>
@@ -947,6 +776,8 @@ const Company = () => {
                               variant="filled"
                               disabled={isFormDisabled}
                               className="custom-textfield"
+                              // error={!formData.jurisdiction}
+                              helperText={!formData.jurisdiction ? "" : ""}
                             />
                           </Grid>
                         </Grid>
@@ -1071,9 +902,9 @@ const Company = () => {
                         position="relative"
                         sx={{ cursor: 'pointer' }} 
                       >
-                        {formData.photo ? (
+                        {selectedImage ? (
                           <img
-                            src={formData.photo}
+                            src={selectedImage}
                             alt="Logo"
                             style={{
                               width: '100%',
@@ -1204,13 +1035,19 @@ const Company = () => {
                           <Grid item xs={12} md={4}>
                             <TextField
                               fullWidth
-                              label="Pin Code"
+                              label={
+                                <span>
+                                  Pincode <span style={{ color: 'red' }}>*</span>
+                                </span>
+                              }
                               name="pinCode"
                               value={formData.pinCode || ''}
                               onChange={handleInputChange}
                               variant="filled"
                               disabled={isFormDisabled}
                               className="custom-textfield"
+                              // error={!formData.pinCode}
+                              helperText={!formData.pinCode ? "" : ""}
                             />
                           </Grid>
                           <Grid item xs={12} md={4}>
@@ -1420,9 +1257,9 @@ const Company = () => {
                         position="relative"
                         sx={{ cursor: 'pointer' }} // Change cursor to indicate clickable area
                       >
-                        {formData.photos ? (
+                        {selectedImage ? (
                           <img
-                            src={formData.photos}
+                            src={selectedImage}
                             alt="Logo"
                             style={{
                               width: '100%',
@@ -1440,7 +1277,7 @@ const Company = () => {
                         <input
                           type="file"
                           accept="image/*"
-                          onChange={handleFileChange}
+                          onChange={handleImageUpload}
                           style={{
                             position: 'absolute',
                             top: 0,
@@ -1735,7 +1572,7 @@ const Company = () => {
                 size="small"
                 sx={{ backgroundColor: '#7c3aed' }}
                 onClick={handleAdd}
-                disabled={mode !== 'view'}
+                disabled={mode !== 'view' }
               >
                 <AddIcon />
               </Button>
@@ -1744,7 +1581,7 @@ const Company = () => {
                 size="small"
                 sx={{ backgroundColor: '#7c3aed', margin: '0px 10px' }}
                 onClick={handleEdit}
-                disabled={mode !== 'view'}
+                disabled={mode !== 'view' }
               >
                 <EditIcon />
               </Button>
@@ -1753,7 +1590,7 @@ const Company = () => {
                 size="small"
                 sx={{ backgroundColor: '#7c3aed' }}
                 onClick={handleDelete}
-                disabled={mode !== 'view'}
+                disabled={mode !== 'view' }
               >
                 <DeleteIcon />
               </Button>
@@ -1762,7 +1599,7 @@ const Company = () => {
                 size="small"
                 sx={{ backgroundColor: '#7c3aed', margin: '0px 10px' }}
                 onClick={handleExit}
-                disabled={mode !== 'view'}
+                disabled={mode !== 'view' }
               >
                 <CancelPresentationIcon />
               </Button>
@@ -1862,7 +1699,9 @@ const Company = () => {
                   onClick={handleBranchEdit}
                   
                   // disabled={mode === 'view' || mode ===''}
-                  disabled={!isBranchEditDeleteEnabled}
+                  // disabled={!isBranchEditDeleteEnabled}
+                  disabled={!isBranchEditDeleteEnabled || isFirstRowSelected}
+
 
                 >
                   <EditIcon />
@@ -1875,8 +1714,8 @@ const Company = () => {
                   onClick={handleBranchDelete}
 
                   // disabled={mode === 'view'}
-                  disabled={!isBranchEditDeleteEnabled}
-
+                  // disabled={!isBranchEditDeleteEnabled}
+                  disabled={!isBranchEditDeleteEnabled || isFirstRowSelected}
 
                 >
                   <DeleteIcon />
@@ -1925,8 +1764,7 @@ const Company = () => {
               // sx={{ backgroundColor: '#7c3aed', mr: 1 }}
               sx={{ mr: 1, background: 'linear-gradient(290deg, #b9d0e9, #e9f2fa)' }}
               onClick={handleBack}
-              disabled={activeStep === 0 || mode !== 'view'}
-
+              disabled={activeStep === 0 }
             >
               {/* {activeStep === steps.length - 1 ? 'Previous' : ''} */}
               Previous
