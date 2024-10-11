@@ -328,7 +328,7 @@ console.log('tableData',tableData)
         // mainBranch: 1,
       };
   
-      if (isAddingNewData) {
+      // if (isAddingNewData) {
         if (!branches.some(branch => branch.branchCode === companyBranch.branchCode)) {
           setBranches(prevBranches => [...prevBranches, companyBranch]);
         }
@@ -349,10 +349,10 @@ console.log('tableData',tableData)
         setIsMainBranchSelected(true);
         setIsAddButtonEnabled(true);
         setIsConfirmCancelEnabled(false);
-      } else {
+      // } else {
 
-        // toast.info('Data is in view mode. No new data will be added.');
-      }
+        
+      // }
     }
   
     if (activeStep === steps.length - 1) {
