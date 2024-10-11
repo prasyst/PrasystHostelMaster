@@ -160,13 +160,13 @@ const handleSave = async () => {
     setError(prev => ({ ...prev, facName: false }));
   }
 
-  if (!formData.facDesc) {
-    toast.error('Fac Desc is required');
-    setError(prev => ({ ...prev, facDesc: true }));
-    hasError = true;
-  } else {
-    setError(prev => ({ ...prev, facDesc: false }));
-  }
+  // if (!formData.facDesc) {
+  //   toast.error('Fac Desc is required');
+  //   setError(prev => ({ ...prev, facDesc: true }));
+  //   hasError = true;
+  // } else {
+  //   setError(prev => ({ ...prev, facDesc: false }));
+  // }
 
   // if (!formData.remark) {
   //   toast.error('Description is required');

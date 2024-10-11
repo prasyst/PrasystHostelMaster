@@ -47,7 +47,7 @@ const AmenityMaster = () => {
   const [formData, setFormData] = useState({
     amenityName: '',
     amenity_Desc: '',
-    floor: '',
+    floorName: '',
     areaSqFt: '',
     remark: '',
     photo: ''
@@ -150,7 +150,7 @@ const AmenityMaster = () => {
           amenityName: amenityData.amenityName,
           amenity_Desc: amenityData.amenity_Desc,
           remark: amenityData.remark,
-          floor: amenityData.floorId.toString(),
+          floorName: amenityData.floorId.toString(),
           areaSqFt: amenityData.areaSqFt,
           photo: amenityData.photo || ''
         });
@@ -246,12 +246,12 @@ const AmenityMaster = () => {
       setError(prev => ({ ...prev, amenityName: false }));
     }
 
-    if (!formData.floor) {
+    if (!formData.floorName) {
       toast.error('Floor is required');
-      setError(prev => ({ ...prev, floor: true }));
+      setError(prev => ({ ...prev, floorName: true }));
       hasError = true;
     } else {
-      setError(prev => ({ ...prev, floor: false }));
+      setError(prev => ({ ...prev, floorName: false }));
     }
 
     if (hasError) {
@@ -262,7 +262,7 @@ const AmenityMaster = () => {
       const payload = {
         amenityName: formData.amenityName,
         amenity_Desc: formData.amenity_Desc,
-        floorId: parseInt(formData.floor),
+        floorId: parseInt(formData.floorName),
         areaSqFt: formData.areaSqFt,
         remark: formData.remark,
         photo: formData?.photo || '',
@@ -321,7 +321,7 @@ const AmenityMaster = () => {
       amenity_Desc: '',
       remark: '',
       areaSqFt: '',
-      floor: '',
+      floorName: '',
       photo: ''
     });
     setCurrentAmenityId(null);
@@ -347,7 +347,7 @@ const AmenityMaster = () => {
       amenity_Desc: '',
       remark: '',
       areaSqFt: '',
-      floor: '',
+      floorName: '',
       photo: ''
     });
     setCurrentAmenityId(null);
@@ -524,11 +524,11 @@ const AmenityMaster = () => {
                   </FormControl> */}
                   <FloorAutocomplete
                     floors={floors}
-                    value={floors.find(floor => floor.id == formData.floor) || null}
+                    value={floors.find(floorName => floorName.id == formData.floorName) || null}
                     onChange={handleInputChange}
                     disabled={isFormDisabled}
-                    error={error.floor}
-                    helperText={error.floor ? '' : ''}
+                    error={error.floorName}
+                    helperText={error.floorName ? '' : ''}
                     ref={floorRef}
                     onKeyDown={handleKeyPress}
                   />

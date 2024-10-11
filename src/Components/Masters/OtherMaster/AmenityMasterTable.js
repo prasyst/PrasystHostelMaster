@@ -14,7 +14,7 @@ import { useNavigate } from 'react-router-dom';
 const columns = [
   { id: 'amenityName', label: 'Amenity', minWidth: 170 },
   { id: 'amenity_Desc', label: 'Description', minWidth: 170 },
-  { id: 'floor', label: 'Floors', minWidth: 170 },
+  { id: 'floorName', label: 'Floor', minWidth: 170 },
   { id: 'areaSqFt', label: 'AreaSqFt', minWidth: 100 },
   { id: 'remark', label: 'Remark', minWidth: 170 }
 ];
@@ -44,7 +44,7 @@ export default function AmenityMasterTable() {
           ...amenity,
           amenityName: amenity.amenityName || '',
           amenity_Desc: amenity.amenity_Desc || '',
-          floor: amenity.floor || '',
+          floorName: amenity.floorName || '',
           areaSqFt: amenity.areaSqFt || '',
           remark: amenity.remark
         }));

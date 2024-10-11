@@ -768,6 +768,79 @@ const PartyMaster = () => {
                               className="custom-textfield"
                             />
                           </Grid>
+                          {/* <Grid item xs={12} md={3}>
+                            <TextField
+                              fullWidth
+                              label="Alt Code"
+                              name="shortName"
+                              value={formData.shortName || ''}
+                              onChange={handleInputChange}
+                              variant="filled"
+                              disabled={isFormDisabled}
+                              className="custom-textfield"
+                            />
+                          </Grid> */}
+                          {/* <Grid item xs={12} md={3}>
+                            <TextField
+                              fullWidth
+                              label={
+                                <span>
+                                  Abrv <span style={{ color: 'red' }}>*</span>
+                                </span>
+                              }
+                              name="jurisdiction"
+                              value={formData.jurisdiction || ''}
+                              onChange={handleInputChange}
+                              variant="filled"
+                              disabled={isFormDisabled}
+                              className="custom-textfield"
+                            />
+                          </Grid> */}
+                          <Grid item xs={12} md={6}>
+                            <Grid container alignItems="center" spacing={2} sx={{ paddingLeft: '9px' }}>
+                              <Grid item>
+                                <FormLabel component="legend">GST Reg</FormLabel>
+                              </Grid>
+
+                              <Grid item>
+                                <FormControl component="fieldset">
+                                  <RadioGroup
+                                    aria-label="gstReg"
+                                    name="gstReg"
+                                    value={formData.gstReg}
+                                    onChange={handleInputChange}
+                                    row
+                                  >
+                                    <FormControlLabel
+                                      value="RD"
+                                      control={<Radio sx={{ '& .MuiSvgIcon-root': { fontSize: 18 } }} />}
+                                      label="RD"
+                                      className="custom-textfield"
+                                      disabled={isFormDisabled}
+                                    />
+                                    <FormControlLabel
+                                      value="URD"
+                                      control={<Radio sx={{ '& .MuiSvgIcon-root': { fontSize: 18 } }} />}
+                                      label="URD"
+                                      className="custom-textfield"
+                                      disabled={isFormDisabled}
+                                    />
+                                    <FormControlLabel
+                                      value="composition"
+                                      control={<Radio sx={{ '& .MuiSvgIcon-root': { fontSize: 18 } }} />}
+                                      label="Composition"
+                                      className="custom-textfield"
+                                      disabled={isFormDisabled}
+                                    />
+                                  </RadioGroup>
+                                </FormControl>
+                              </Grid>
+                            </Grid>
+
+                          </Grid>
+                        </Grid>
+
+                        <Grid container spacing={2}>
                           <Grid item xs={12} md={3}>
                             <TextField
                               fullWidth
@@ -795,6 +868,69 @@ const PartyMaster = () => {
                               disabled={isFormDisabled}
                               className="custom-textfield"
                             />
+                          </Grid>
+                          {/* <Grid item xs={12} md={3}>
+                            <TextField
+                              fullWidth
+                              label="Alt Code"
+                              name="shortName"
+                              value={formData.shortName || ''}
+                              onChange={handleInputChange}
+                              variant="filled"
+                              disabled={isFormDisabled}
+                              className="custom-textfield"
+                            />
+                          </Grid> */}
+                          {/* <Grid item xs={12} md={3}>
+                            <TextField
+                              fullWidth
+                              label={
+                                <span>
+                                  Abrv <span style={{ color: 'red' }}>*</span>
+                                </span>
+                              }
+                              name="jurisdiction"
+                              value={formData.jurisdiction || ''}
+                              onChange={handleInputChange}
+                              variant="filled"
+                              disabled={isFormDisabled}
+                              className="custom-textfield"
+                            />
+                          </Grid> */}
+                          <Grid item xs={12} md={3} className='form_field'>
+                            <FormControl variant="filled" fullWidth className="custom-select">
+                              <InputLabel id="partyType-select-label">Party Type</InputLabel>
+                              <Select
+                                labelId="partyType-select-label"
+                                id="partyType-select"
+                                name="partyType"
+                                value={formData.partyType}
+                                onChange={handleInputChange}
+                                className="custom-textfield"
+                              >
+                                <MenuItem value={10}>Supplier/Creditor</MenuItem>
+                                <MenuItem value={20}>Broker</MenuItem>
+                                <MenuItem value={30}>Transporter</MenuItem>
+                                <MenuItem value={40}>Others</MenuItem>
+                                <MenuItem value={50}>All</MenuItem>
+                              </Select>
+                            </FormControl>
+                          </Grid>
+                          <Grid item xs={12} md={3} className='form_field'>
+                            <FormControl variant="filled" fullWidth className="custom-select">
+                              <InputLabel id="glControl-select-label">GL-Control A/C</InputLabel>
+                              <Select
+                                labelId="glControl-select-label"
+                                id="glControl-select"
+                                name="glControl"
+                                value={formData.glControl}
+                                onChange={handleInputChange}
+                                className="custom-textfield"
+                              >
+                                <MenuItem value={10}>Sundry Creditor</MenuItem>
+                                <MenuItem value={20}>Sundry Dater</MenuItem>
+                              </Select>
+                            </FormControl>
                           </Grid>
                         </Grid>
 
@@ -1118,92 +1254,6 @@ const PartyMaster = () => {
 
                       <Box display="flex" flexDirection="column" gap={2}>
                         <Grid container spacing={2}>
-                          <Grid item xs={12} md={4}>
-                            <Grid container alignItems="center" spacing={2} sx={{ paddingLeft: '9px' }}>
-                              <Grid item>
-                                <FormLabel component="legend">GST Reg</FormLabel>
-                              </Grid>
-
-                              <Grid item>
-                                <FormControl component="fieldset">
-                                  <RadioGroup
-                                    aria-label="gstReg"
-                                    name="gstReg"
-                                    value={formData.gstReg}
-                                    onChange={handleInputChange}
-                                    row
-                                  >
-                                    <FormControlLabel
-                                      value="RD"
-                                      control={<Radio sx={{ '& .MuiSvgIcon-root': { fontSize: 18 } }} />}
-                                      label="RD"
-                                      className="custom-textfield"
-                                      disabled={isFormDisabled}
-                                    />
-                                    <FormControlLabel
-                                      value="URD"
-                                      control={<Radio sx={{ '& .MuiSvgIcon-root': { fontSize: 18 } }} />}
-                                      label="URD"
-                                      className="custom-textfield"
-                                      disabled={isFormDisabled}
-                                    />
-                                    <FormControlLabel
-                                      value="composition"
-                                      control={<Radio sx={{ '& .MuiSvgIcon-root': { fontSize: 18 } }} />}
-                                      label="Composition"
-                                      className="custom-textfield"
-                                      disabled={isFormDisabled}
-                                    />
-                                  </RadioGroup>
-                                </FormControl>
-                              </Grid>
-                            </Grid>
-
-                          </Grid>
-                          <Grid item xs={12} md={4} className='form_field'>
-                            <FormControl variant="filled" fullWidth className="custom-select">
-                              <InputLabel id="partyType-select-label">Party Type</InputLabel>
-                              <Select
-                                labelId="partyType-select-label"
-                                id="partyType-select"
-                                name="partyType"
-                                value={formData.partyType}
-                                onChange={handleInputChange}
-                                className="custom-textfield"
-                              >
-                                <MenuItem value={10}>Supplier/Creditor</MenuItem>
-                                <MenuItem value={20}>Broker</MenuItem>
-                                <MenuItem value={30}>Transporter</MenuItem>
-                                <MenuItem value={40}>Others</MenuItem>
-                                <MenuItem value={50}>All</MenuItem>
-                              </Select>
-                            </FormControl>
-                          </Grid>
-                          
-                          <Grid item xs={12} md={4} className='form_field'>
-                            <FormControl variant="filled" fullWidth className="custom-select">
-                              <InputLabel id="glControl-select-label">GL-Control A/C</InputLabel>
-                              <Select
-                                labelId="glControl-select-label"
-                                id="glControl-select"
-                                name="glControl"
-                                value={formData.glControl}
-                                onChange={handleInputChange}
-                                className="custom-textfield"
-                              >
-                                <MenuItem value={10}>Sundry Creditor</MenuItem>
-                                <MenuItem value={20}>Sundry Dater</MenuItem>
-                              </Select>
-                            </FormControl>
-                          </Grid>
-                        </Grid>
-                      </Box>
-
-                    </Grid>
-                    <Grid item lg={12} md={12} xs={12}>
-
-                      <Box display="flex" flexDirection="column" gap={2}>
-                        <Grid container spacing={2}>
                           <Grid item xs={12} md={3}>
                             <Grid container alignItems="center" spacing={2} sx={{ paddingLeft: '9px' }}>
                               <Grid item>
@@ -1323,6 +1373,79 @@ const PartyMaster = () => {
                               className="custom-textfield"
                             />
                           </Grid>
+                          {/* <Grid item xs={12} md={3}>
+                            <TextField
+                              fullWidth
+                              label="Alt Code"
+                              name="shortName"
+                              value={formData.shortName || ''}
+                              onChange={handleInputChange}
+                              variant="filled"
+                              disabled={isFormDisabled}
+                              className="custom-textfield"
+                            />
+                          </Grid> */}
+                          {/* <Grid item xs={12} md={3}>
+                            <TextField
+                              fullWidth
+                              label={
+                                <span>
+                                  Abrv <span style={{ color: 'red' }}>*</span>
+                                </span>
+                              }
+                              name="jurisdiction"
+                              value={formData.jurisdiction || ''}
+                              onChange={handleInputChange}
+                              variant="filled"
+                              disabled={isFormDisabled}
+                              className="custom-textfield"
+                            />
+                          </Grid> */}
+                          <Grid item xs={12} md={6}>
+                            <Grid container alignItems="center" spacing={2} sx={{ paddingLeft: '9px' }}>
+                              <Grid item>
+                                <FormLabel component="legend">GST Reg</FormLabel>
+                              </Grid>
+
+                              <Grid item>
+                                <FormControl component="fieldset">
+                                  <RadioGroup
+                                    aria-label="gstReg"
+                                    name="gstReg"
+                                    value={formData.gstReg}
+                                    onChange={handleInputChange}
+                                    row
+                                  >
+                                    <FormControlLabel
+                                      value="RD"
+                                      control={<Radio sx={{ '& .MuiSvgIcon-root': { fontSize: 18 } }} />}
+                                      label="RD"
+                                      className="custom-textfield"
+                                      disabled={isFormDisabled}
+                                    />
+                                    <FormControlLabel
+                                      value="URD"
+                                      control={<Radio sx={{ '& .MuiSvgIcon-root': { fontSize: 18 } }} />}
+                                      label="URD"
+                                      className="custom-textfield"
+                                      disabled={isFormDisabled}
+                                    />
+                                    <FormControlLabel
+                                      value="composition"
+                                      control={<Radio sx={{ '& .MuiSvgIcon-root': { fontSize: 18 } }} />}
+                                      label="Composition"
+                                      className="custom-textfield"
+                                      disabled={isFormDisabled}
+                                    />
+                                  </RadioGroup>
+                                </FormControl>
+                              </Grid>
+                            </Grid>
+
+                          </Grid>
+                        </Grid>
+
+                        <Grid container spacing={2}>
                           <Grid item xs={12} md={3}>
                             <TextField
                               fullWidth
@@ -1350,6 +1473,69 @@ const PartyMaster = () => {
                               disabled={isFormDisabled}
                               className="custom-textfield"
                             />
+                          </Grid>
+                          {/* <Grid item xs={12} md={3}>
+                            <TextField
+                              fullWidth
+                              label="Alt Code"
+                              name="shortName"
+                              value={formData.shortName || ''}
+                              onChange={handleInputChange}
+                              variant="filled"
+                              disabled={isFormDisabled}
+                              className="custom-textfield"
+                            />
+                          </Grid> */}
+                          {/* <Grid item xs={12} md={3}>
+                            <TextField
+                              fullWidth
+                              label={
+                                <span>
+                                  Abrv <span style={{ color: 'red' }}>*</span>
+                                </span>
+                              }
+                              name="jurisdiction"
+                              value={formData.jurisdiction || ''}
+                              onChange={handleInputChange}
+                              variant="filled"
+                              disabled={isFormDisabled}
+                              className="custom-textfield"
+                            />
+                          </Grid> */}
+                          <Grid item xs={12} md={3} className='form_field'>
+                            <FormControl variant="filled" fullWidth className="custom-select">
+                              <InputLabel id="partyType-select-label">Party Type</InputLabel>
+                              <Select
+                                labelId="partyType-select-label"
+                                id="partyType-select"
+                                name="partyType"
+                                value={formData.partyType}
+                                onChange={handleInputChange}
+                                className="custom-textfield"
+                              >
+                                <MenuItem value={10}>Supplier/Creditor</MenuItem>
+                                <MenuItem value={20}>Broker</MenuItem>
+                                <MenuItem value={30}>Transporter</MenuItem>
+                                <MenuItem value={40}>Others</MenuItem>
+                                <MenuItem value={50}>All</MenuItem>
+                              </Select>
+                            </FormControl>
+                          </Grid>
+                          <Grid item xs={12} md={3} className='form_field'>
+                            <FormControl variant="filled" fullWidth className="custom-select">
+                              <InputLabel id="glControl-select-label">GL-Control A/C</InputLabel>
+                              <Select
+                                labelId="glControl-select-label"
+                                id="glControl-select"
+                                name="glControl"
+                                value={formData.glControl}
+                                onChange={handleInputChange}
+                                className="custom-textfield"
+                              >
+                                <MenuItem value={10}>Sundry Creditor</MenuItem>
+                                <MenuItem value={20}>Sundry Dater</MenuItem>
+                              </Select>
+                            </FormControl>
                           </Grid>
                         </Grid>
 
@@ -1467,6 +1653,7 @@ const PartyMaster = () => {
                         </Grid>
 
                       </Box>
+                      
                     </Grid>
 
 
@@ -1672,92 +1859,6 @@ const PartyMaster = () => {
 
                       <Box display="flex" flexDirection="column" gap={2}>
                         <Grid container spacing={2}>
-                          <Grid item xs={12} md={4}>
-                            <Grid container alignItems="center" spacing={2} sx={{ paddingLeft: '9px' }}>
-                              <Grid item>
-                                <FormLabel component="legend">GST Reg</FormLabel>
-                              </Grid>
-
-                              <Grid item>
-                                <FormControl component="fieldset">
-                                  <RadioGroup
-                                    aria-label="gstReg"
-                                    name="gstReg"
-                                    value={formData.gstReg}
-                                    onChange={handleInputChange}
-                                    row
-                                  >
-                                    <FormControlLabel
-                                      value="RD"
-                                      control={<Radio sx={{ '& .MuiSvgIcon-root': { fontSize: 18 } }} />}
-                                      label="RD"
-                                      className="custom-textfield"
-                                      disabled={isFormDisabled}
-                                    />
-                                    <FormControlLabel
-                                      value="URD"
-                                      control={<Radio sx={{ '& .MuiSvgIcon-root': { fontSize: 18 } }} />}
-                                      label="URD"
-                                      className="custom-textfield"
-                                      disabled={isFormDisabled}
-                                    />
-                                    <FormControlLabel
-                                      value="composition"
-                                      control={<Radio sx={{ '& .MuiSvgIcon-root': { fontSize: 18 } }} />}
-                                      label="Composition"
-                                      className="custom-textfield"
-                                      disabled={isFormDisabled}
-                                    />
-                                  </RadioGroup>
-                                </FormControl>
-                              </Grid>
-                            </Grid>
-
-                          </Grid>
-                          <Grid item xs={12} md={4} className='form_field'>
-                            <FormControl variant="filled" fullWidth className="custom-select">
-                              <InputLabel id="partyType-select-label">Party Type</InputLabel>
-                              <Select
-                                labelId="partyType-select-label"
-                                id="partyType-select"
-                                name="partyType"
-                                value={formData.partyType}
-                                onChange={handleInputChange}
-                                className="custom-textfield"
-                              >
-                                <MenuItem value={10}>Supplier/Creditor</MenuItem>
-                                <MenuItem value={20}>Broker</MenuItem>
-                                <MenuItem value={30}>Transporter</MenuItem>
-                                <MenuItem value={40}>Others</MenuItem>
-                                <MenuItem value={50}>All</MenuItem>
-                              </Select>
-                            </FormControl>
-                          </Grid>
-                          
-                          <Grid item xs={12} md={4} className='form_field'>
-                            <FormControl variant="filled" fullWidth className="custom-select">
-                              <InputLabel id="glControl-select-label">GL-Control A/C</InputLabel>
-                              <Select
-                                labelId="glControl-select-label"
-                                id="glControl-select"
-                                name="glControl"
-                                value={formData.glControl}
-                                onChange={handleInputChange}
-                                className="custom-textfield"
-                              >
-                                <MenuItem value={10}>Sundry Creditor</MenuItem>
-                                <MenuItem value={20}>Sundry Dater</MenuItem>
-                              </Select>
-                            </FormControl>
-                          </Grid>
-                        </Grid>
-                      </Box>
-
-                    </Grid>
-                    <Grid item lg={12} md={12} xs={12}>
-
-                      <Box display="flex" flexDirection="column" gap={2}>
-                        <Grid container spacing={2}>
                           <Grid item xs={12} md={3}>
                             <Grid container alignItems="center" spacing={2} sx={{ paddingLeft: '9px' }}>
                               <Grid item>
@@ -1853,7 +1954,6 @@ const PartyMaster = () => {
                   </Grid>
 
                 </Grid>
-
               );
             default:
               return null;

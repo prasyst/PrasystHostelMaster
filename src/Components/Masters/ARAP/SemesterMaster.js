@@ -40,13 +40,13 @@ const CustomTextField = styled(TextField)(({ theme }) => ({
 const SemesterMaster = () => {
   const [formData, setFormData] = useState({
     semesterName: '',
-    courseName: '',
+    // courseName: '',
     remark: ''
   });
 
   const [error, setError] = useState({
     semesterName: false,
-    courseName: false
+    // courseName: false
   });
 
   const navigate = useNavigate();
@@ -62,7 +62,7 @@ const SemesterMaster = () => {
   const [lastInsertedSemesterId, setLastInsertedSemesterId] = useState(null);
   const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
 
-  const courseNameRef = useRef(null);
+  // const courseNameRef = useRef(null);
   const semesterNameRef = useRef(null);
   const remarkRef = useRef(null);
 
@@ -88,7 +88,7 @@ const SemesterMaster = () => {
         const semesterData = response.data.data[0];
         setFormData({
           semesterName: semesterData.semesterName,
-          courseName: semesterData.courseId.toString(),
+          // courseName: semesterData.courseId.toString(),
           remark: semesterData.remark
         });
         setIsFormDisabled(true);
@@ -157,8 +157,8 @@ const SemesterMaster = () => {
 
   const handleKeyPress = (event) => {
     if (event.key === 'Enter') {
-      if (event.target === courseNameRef.current) {
-        semesterNameRef.current.focus();
+      if (event.target === semesterNameRef.current) {
+        remarkRef.current.focus();
       } else {
         remarkRef.current.focus();
       }
@@ -169,13 +169,13 @@ const SemesterMaster = () => {
 
     let hasError = false;
 
-    if (!formData.courseName) {
-      toast.error('Course Name is required');
-      setError(prev => ({ ...prev, courseName: true }));
-      hasError = true;
-    } else {
-      setError(prev => ({ ...prev, courseName: false }));
-    }
+    // if (!formData.courseName) {
+    //   toast.error('Course Name is required');
+    //   setError(prev => ({ ...prev, courseName: true }));
+    //   hasError = true;
+    // } else {
+    //   setError(prev => ({ ...prev, courseName: false }));
+    // }
 
     if (!formData.semesterName) {
       toast.error('Semester Name is required');
@@ -193,7 +193,7 @@ const SemesterMaster = () => {
     try {
       const payload = {
         semesterName: formData.semesterName,
-        courseId: parseInt(formData.courseName),
+        // courseId: parseInt(formData.courseName),
         remark: formData.remark,
         status: "1"
       };
@@ -247,13 +247,13 @@ const SemesterMaster = () => {
     setIsFormDisabled(false);
     setFormData({
       semesterName: '',
-      courseName: '',
+      // courseName: '',
       remark: ''
     });
     setCurrentSemesterId(null);
 
     setTimeout(() => {
-      courseNameRef.current.focus();
+      semesterNameRef.current.focus();
     }, 0);
   };
 
@@ -270,7 +270,7 @@ const SemesterMaster = () => {
   const resetForm = () => {
     setFormData({
       semesterName: '',
-      courseName: '',
+      // courseName: '',
       remark: ''
     });
     setCurrentSemesterId(null);
@@ -377,7 +377,7 @@ const SemesterMaster = () => {
 
           <Grid item xs={12} className='form_field'>
             <Grid container spacing={2}>
-              <Grid item xs={12} md={6} lg={6} className='form_field'>
+              {/* <Grid item xs={12} md={6} lg={6} className='form_field'>
                 <CourseAutocomplete
                   courses={courses}
                   value={courses.find(courseName => courseName.id == formData.courseName) || null}
@@ -388,7 +388,7 @@ const SemesterMaster = () => {
                   ref={courseNameRef}
                   onKeyDown={handleKeyPress}
                 />
-              </Grid>
+              </Grid> */}
               <Grid item xs={12} md={6} lg={6}>
                 <TextField
                   id="semesterName"
@@ -433,7 +433,6 @@ const SemesterMaster = () => {
                   Submit
                 </Button>
                 <Button variant="contained" sx={{ mr: 1, background: 'linear-gradient(290deg, #a7c5e9, #ffffff)' }} onClick={handleEdit}
-                  // disabled={!currentZoneId}
                   disabled
                 >
                   Cancel
