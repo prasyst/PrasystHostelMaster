@@ -30,7 +30,7 @@ const CustomTextField = styled(TextField)(({ theme }) => ({
     backgroundColor: 'transparent',
     border: '1px solid #e0e0e0',
     borderRadius: '4px',
-  },
+  }, 
   '& .Mui-focused': {
     borderColor: '#673ab7',
   },
