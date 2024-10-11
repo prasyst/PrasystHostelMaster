@@ -1244,7 +1244,9 @@ const StepperForm = () => {
                 <NavigateNextIcon />
               </Button>
             </Grid>
-            <Typography variant="h5">Property Master</Typography>
+
+            <Typography sx={{ color: 'Yellow' }} variant="h5">Property Master</Typography>
+
             <Grid sx={{ display: 'flex', justifyContent: 'end' }}>
               <Button
                 variant="contained"
