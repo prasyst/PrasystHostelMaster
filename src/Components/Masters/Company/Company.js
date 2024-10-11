@@ -1460,7 +1460,7 @@ console.log('tableData',tableData)
                           <Grid item xs={12} md={4}>
                             <TextField
                               fullWidth
-                              label="Pin Code"
+                              label="Pin Code" 
                               name="pinCode"
                               value={currentBranch.pinCode || ''}
                               onChange={handleBranchInputChangeNew}
@@ -1469,6 +1469,7 @@ console.log('tableData',tableData)
                               className="custom-textfield"
                             />
                           </Grid>
+                          
                           <Grid item xs={12} md={4}>
                             <TextField
                               fullWidth
@@ -1481,6 +1482,7 @@ console.log('tableData',tableData)
                               className="custom-textfield"
                             />
                           </Grid>
+                          
                           <Grid item xs={12} md={4}>
                             <TextField
                               fullWidth
@@ -1494,8 +1496,10 @@ console.log('tableData',tableData)
                             />
                           </Grid>
                         </Grid>
+                        
                       </Box>
                     </Grid>
+                    
                     <Grid item lg={12} md={12} xs={12}>
                       <Box display="flex" flexDirection="column" gap={2}>
                         <Grid container spacing={3}>
