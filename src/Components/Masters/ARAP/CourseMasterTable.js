@@ -12,7 +12,7 @@ import { Breadcrumbs, Link, Typography, Box, Button, TextField } from '@mui/mate
 import { useNavigate } from 'react-router-dom';
 
 const columns = [
-  { id: 'instituteName', label: 'Institute Name', minWidth: 100 },
+  // { id: 'instituteName', label: 'Institute Name', minWidth: 100 },
   { id: 'courseName', label: 'Course Name', minWidth: 100 },
   { id: 'coursePeriod', label: 'Course Period', minWidth: 100 },
   { id: 'remark', label: 'Remark', minWidth: 100 }
@@ -40,7 +40,7 @@ export default function CourseMasterTable() {
       if (response.data.status === 0) {
         const formattedData = response.data.data.map(course => ({
           ...course,
-          instituteName: course.instituteName || '',
+          // instituteName: course.instituteName || '',
           courseName: course.courseName || '',
           coursePeriod: course.coursePeriod || '',
           remark: course.remark
