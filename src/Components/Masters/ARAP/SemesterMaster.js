@@ -433,7 +433,6 @@ const SemesterMaster = () => {
                   Submit
                 </Button>
                 <Button variant="contained" sx={{ mr: 1, background: 'linear-gradient(290deg, #a7c5e9, #ffffff)' }} onClick={handleEdit}
-                  // disabled={!currentZoneId}
                   disabled
                 >
                   Cancel

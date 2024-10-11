@@ -344,6 +344,26 @@ const StepperForm = () => {
     fetchWardens();
   }, []);
 
+  useEffect(() => {
+    const fetchWings = async (flag) => {
+      try {
+        const response = await axios.post(`${process.env.REACT_APP_API_URL}WingMst/getMstWingdrp`, {
+          Flag: flag
+        });
+        if (response.data.status === 0 && response.data.responseStatusCode === 1) {
+          setWings(response.data.data);
+        } else {
+          toast.error('Failed to fetch Wings');
+        }
+      } catch (error) {
+        console.error('Error fetching Wings:', error);
+        toast.error('Error fetching Wings. Please try again.');
+      }
+    };
+
+    fetchWings();
+  }, []);
+
   // useEffect(() => {
   //   GetSourceName()
   //   GetSemesterName()
