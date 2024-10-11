@@ -18,7 +18,7 @@ const Item = styled(Paper)(({ theme }) => ({
 }));
 
 const ARAP = () => {
-  const names = ['Resident Master', 'Vendros & Creditors', 'Institute Master', 'Course Master', 'Semester Master',
+  const names = ['Resident Master', 'Vendors & Creditors', 'Institute Master', 'Course Master', 'Semester Master',
     'Source Master'
   ];
 
@@ -47,7 +47,7 @@ const ARAP = () => {
                   style={{ width: '100px', height: '100px', borderRadius: '50%' }} 
                 />
                 <Box sx={{ textAlign: 'center', marginTop: 1 }}>
-                  <Link to='/partymaster'>Vendros & Creditors</Link>
+                  <Link to='/masters/partyTable/'>Vendors & Creditors</Link>
                 </Box>
               </Item>
             </Grid>

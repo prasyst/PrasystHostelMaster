@@ -84,19 +84,19 @@ const Company = () => {
   const [isAddingBranch, setIsAddingBranch] = useState(false);
   const [isEditingBranch, setIsEditingBranch] = useState(false);
   const [isBranchEditDeleteEnabled, setIsBranchEditDeleteEnabled] = useState(false);
- 
+
   const [selectedBranchIndex, setSelectedBranchIndex] = useState(null);
 
 
   const handleAddClick = () => {
-    setIsAdding(true); 
+    setIsAdding(true);
   };
 
   const handleImageUpload = (event) => {
     const file = event.target.files[0];
     if (file) {
       const reader = new FileReader();
-      
+
       // Use a Promise to handle the file reading
       const readFileAsBase64 = (file) => {
         return new Promise((resolve, reject) => {
@@ -107,7 +107,7 @@ const Company = () => {
           reader.readAsDataURL(file);
         });
       };
-  
+
       // Read the file and update the state
       readFileAsBase64(file)
         .then(base64String => {
@@ -127,7 +127,7 @@ const Company = () => {
     const file = event.target.files[0];
     if (file) {
       const reader = new FileReader();
-      
+
       // Use a Promise to handle the file reading
       const readFileAsBase64 = (file) => {
         return new Promise((resolve, reject) => {
@@ -138,7 +138,7 @@ const Company = () => {
           reader.readAsDataURL(file);
         });
       };
-  
+
       // Read the file and update the state
       readFileAsBase64(file)
         .then(base64String => {
@@ -178,7 +178,7 @@ const Company = () => {
     remark1: '',
     remark2: '',
     workAddress: '',
-    
+
   });
   const [branches, setBranches] = useState([]);
   const [currentBranch, setCurrentBranch] = useState({
@@ -216,12 +216,12 @@ const Company = () => {
         CoMstId: parseInt(id),
         Flag: flag
       });
-
+      
       if (response.data.status === 0 && response.data.responseStatusCode === 1) {
         const company = response.data.data.CoMstList[0];
         const branches = response.data.data.CoMstList[0].CobrMstList;
-        console.log('com',company)
-        console.log('br',branches)
+        console.log('com', company)
+        console.log('br', branches)
         setFormData({
           CoMstId: company.CoMstId,
           companyCode: company.CoMstId,
@@ -249,10 +249,10 @@ const Company = () => {
           remark2: company.Remark2,
           workAddress: company.WorkAddr,
         })
-       
+
         setBranches(branches.map((branch) => ({
           branchCode: branch.CobrMstId,
-          companyName: company.CoName, 
+          companyName: company.CoName,
           branchName: branch.CobrName,
           shortName: branch.CobrAbrv,
           gstNo: branch.GSTIN,
@@ -281,29 +281,29 @@ const Company = () => {
           gstNo: branch.GSTIN,
           pinCode: branch.PinID,
           branchAddress: branch.CobrAdd,
-          state: 'N/A' 
+          state: 'N/A'
         })));
         const mainBranch = branches.find(branch => branch.MainBranch === "0") || branches[0];
-      setCurrentBranch({
-        branchCode: mainBranch.CobrMstId,
-        branchName: mainBranch.CobrName,
-        shortName: mainBranch.CobrAbrv,
-        gstNo: mainBranch.GSTIN,
-        jurisdiction: mainBranch.CityId,
-        branchAddress: mainBranch.CobrAdd,
-        emailID: mainBranch.CobrEmail,
-        telNo: mainBranch.CobrTel,
-        website: mainBranch.Website,
-        ieCode: mainBranch.IeCode,
-        msmeNo: mainBranch.MsmeNo,
-        msmeCat: mainBranch.MsmeCat,
-        msmeType: mainBranch.MsmeType,
-        pinCode: mainBranch.PinID,
-        remark1: mainBranch.Remark1,
-        remark2: mainBranch.Remark2,
-      });
+        setCurrentBranch({
+          branchCode: mainBranch.CobrMstId,
+          branchName: mainBranch.CobrName,
+          shortName: mainBranch.CobrAbrv,
+          gstNo: mainBranch.GSTIN,
+          jurisdiction: mainBranch.CityId,
+          branchAddress: mainBranch.CobrAdd,
+          emailID: mainBranch.CobrEmail,
+          telNo: mainBranch.CobrTel,
+          website: mainBranch.Website,
+          ieCode: mainBranch.IeCode,
+          msmeNo: mainBranch.MsmeNo,
+          msmeCat: mainBranch.MsmeCat,
+          msmeType: mainBranch.MsmeType,
+          pinCode: mainBranch.PinID,
+          remark1: mainBranch.Remark1,
+          remark2: mainBranch.Remark2,
+        });
         setIsFormDisabled(true);
-        console.log('CobrName',branches)
+        console.log('CobrName', branches)
         setCompanyId(company.CoMstId);
       } else if (response.data.status === 1 && response.data.responseStatusCode === 2) {
         toast.info(response.data.message);
@@ -343,6 +343,7 @@ const Company = () => {
 
   useEffect(() => {
     if (location.state && location.state.companyId) {
+      console.log(location.state, "to check what is coming in url")
       setCompanyId(location.state.companyId);
       fetchCompanyData(location.state.companyId);
       setMode('view');
@@ -353,23 +354,23 @@ const Company = () => {
   }, [location]);
 
   const handleNext = () => {
-    if (activeStep === 0) {  
+    if (activeStep === 0) {
       const companyBranch = {
         branchCode: formData.companyCode || '',
         companyName: formData.companyName,
-        branchName: formData.companyName, 
+        branchName: formData.companyName,
         gstNo: formData.gstNo,
         PinCode: formData.pinCode,
         branchAddress: formData.regAddress,
-        state: '', 
+        state: '',
       };
       // setTableData(branches);
       // const mainBranch = branches.find(branch => branch.branchCode === formData.companyCode);
       // setSelectedBranch(mainBranch);
       // setIsMainBranchSelected(true);
-       setTableData([companyBranch]);
+      setTableData([companyBranch]);
       setBranches([companyBranch]);
-      console.log('company',companyBranch)
+      console.log('company', companyBranch)
       setSelectedBranch(companyBranch);
       setIsMainBranchSelected(true);
       setIsAddButtonEnabled(true);
@@ -413,14 +414,14 @@ const Company = () => {
     setIsAddingBranch(true);
     setIsConfirmEnabled(true);
     setIsEditingBranch(false);
-    
+
     // Enable only Confirm and Cancel buttons
     setIsAddButtonEnabled(false);
     setIsConfirmCancelEnabled(true);
   };
   const handleSubmit = async () => {
     let payload;
-  
+
     const companyData = {
       DBFLAG: companyId ? "U" : "I",
       CoMstId: companyId || 0,
@@ -449,7 +450,7 @@ const Company = () => {
       WorkAddr: formData.workAddress || "",
       Status: formData.Status || "1",
     };
-  
+
     const branchesData = branches.map((branch) => ({
       DBFLAG: branch.branchCode ? "U" : "I",
       CobrMstId: branch.branchCode || 0,
@@ -472,17 +473,17 @@ const Company = () => {
       Status: branch.Status || "1",
       MainBranch: branch.branchCode === formData.companyCode ? "1" : "0",
     }));
-  
+
     payload = {
       ...companyData,
       cobrMstList: branchesData,
     };
-  
+
     console.log("submissionData", payload);
     let jsonData = JSON.stringify(payload).replace(/\\/g, '\\\\').replace(/\"/g, '\\"');
     jsonData = '"' + jsonData + '"';
     console.log("jsonData", jsonData);
-  
+
     try {
       const response = await axios.post(
         'http://43.230.196.21/api/CoMst/ManageCompanyBranch',
@@ -495,7 +496,7 @@ const Company = () => {
       );
       console.log('Submission successful:', response.data);
       toast.success(response.data.message);
-  
+
       if (isEditing) {
         setIsEditing(false);
         setMode('view');
@@ -515,7 +516,7 @@ const Company = () => {
     }
   };
   // const handleSubmit = async () => {
-    
+
   //   if (isEditing) {
   //     const payload = {
   //       comstid: companyId,
@@ -523,7 +524,7 @@ const Company = () => {
   //       CoAbrv: formData.shortName,
   //       GSTIN: formData.gstNo,
   //       CityId: parseInt(formData.jurisdiction) || 1,
-        
+
   //     };
 
   //     try {
@@ -571,7 +572,7 @@ const Company = () => {
   //       WorkAddr: formData.workAddress || "",
   //       Status: formData.Status || "1",
   //     };
-    
+
   //     const mainBranchData = {
   //       DBFLAG: "I",
   //       CobrName: formData.companyName ,
@@ -593,7 +594,7 @@ const Company = () => {
   //       Status: "1",
   //       MainBranch: "0"  
   //     };
-  
+
   //     // Prepare other branches data
   //     const otherBranchesData = branches.slice(1).map(branch => ({
   //       DBFLAG: "I",
@@ -622,7 +623,7 @@ const Company = () => {
   //       ...companyData,
   //       cobrMstList: [mainBranchData, ...otherBranchesData]
   //     };
-    
+
   //     // const payload = {
   //     //   ...companyData,
   //     //   cobrMstList: branchData
@@ -631,7 +632,7 @@ const Company = () => {
   //     let jsonData = JSON.stringify(payload)
   //       .replace(/\\/g, '\\\\')
   //       .replace(/\"/g, '\\"');
-  
+
   //     jsonData = '"' + jsonData + '"';
   //     console.log('jsonData', jsonData)
   //     try {
@@ -647,7 +648,7 @@ const Company = () => {
   //       toast.error('Error submitting form');
   //     }
   //   }
-  
+
   // };
   const handleAdd = () => {
     setMode('add');
@@ -727,7 +728,7 @@ const Company = () => {
       try {
         const response = await axios.post(`http://43.230.196.21/api/CoMst_Cobr/RetriveCobrMst`, {
           CobrMstId: selectedBranch.branchCode,
-        Flag: "D"
+          Flag: "D"
         });
         if (response.data.status === 0) {
           toast.success('Branch deleted successfully');
@@ -818,7 +819,7 @@ const Company = () => {
       setBranches(prev => [...prev, newBranch]);
     } else if (mode === 'edit') {
       console.log(setIsEditing(true))
-      const updatedBranches = branches.map(branch => 
+      const updatedBranches = branches.map(branch =>
         branch.branchCode === currentBranch.branchCode ? currentBranch : branch
       );
       setBranches(updatedBranches);
@@ -849,12 +850,12 @@ const Company = () => {
       bankDetails1: '',
       bankDetails2: '',
     });
-    
+
     // Reset button states
     setIsAddButtonEnabled(true);
     setIsConfirmCancelEnabled(false);
   };
-   const handleCancelBranch = () => {
+  const handleCancelBranch = () => {
     setMode('view');
     setIsFormDisabled(true);
     setSelectedBranch(null);
@@ -1069,7 +1070,7 @@ const Company = () => {
                         height={170}
                         overflow="hidden"
                         position="relative"
-                        sx={{ cursor: 'pointer' }} 
+                        sx={{ cursor: 'pointer' }}
                       >
                         {formData.photo ? (
                           <img
@@ -1094,7 +1095,7 @@ const Company = () => {
                           onChange={handleImageUpload}
                           style={{
                             position: 'absolute',
-                            top: 0,left: 0,width: '100%',height: '100%',
+                            top: 0, left: 0, width: '100%', height: '100%',
                             opacity: 0, // Make it invisible
                             cursor: 'pointer', // Ensure the cursor indicates it's clickable
                           }}
@@ -1695,7 +1696,7 @@ const Company = () => {
   };
 
   const handleStepClick = (step) => {
-    if (mode === 'view' ) {
+    if (mode === 'view') {
       setActiveStep(step);
     }
   };
@@ -1771,7 +1772,7 @@ const Company = () => {
           <Grid item xs={12} >
             <Stepper activeStep={activeStep} connector={<CustomStepConnector />} alternativeLabel>
               {steps.map((label, index) => (
-                <Step key={label} onClick={() => handleStepClick(index)} style={{ cursor: mode === 'view'  ? 'pointer' : 'default' }}>
+                <Step key={label} onClick={() => handleStepClick(index)} style={{ cursor: mode === 'view' ? 'pointer' : 'default' }}>
                   <CustomStepLabel
                     sx={{ mt: 0, pt: 0 }}
                     StepIconComponent={(props) => (
@@ -1842,16 +1843,16 @@ const Company = () => {
             </Paper>
             <Grid item xs={12} md={12} lg={12} className='form_title' sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '5px' }}>
 
-                <Grid xs={12} md={12} lg={12}>
+              <Grid xs={12} md={12} lg={12}>
                 <Button
                   variant="contained"
                   size="small"
                   sx={{ backgroundColor: '#7c3aed' }}
 
-                // disabled={mode === 'view'}
-                onClick={handleBranchAdd}
-             
-          disabled={!isAddButtonEnabled}
+                  // disabled={mode === 'view'}
+                  onClick={handleBranchAdd}
+
+                  disabled={!isAddButtonEnabled}
                 >
                   <AddIcon />
                 </Button>
@@ -1860,7 +1861,7 @@ const Company = () => {
                   size="small"
                   sx={{ backgroundColor: '#7c3aed', margin: '0px 10px' }}
                   onClick={handleBranchEdit}
-                  
+
                   // disabled={mode === 'view' || mode ===''}
                   disabled={!isBranchEditDeleteEnabled}
 
@@ -1881,37 +1882,37 @@ const Company = () => {
                 >
                   <DeleteIcon />
                 </Button>
-                </Grid>
-                   <Grid xs={6} md={12}>
-                   <Button
-                     variant="contained"
-                     size="small"
-                     sx={{ backgroundColor: '#7c3aed' }}
-                     onClick={handleConfirmBranch}
-                     disabled={!isConfirmCancelEnabled}
-                   >
-                     Confirm
-                   </Button>
-                   <Button
-                     variant="contained"
-                     size="small"
-                     sx={{ backgroundColor: '#7c3aed', margin: '0px 10px' }}
-                     onClick={handleCancelBranch}
+              </Grid>
+              <Grid xs={6} md={12}>
+                <Button
+                  variant="contained"
+                  size="small"
+                  sx={{ backgroundColor: '#7c3aed' }}
+                  onClick={handleConfirmBranch}
+                  disabled={!isConfirmCancelEnabled}
+                >
+                  Confirm
+                </Button>
+                <Button
+                  variant="contained"
+                  size="small"
+                  sx={{ backgroundColor: '#7c3aed', margin: '0px 10px' }}
+                  onClick={handleCancelBranch}
 
-                    //  disabled={mode === 'view' || mode ===''}
-                    disabled={!isConfirmCancelEnabled}
+                  //  disabled={mode === 'view' || mode ===''}
+                  disabled={!isConfirmCancelEnabled}
 
-                   >
-                    Cancel
-                   </Button>
-                   
-                   </Grid>
+                >
+                  Cancel
+                </Button>
 
               </Grid>
-              <Grid>
 
-              </Grid>
-     
+            </Grid>
+            <Grid>
+
+            </Grid>
+
           </>) : ('')
           }
           <Grid item xs={12}>

@@ -77,6 +77,8 @@ import ComplaintTable from './Components/Masters/Ticketing/ComplaintTable';
 import ComplaintType from './Components/Masters/Ticketing/ComplaintType';
 import ComplaintTypeTable from './Components/Masters/Ticketing/ComplaintTypeTable';
 import PartyMaster from './Components/Masters/ARAP/PartyMaster';
+import PartyTable from './Components/Masters/ARAP/PartyTable';
+import PartyForm from './Components/Masters/ARAP/PartyForm';
 
 const DashboardLayout = ({ children }) => (
   <SidebarDrawar>{children}</SidebarDrawar>
@@ -135,7 +137,7 @@ function App() {
     <Route path="/propertytable" element={<DashboardLayout><PropertyMasterTable /></DashboardLayout>} />
     <Route path="/wing" element={<DashboardLayout><Wing /></DashboardLayout>} />
     <Route path="/floor" element={<DashboardLayout><Floor /></DashboardLayout>} />
-    <Route path="/partymaster" element={<DashboardLayout><PartyMaster /></DashboardLayout>} />
+    <Route path="/partymaster" element={<DashboardLayout><PartyForm/></DashboardLayout>} />
     <Route path="/roomType" element={<DashboardLayout><RoomType /></DashboardLayout>} />
     <Route path="/propertyType-master" element={<DashboardLayout><PropertyType /></DashboardLayout>} />
     <Route path="/roomBedType" element={<DashboardLayout><RoomBedType /></DashboardLayout>} />
@@ -156,7 +158,8 @@ function App() {
     <Route path="/reports/*" element={<DashboardLayout><Reports /></DashboardLayout>} />
     <Route path="/utilities/*" element={<DashboardLayout><Utilities /></DashboardLayout>} />
     <Route path="/masters/residenttable/*" element={<DashboardLayout><ResidentTable /></DashboardLayout>} />
-    <Route path="/masters/companytable/*" element={<DashboardLayout><CompanyTable /></DashboardLayout>} />
+    <Route path="/masters/companytable/" element={<DashboardLayout><CompanyTable /></DashboardLayout>} />
+    <Route path="/masters/partyTable/*" element={<DashboardLayout><PartyTable/></DashboardLayout>} />
 
 
   </Routes>
