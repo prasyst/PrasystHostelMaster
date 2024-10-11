@@ -252,7 +252,7 @@ console.log('tableData',tableData)
       } else if (response.data.status === 1 && response.data.responseStatusCode === 2) {
         toast.info(response.data.message);
       } else {
-        toast.error('Failed to fetch city data');
+        // toast.error('Failed to fetch city data');
       }
     } catch (error) {
       console.error('Error fetching city data:', error);
@@ -298,10 +298,12 @@ console.log('tableData',tableData)
 
   const handleNext = () => {
     if (activeStep === 0) {  
+      // Validate required fields
       if (!formData.companyName || !formData.jurisdiction || !formData.pinCode) {
-        toast.error("Company Name ,Pincode and Jurisdiction are required fields.");
+        toast.error("Company Name, Pincode, and Jurisdiction are required fields.");
         return;
       }
+  
       const companyBranch = {
         branchCode: formData.companyCode || '',
         companyName: formData.companyName,
@@ -322,34 +324,39 @@ console.log('tableData',tableData)
         branchAddress: formData.regAddress,
         bankDetails1: '', 
         bankDetails2: '',
-        state: '', 
+        state: '',
         // mainBranch: 1,
       };
-      console.log('companyBranch',companyBranch)
+  
       if (isAddingNewData) {
-      if (!branches.some(branch => branch.branchCode === companyBranch.branchCode)) {
-        setBranches(prevBranches => [...prevBranches, companyBranch]);
-      }
-      
-      setTableData(prevData => {
-        const existingIndex = prevData.findIndex(item => item.branchCode === companyBranch.branchCode);
-        if (existingIndex !== -1) {
-          const newData = [...prevData];
-          newData[existingIndex] = companyBranch;
-          return newData;
-        } else {
-          return [...prevData, companyBranch];
+        if (!branches.some(branch => branch.branchCode === companyBranch.branchCode)) {
+          setBranches(prevBranches => [...prevBranches, companyBranch]);
         }
-      });
-      setSelectedBranch(companyBranch);
-      setCurrentBranch(companyBranch);
-      setIsMainBranchSelected(true);
-      setIsAddButtonEnabled(true);
-      setIsConfirmCancelEnabled(false);
+  
+        setTableData(prevData => {
+          const existingIndex = prevData.findIndex(item => item.branchCode === companyBranch.branchCode);
+          if (existingIndex !== -1) {
+            const newData = [...prevData];
+            newData[existingIndex] = companyBranch;
+            return newData;
+          } else {
+            return [...prevData, companyBranch];
+          }
+        });
+  
+        setSelectedBranch(companyBranch);
+        setCurrentBranch(companyBranch);
+        setIsMainBranchSelected(true);
+        setIsAddButtonEnabled(true);
+        setIsConfirmCancelEnabled(false);
+      } else {
+
+        // toast.info('Data is in view mode. No new data will be added.');
+      }
     }
-    }
+  
     if (activeStep === steps.length - 1) {
-      handleSubmit();
+      handleSubmit(); // Submit the form when it's the last step
     } else {
       setActiveStep((prevActiveStep) => prevActiveStep + 1);
     }
@@ -396,7 +403,7 @@ console.log('tableData',tableData)
   
     const companyData = {
       DBFLAG: companyId ? "U" : "I",
-      // CoMstId: companyId || 0,
+      CoMstId: companyId || 0,
       CoName: formData.companyName,
       CoAbrv: formData.shortName || '',
       GSTIN: formData.gstNo || '',
@@ -422,30 +429,37 @@ console.log('tableData',tableData)
       WorkAddr: formData.workAddress || "",
       Status: formData.Status || "1",
     };
-    const branchesData = branches.map((branch,index) => ({
-      DBFLAG: branch.branchCode ? "U" : "I",  
-      // CobrMstId: branch.branchCode || 0,
-      // CobrName: branch.branchName || "",
-      CobrName: index === 0 && !branch.branchName ? formData.companyName : branch.branchName || "", 
-      CobrAbrv: branch.shortName || "",
-      GSTIN: branch.gstNo,
-      CityId: parseInt(branch.jurisdiction) || 1,
-      CobrAdd: branch.branchAddress || "",
-      CobrEmail: branch.emailID || "",
-      CobrTel: branch.telNo || "",
-      CobrMob: branch.branchMobile || "",
-      Website: branch.website || "",
-      IeCode: branch.ieCode || "",
-      MsmeNo: branch.msmeNo || "",
-      MsmeCat: branch.msmeCat || "",
-      MsmeType: branch.msmeType || "",
-      PinID: parseInt(branch.pinCode) || 1, //branch.pinC
-      Remark1: branch.remark1 || "",
-      Remark2: branch.remark2 || "",
-      Status: branch.status || "1",  
-      // MainBranch: branch.branchCode === formData.companyCode ? "1" : "0",
-      MainBranch: index === 0 ? "1" : "0",
-    }))
+    const branchesData = branches.map((branch, index) => {
+      let dbFlag = "I"; 
+      if (branch.branchCode) {
+        dbFlag = "U";
+      }
+  
+      const branchName = index === 0 && !branch.branchName ? formData.companyName : branch.branchName || "";
+  
+      return {
+        DBFLAG: dbFlag,  
+        CobrMstId: branch.branchCode || 0,
+        CobrName: branchName,
+        CobrAbrv: branch.shortName || "",
+        GSTIN: branch.gstNo || "",
+        CityId: parseInt(branch.jurisdiction) || 1,
+        CobrAdd: branch.branchAddress || "",
+        CobrEmail: branch.emailID || "",
+        CobrTel: branch.telNo || "",
+        CobrMob: branch.branchMobile || "",
+        Website: branch.website || "",
+        IeCode: branch.ieCode || "",
+        MsmeNo: branch.msmeNo || "",
+        MsmeCat: branch.msmeCat || "",
+        MsmeType: branch.msmeType || "",
+        PinID: parseInt(branch.pinCode) || 1,
+        Remark1: branch.remark1 || "",
+        Remark2: branch.remark2 || "",
+        Status: branch.status || "1",  
+        MainBranch: index === 0 ? "1" : "0",
+      };
+    });
     console.log('branch',branchesData)
     payload = {
       ...companyData,
@@ -564,38 +578,101 @@ console.log('tableData',tableData)
       setIsFormDisabled(true);
     }
   };
-  const handleBranchDelete = () => {
+  const handleBranchDelete = async () => {
     if (selectedBranchIndex !== null && !isFirstRowSelected) {
-      const newTableData = tableData.filter((_, index) => index !== selectedBranchIndex);
-      const newBranches = branches.filter((_, index) => index !== selectedBranchIndex);
-      setTableData(newTableData);
-      setBranches(newBranches);
-      setSelectedBranchIndex(null);
-      setSelectedBranch(null);
-      setCurrentBranch({
-        branchCode: '',
-        branchName: '',
-        shortName: '',
-        gstNo: '',
-        jurisdiction: '',
-        branchAddress: '',
-        emailID: '',
-        telNo: '',
-        website: '',
-        ieCode: '',
-        msmeNo: '',
-        msmeCat: '',
-        msmeType: '',
-        pinCode: '',
-        remark1: '',
-        remark2: '',
-        bankDetails1: '',
-        bankDetails2: '',
-      });
-
-      setIsBranchEditDeleteEnabled(false);
-      setIsAddButtonEnabled(true);
-      toast.success('Branch deleted successfully');
+      const selectedBranch = branches[selectedBranchIndex];
+  
+      if (selectedBranch.branchCode) {
+        const payload = {
+          CobrMstId: selectedBranch.branchCode,
+          Flag: "D",  
+        };
+  
+        try {
+          const response = await axios.post(
+            'http://43.230.196.21/api/CoMst_Cobr/RetriveCobrMst',
+            payload,
+            {
+              headers: {
+                'Content-Type': 'application/json',
+              },
+            }
+          );
+  
+          // Check if the deletion was successful by checking the responseStatusCode
+          if (response.data.responseStatusCode === 1) {
+            toast.success(response.data.message || 'Branch deleted successfully');
+  
+            // Remove the branch from the local state after successful API deletion
+            const newTableData = tableData.filter((_, index) => index !== selectedBranchIndex);
+            const newBranches = branches.filter((_, index) => index !== selectedBranchIndex);
+            setTableData(newTableData);
+            setBranches(newBranches);
+            setSelectedBranchIndex(null);
+            setSelectedBranch(null);
+            setCurrentBranch({
+              branchCode: '',
+              branchName: '',
+              shortName: '',
+              gstNo: '',
+              jurisdiction: '',
+              branchAddress: '',
+              emailID: '',
+              telNo: '',
+              website: '',
+              ieCode: '',
+              msmeNo: '',
+              msmeCat: '',
+              msmeType: '',
+              pinCode: '',
+              remark1: '',
+              remark2: '',
+              bankDetails1: '',
+              bankDetails2: '',
+            });
+  
+            setIsBranchEditDeleteEnabled(false);
+            setIsAddButtonEnabled(true);
+          } else {
+            toast.error('Error deleting branch from the server');
+          }
+        } catch (error) {
+          console.error('API error:', error);
+          toast.error('Error deleting branch');
+        }
+      } else {
+        // For locally added branches (unsaved), remove them from the local state
+        const newTableData = tableData.filter((_, index) => index !== selectedBranchIndex);
+        const newBranches = branches.filter((_, index) => index !== selectedBranchIndex);
+        setTableData(newTableData);
+        setBranches(newBranches);
+        setSelectedBranchIndex(null);
+        setSelectedBranch(null);
+        setCurrentBranch({
+          branchCode: '',
+          branchName: '',
+          shortName: '',
+          gstNo: '',
+          jurisdiction: '',
+          branchAddress: '',
+          emailID: '',
+          telNo: '',
+          website: '',
+          ieCode: '',
+          msmeNo: '',
+          msmeCat: '',
+          msmeType: '',
+          pinCode: '',
+          remark1: '',
+          remark2: '',
+          bankDetails1: '',
+          bankDetails2: '',
+        });
+  
+        setIsBranchEditDeleteEnabled(false);
+        setIsAddButtonEnabled(true);
+        toast.success('Branch deleted successfully');
+      }
     } else {
       toast.error('Please select a branch to delete (excluding the main branch)');
     }
