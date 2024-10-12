@@ -85,12 +85,45 @@ const Company = () => {
   const [selectedBranchIndex, setSelectedBranchIndex] = useState(null);
   const [isFirstRowSelected, setIsFirstRowSelected] = useState(false);
   const [isAddingNewData, setIsAddingNewData] = useState(true); 
+  const [cities, setCities] = useState([]);
+  const [areaOptions, setAreaOptions] = useState([]);
+  const [jurisdiction,setJurisdication]=useState()
 
+  const handleAreaChange = async (e) => {
+    const selectedArea = e.target.value;
+    setFormData(prevState => ({ ...prevState, area: selectedArea }));
 
-console.log('tableData',tableData)
-  const handleAddClick = () => {
-    setIsAdding(true); 
+    try {
+      const response = await axios.post('http://43.230.196.21/api/pincodeMst/getdrppincodeAreawise_datafill', {
+        PinCode: formData.PinID,
+        AreaName: selectedArea
+      });
+      const data = response.data.data[0];
+      console.log('Area data', data);
+      if (data) {
+        setFormData(prevState => ({
+          ...prevState,
+          state: data.stateName || '',
+          city: data.cityName || '',
+          country: data.countryName || 'India',
+        }));
+      }
+    } catch (error) {
+      console.error('Error fetching area data:', error);
+    }
   };
+  const fetchCities = async () => {
+    try {
+      const response = await axios.get('http://43.230.196.21/api/PincodeMst/getcitydrp');
+      console.log('city', response.data)
+      setCities(response?.data?.data);
+    } catch (error) {
+      console.error('Error fetching cities:', error);
+    }
+  };
+  useEffect(() => {
+    fetchCities()
+  }, [])
 
   const handleImageUpload = (event) => {
     const file = event.target.files[0];
@@ -123,7 +156,8 @@ console.log('tableData',tableData)
     remark1: '',
     remark2: '',
     workAddress: '',
-    
+    state:'',
+    city:''
   });
   const [branches, setBranches] = useState([]);
   const [currentBranch, setCurrentBranch] = useState({
@@ -299,11 +333,11 @@ console.log('tableData',tableData)
   const handleNext = () => {
     if (activeStep === 0) {  
       // Validate required fields
-      if (!formData.companyName || !formData.jurisdiction || !formData.pinCode) {
+      if (!formData.companyName || !formData.jurisdiction ||  !formData.PinID) {
         toast.error("Company Name, Pincode, and Jurisdiction are required fields.");
         return;
       }
-  
+
       const companyBranch = {
         branchCode: formData.companyCode || '',
         companyName: formData.companyName,
@@ -318,13 +352,14 @@ console.log('tableData',tableData)
         msmeNo: formData.msmeNo,
         msmeCat: formData.msmeCat,
         msmeType: formData.msmeType,
-        pinCode: formData.pinCode,
+        pinCode: formData.PinID,
         remark1: formData.remark1,
         remark2: formData.remark2,
         branchAddress: formData.regAddress,
         bankDetails1: '', 
         bankDetails2: '',
-        state: '',
+        state: formData.state,
+        city:formData.city
         // mainBranch: 1,
       };
   
@@ -797,6 +832,33 @@ console.log('tableData',tableData)
     setIsFirstRowSelected(index === 0);
 
   };
+  const handleBranchInputChangeNewcity = (event) => {
+    console.log(event.target.value,'2')
+    setJurisdication(event.target.value );
+  };
+  const handleInputChangePin = async (e) => {
+    const { name, value } = e.target;
+
+    setFormData(prevState => ({ ...prevState, [name]: value }));
+
+    if (name === 'PinID' && value.length === 6) {
+      try {
+        const response = await axios.post('http://43.230.196.21/api/pincodeMst/getdrppincodewisearea', {
+          PinCode: parseInt(value),
+        });
+        const data = response.data.data;
+        console.log('data', data);
+        if (data && data.length > 0) {
+          // Set area options
+          setAreaOptions(data.map(item => item.name));
+
+          
+        }
+      } catch (error) {
+        console.error('Error fetching pin code data:', error);
+      }
+    }
+  };
   const renderStepContent = (step) => {
     return (
       <Box sx={{ height: '350px', overflowY: 'scroll', padding: '16px' }}>
@@ -840,7 +902,7 @@ console.log('tableData',tableData)
                             />
                           </Grid>
                           <Grid item xs={12} md={3}>
-                            <TextField
+                            {/* <TextField
                               fullWidth
                               label={
                                 <span>
@@ -855,7 +917,25 @@ console.log('tableData',tableData)
                               className="custom-textfield"
                               // error={!formData.jurisdiction}
                               helperText={!formData.jurisdiction ? "" : ""}
-                            />
+                            /> */}
+                            <FormControl className='custom-textfield' fullWidth variant="filled" disabled={isFormDisabled}>
+                              <InputLabel>
+                                Jurisdiction <span style={{ color: 'red' }}>*</span>
+                              </InputLabel>
+                              <Select
+                                value={formData.jurisdiction}
+                                onChange={handleInputChange}
+                                name="jurisdiction"
+                                className="custom-textfield"
+                              helperText={!formData.jurisdiction ? "" : ""}
+
+                              >
+                                {cities?.map((option) => (
+                                  <MenuItem key={option.id} value={option.id}>{option.name}</MenuItem>
+                                ))}
+                              </Select>
+                              
+                            </FormControl>
                           </Grid>
                         </Grid>
                         <Grid container spacing={2}>
@@ -1105,7 +1185,7 @@ console.log('tableData',tableData)
 
                     </Grid>
 
-                    <Grid item lg={12} md={12} xs={12}>
+                    {/* <Grid item lg={12} md={12} xs={12}>
 
                       <Box display="flex" flexDirection="column" gap={2}>
                         <Grid container spacing={3}>
@@ -1154,9 +1234,67 @@ console.log('tableData',tableData)
                         </Grid>
                       </Box>
 
+                    </Grid> */}
+                    <Grid item lg={12} md={12} xs={12}>
+                      <Box display="flex" flexDirection="column" gap={2}>
+                        <Grid container spacing={2}>
+                          {/* Pin Code TextField */}
+                          <Grid item xs={12} md={4}>
+                            <TextField
+                              fullWidth
+                              label={
+                                <span>
+                                  Pincode <span style={{ color: 'red' }}>*</span>
+                                </span>
+                              }
+                              name="PinID"
+                              value={formData.PinID || ''}
+                              onChange={handleInputChangePin}
+                              variant="filled"
+                              disabled={isFormDisabled}
+                              className="custom-textfield"
+                              helperText={!formData.PinID ? "" : ""}
+
+                            />
+                          </Grid>
+
+                          {/* Area/Place Select Dropdown */}
+                          <Grid item xs={12} md={4}>
+                            <FormControl className='custom-textfield' fullWidth variant="filled" disabled={isFormDisabled}>
+                              <InputLabel>Area/Place</InputLabel>
+                              <Select
+                                value={formData.area || ''}
+                                onChange={handleAreaChange}
+                                name="area"
+                                className="custom-textfield"
+                              >
+
+                                {areaOptions.map((option) => (
+                                  <MenuItem key={option} value={option}>{option}</MenuItem>
+                                ))}
+                              </Select>
+                            </FormControl>
+                          </Grid>
+
+                          {/* Country TextField */}
+                          <Grid item xs={12} md={4}>
+                            <TextField
+                              fullWidth
+                              label="Country"
+                              name="country"
+                              value={formData.country || ''}
+                              onChange={handleInputChangePin}
+                              variant="filled"
+                              disabled={isFormDisabled}
+                              className="custom-textfield"
+                              InputLabelProps={{ shrink: true }}
+                            />
+                          </Grid>
+                        </Grid>
+                      </Box>
                     </Grid>
 
-                    <Grid item lg={12} md={12} xs={12}>
+                    {/* <Grid item lg={12} md={12} xs={12}>
 
                       <Box display="flex" flexDirection="column" gap={2}>
                         <Grid container spacing={3}>
@@ -1224,7 +1362,153 @@ console.log('tableData',tableData)
                         </Grid>
                       </Box>
 
-                    </Grid>
+                    </Grid> */}
+                     <Grid item lg={12} md={12} xs={12}>
+
+<Box display="flex" flexDirection="column" gap={2}>
+  <Grid container spacing={3}>
+    <Grid item xs={12} md={4}>
+      <TextField
+        fullWidth
+        label="State"
+        name="state"
+        value={formData.state}
+        onChange={handleInputChangePin}
+        variant="filled"
+        disabled={isFormDisabled}
+        className="custom-textfield"
+        InputLabelProps={{ shrink: true }}
+      />
+    </Grid>
+    <Grid item xs={12} md={4}>
+      <TextField
+        fullWidth
+        label="City"
+        name="city"
+        value={formData.city}
+        onChange={handleInputChange}
+        variant="filled"
+        disabled={isFormDisabled}
+        className="custom-textfield"
+        InputLabelProps={{ shrink: true }}
+
+      />
+    </Grid>
+    <Grid item xs={12} md={4}>
+      <TextField
+        fullWidth
+        label="Remark1"
+        name="remark1"
+        value={formData.remark1}
+        onChange={handleInputChange}
+        variant="filled"
+        disabled={isFormDisabled}
+        className="custom-textfield"
+      />
+    </Grid>
+
+  </Grid>
+</Box>
+
+</Grid>
+<Grid item lg={12} md={12} xs={12}>
+
+<Box display="flex" flexDirection="column" gap={2}>
+  <Grid container spacing={3}>
+    <Grid item xs={12} md={4}>
+      <TextField
+        fullWidth
+        label="Remark2"
+        name="remark2"
+        value={formData.remark2}
+        onChange={handleInputChange}
+        variant="filled"
+        disabled={isFormDisabled}
+        className="custom-textfield"
+        rows={2}
+        sx={{
+          '& .MuiInputBase-root': {
+            height: '115px',
+          },
+          '& .MuiInputBase-input': {
+            resize: 'vertical',
+          },
+          '& .MuiFilledInput-root': {
+            '&:hover': {
+              backgroundColor: 'transparent',
+            },
+            '&.Mui-focused': {
+              backgroundColor: 'transparent',
+            },
+          },
+        }}
+      />
+    </Grid>
+    <Grid item xs={12} md={4} lg={4}>
+      <TextField
+        fullWidth
+        label="Reg Address"
+        name="regAddress"
+        value={formData.regAddress || ''}
+        onChange={handleInputChange}
+        multiline
+        rows={2}
+        variant="filled"
+        disabled={isFormDisabled}
+        className="custom-textfield"
+        sx={{
+          '& .MuiInputBase-root': {
+            height: '115px',
+          },
+          '& .MuiInputBase-input': {
+            resize: 'vertical',
+          },
+          '& .MuiFilledInput-root': {
+            '&:hover': {
+              backgroundColor: 'transparent',
+            },
+            '&.Mui-focused': {
+              backgroundColor: 'transparent',
+            },
+          },
+        }}
+      />
+    </Grid>
+    <Grid item xs={12} md={4} lg={4}>
+      <TextField
+        fullWidth
+        label="Work Address"
+        name="workAddress"
+        value={formData.workAddress || ''}
+        onChange={handleInputChange}
+        multiline
+        rows={2}
+        variant="filled"
+        disabled={isFormDisabled}
+        className="custom-textfield"
+        sx={{
+          '& .MuiInputBase-root': {
+            height: '115px',
+          },
+          '& .MuiInputBase-input': {
+            resize: 'vertical',
+          },
+          '& .MuiFilledInput-root': {
+            '&:hover': {
+              backgroundColor: 'transparent',
+            },
+            '&.Mui-focused': {
+              backgroundColor: 'transparent',
+            },
+          },
+        }}
+      />
+    </Grid>
+
+  </Grid>
+</Box>
+
+</Grid>
                   </Grid>
 
                 </Grid>
