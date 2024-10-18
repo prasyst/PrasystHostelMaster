@@ -88,6 +88,7 @@ const Company = () => {
   const [cities, setCities] = useState([]);
   const [areaOptions, setAreaOptions] = useState([]);
   const [jurisdiction,setJurisdication]=useState()
+  const [address,setAddress]=useState('')
 
   const handleAreaChange = async (e) => {
     const selectedArea = e.target.value;
@@ -105,7 +106,31 @@ const Company = () => {
           ...prevState,
           state: data.stateName || '',
           city: data.cityName || '',
-          country: data.countryName || 'India',
+          country: data.countryName ,
+        }));
+      }
+    } catch (error) {
+      console.error('Error fetching area data:', error);
+    }
+  };
+  const handleAreaChangeBranch = async (e) => {
+    console.log('test',e.target.value)
+    const selectedArea = e.target.value;
+    setCurrentBranch(prevState => ({ ...prevState, area: selectedArea }));
+
+    try {
+      const response = await axios.post('http://43.230.196.21/api/pincodeMst/getdrppincodeAreawise_datafill', {
+        PinCode: currentBranch.pinCode,
+        AreaName: selectedArea
+      });
+      const data = response.data.data[0];
+      console.log('Area data', data);
+      if (data) {
+        setCurrentBranch(prevState => ({
+          ...prevState,
+          state: data.stateName || '',
+          city: data.cityName || '',
+          country: data.countryName,
         }));
       }
     } catch (error) {
@@ -138,6 +163,7 @@ const Company = () => {
     gstNo: '',
     CityId: '',
     CoRegAdd: '',
+    jurisdiction:'',
     CoPan: '',
     CoTan: '',
     CoCin: '',
@@ -156,6 +182,7 @@ const Company = () => {
     remark1: '',
     remark2: '',
     workAddress: '',
+    area:'',
     state:'',
     city:''
   });
@@ -179,6 +206,11 @@ const Company = () => {
     remark2: '',
     bankDetails1: '',
     bankDetails2: '',
+    cityId:'',
+    city:'',
+    state:'',
+    country:'',
+    area:''
   });
 
   const navigate = useNavigate()
@@ -205,7 +237,7 @@ const Company = () => {
           companyName: company.CoName,
           shortName: company.CoAbrv,
           gstNo: company.GSTIN,
-          jurisdiction: company.CityId,
+          jurisdiction: company.CityId.toString(),
           regAddress: company.CoRegAdd,
           panN: company.CoPan,
           tanNo: company.CoTan,
@@ -221,11 +253,33 @@ const Company = () => {
           msmeNo: company.MsmeNo,
           msmeCat: company.MsmeCat,
           msmeType: company.MsmeType,
-          pinCode: company.PinID,
+          PinID: company.PinID.toString(),
           remark1: company.Remark1,
           remark2: company.Remark2,
           workAddress: company.WorkAddr,
         })
+        if (company.PinID) {
+          await fetchPincodeData(company.PinID);
+        }
+        // if (company.PinID) {
+        //   try {
+        //     const pinResponse = await axios.post('http://43.230.196.21/api/pincodeMst/getdrppincodewisearea', {
+        //       PinCode: parseInt(company.PinID),
+        //     });
+        //     const pinData = pinResponse.data.data;
+        //     if (pinData && pinData.length > 0) {
+        //       setAreaOptions(pinData.map(item => item.name));
+              
+        //       if (company.Area) {
+        //         setFormData(prevState => ({ ...prevState, area: company.Area }));
+        //       } else {
+        //         setFormData(prevState => ({ ...prevState, area: pinData[0].name }));
+        //       }
+        //     }
+        //   } catch (error) {
+        //     console.error('Error fetching pin code data:', error);
+        //   }
+        // }
        
         setBranches(branches.map((branch) => ({
           branchCode: branch.CobrMstId,
@@ -258,8 +312,8 @@ const Company = () => {
           branchName: branch.CobrName,
           gstNo: branch.GSTIN,
           pinCode: branch.PinID,
-          branchAddress: branch.CobrAdd,
-          state: 'N/A' 
+          city: address.cityName,
+          state: address.stateName ,
         })));
         const mainBranch = branches.find(branch => branch.MainBranch === "0") || branches[0];
       setCurrentBranch({
@@ -291,6 +345,49 @@ const Company = () => {
     } catch (error) {
       console.error('Error fetching city data:', error);
       toast.error('Error fetching city data. Please try again.');
+    }
+  };
+  const fetchPincodeData = async (pincode) => {
+    try {
+      const pinResponse = await axios.post('http://43.230.196.21/api/pincodeMst/getdrppincodewisearea', {
+        PinCode: parseInt(pincode),
+      });
+      const pinData = pinResponse.data.data;
+      if (pinData && pinData.length > 0) {
+        setAreaOptions(pinData.map(item => item.name));
+        
+        if (formData.area) {
+          setFormData(prevState => ({ ...prevState, area: formData.area }));
+        } else {
+          setFormData(prevState => ({ ...prevState, area: pinData[0].name }));
+        }
+
+        await fetchAreaDetails(pincode, pinData[0].name);
+      }
+    } catch (error) {
+      console.error('Error fetching pin code data:', error);
+    }
+  };
+  const fetchAreaDetails = async (pincode, area) => {
+    try {
+      const response = await axios.post('http://43.230.196.21/api/pincodeMst/getdrppincodeAreawise_datafill', {
+        PinCode: pincode,
+        AreaName: area
+      });
+      const data = response.data.data[0];
+      console.log('dddddd',data)
+      setAddress(data)
+      if (data) {
+        setFormData(prevState => ({
+          ...prevState,
+          state: data.stateName || '',
+          city: data.cityName || '',
+          country: data.countryName || '',
+        }));
+        
+      }
+    } catch (error) {
+      console.error('Error fetching area data:', error);
     }
   };
   const handleBranchEdit = () => {
@@ -329,73 +426,146 @@ const Company = () => {
       setIsFormDisabled(false);
     }
   }, [location]);
-
   const handleNext = () => {
-    if (activeStep === 0) {  
-      // Validate required fields
-      if (!formData.companyName || !formData.jurisdiction ||  !formData.PinID) {
+    if (activeStep === 0) {
+      if (!formData.companyName || !formData.jurisdiction || !formData.PinID) {
         toast.error("Company Name, Pincode, and Jurisdiction are required fields.");
         return;
       }
-
-      const companyBranch = {
-        branchCode: formData.companyCode || '',
-        companyName: formData.companyName,
-        branchName: formData.companyName, 
-        shortName: formData.shortName,
-        jurisdiction: formData.jurisdiction,
-        gstNo: formData.gstNo,
-        ieCode: formData.ieCode,
-        emailID: formData.emailID,
-        telNo: formData.telNo,
-        website: formData.website,
-        msmeNo: formData.msmeNo,
-        msmeCat: formData.msmeCat,
-        msmeType: formData.msmeType,
-        pinCode: formData.PinID,
-        remark1: formData.remark1,
-        remark2: formData.remark2,
-        branchAddress: formData.regAddress,
-        bankDetails1: '', 
-        bankDetails2: '',
-        state: formData.state,
-        city:formData.city
-        // mainBranch: 1,
-      };
   
-      // if (isAddingNewData) {
-        if (!branches.some(branch => branch.branchCode === companyBranch.branchCode)) {
-          setBranches(prevBranches => [...prevBranches, companyBranch]);
-        }
+      if (mode === 'add') {
+        const companyBranch = {
+          branchCode: formData.companyCode || '',
+          companyName: formData.companyName,
+          branchName: formData.companyName,
+          shortName: formData.shortName,
+          jurisdiction: formData.jurisdiction,
+          gstNo: formData.gstNo,
+          ieCode: formData.ieCode,
+          emailID: formData.emailID,
+          telNo: formData.telNo,
+          website: formData.website,
+          msmeNo: formData.msmeNo,
+          msmeCat: formData.msmeCat,
+          msmeType: formData.msmeType,
+          pinCode: formData.PinID,
+          remark1: formData.remark1,
+          remark2: formData.remark2,
+          branchAddress: formData.regAddress,
+          bankDetails1: '',
+          bankDetails2: '',
+          state: formData.state,
+          city: formData.city
+        };
   
-        setTableData(prevData => {
-          const existingIndex = prevData.findIndex(item => item.branchCode === companyBranch.branchCode);
-          if (existingIndex !== -1) {
-            const newData = [...prevData];
-            newData[existingIndex] = companyBranch;
-            return newData;
-          } else {
-            return [...prevData, companyBranch];
-          }
-        });
-  
+        setBranches([companyBranch]);
+        setTableData([companyBranch]);
         setSelectedBranch(companyBranch);
         setCurrentBranch(companyBranch);
         setIsMainBranchSelected(true);
         setIsAddButtonEnabled(true);
         setIsConfirmCancelEnabled(false);
-      // } else {
-
+      } else {
+        // For retrieved data, ensure we're using the correct values
+        const retrievedBranch = {
+          ...currentBranch,
+          state: address.stateName,
+          city: address.cityName,
+          pinCode: formData.PinID
+        };
+        setCurrentBranch(retrievedBranch);
         
-      // }
+        // Update the branches and table data with the retrieved information
+        const updatedBranches = branches.map(branch => 
+          branch.branchCode === retrievedBranch.branchCode ? retrievedBranch : branch
+        );
+        setBranches(updatedBranches);
+        
+        const updatedTableData = tableData.map(row => 
+          row.branchCode === retrievedBranch.branchCode ? {
+            ...row,
+            state: address.stateName,
+            city: address.cityName,
+            pinCode: formData.PinID
+          } : row
+        );
+        setTableData(updatedTableData);
+      }
     }
   
     if (activeStep === steps.length - 1) {
-      handleSubmit(); // Submit the form when it's the last step
+      handleSubmit(); 
     } else {
       setActiveStep((prevActiveStep) => prevActiveStep + 1);
     }
   };
+
+  // const handleNext = () => {
+  //   if (activeStep === 0) {  
+  //     // Validate required fields
+  //     if (!formData.companyName || !formData.jurisdiction ||  !formData.PinID) {
+  //       toast.error("Company Name, Pincode, and Jurisdiction are required fields.");
+  //       return;
+  //     }
+
+  //     const companyBranch = {
+  //       branchCode: formData.companyCode || '',
+  //       companyName: formData.companyName,
+  //       branchName: formData.companyName, 
+  //       shortName: formData.shortName,
+  //       jurisdiction: formData.jurisdiction,
+  //       gstNo: formData.gstNo,
+  //       ieCode: formData.ieCode,
+  //       emailID: formData.emailID,
+  //       telNo: formData.telNo,
+  //       website: formData.website,
+  //       msmeNo: formData.msmeNo,
+  //       msmeCat: formData.msmeCat,
+  //       msmeType: formData.msmeType,
+  //       pinCode: formData.PinID,
+  //       remark1: formData.remark1,
+  //       remark2: formData.remark2,
+  //       branchAddress: formData.regAddress,
+  //       bankDetails1: '', 
+  //       bankDetails2: '',
+  //       state: formData.state,
+  //       city:formData.city
+  //       // mainBranch: 1,
+  //     };
+  
+  //     // if (isAddingNewData) {
+  //       if (!branches.some(branch => branch.branchCode === companyBranch.branchCode)) {
+  //         setBranches(prevBranches => [...prevBranches, companyBranch]);
+  //       }
+  
+  //       setTableData(prevData => {
+  //         const existingIndex = prevData.findIndex(item => item.branchCode === companyBranch.branchCode);
+  //         if (existingIndex !== -1) {
+  //           const newData = [...prevData];
+  //           newData[existingIndex] = companyBranch;
+  //           return newData;
+  //         } else {
+  //           return [...prevData, companyBranch];
+  //         }
+  //       });
+  
+  //       setSelectedBranch(companyBranch);
+  //       setCurrentBranch(companyBranch);
+  //       setIsMainBranchSelected(true);
+  //       setIsAddButtonEnabled(true);
+  //       setIsConfirmCancelEnabled(false);
+  //     // } else {
+
+        
+  //     // }
+  //   }
+  
+  //   if (activeStep === steps.length - 1) {
+  //     handleSubmit(); // Submit the form when it's the last step
+  //   } else {
+  //     setActiveStep((prevActiveStep) => prevActiveStep + 1);
+  //   }
+  // };
 
   const handleBack = () => {
     setIsFormDisabled(false)
@@ -423,7 +593,15 @@ const Company = () => {
       remark2: '',
       bankDetails1: '',
       bankDetails2: '',
+      cityId:'',
+      area:'',
+      city:'',
+      state:''
     });
+      setFormData(prevData => ({
+    ...prevData,
+    jurisdiction: ''
+  }));
     setSelectedBranch(null);
     setIsMainBranchSelected(false);
     setIsAddingBranch(true);
@@ -442,7 +620,7 @@ const Company = () => {
       CoName: formData.companyName,
       CoAbrv: formData.shortName || '',
       GSTIN: formData.gstNo || '',
-      CityId: parseInt(formData.jurisdiction) || 1,
+      CityId: parseInt(formData.jurisdiction),
       CoRegAdd: formData.regAddress || "",
       CoPan: formData.panN || "",
       CoTan: formData.tanNo || "",
@@ -458,7 +636,7 @@ const Company = () => {
       MsmeNo: formData.msmeNo || "",
       MsmeCat: formData.msmeCat || "",
       MsmeType: formData.msmeType || "",
-      PinID: parseInt(formData.pinCode) || 1, //formData.pinCode || "",
+      PinID: parseInt(formData.PinID) , //formData.pinCode || "",
       Remark1: formData.remark1 || "",
       Remark2: formData.remark2 || "",
       WorkAddr: formData.workAddress || "",
@@ -565,6 +743,9 @@ const Company = () => {
       remark1: '',
       remark2: '',
       workAddress: '',
+      state:'',
+      city:'',
+      country:''
     });
     setBranches([{
       branchCode: '',
@@ -616,13 +797,11 @@ const Company = () => {
   const handleBranchDelete = async () => {
     if (selectedBranchIndex !== null && !isFirstRowSelected) {
       const selectedBranch = branches[selectedBranchIndex];
-  
       if (selectedBranch.branchCode) {
         const payload = {
           CobrMstId: selectedBranch.branchCode,
           Flag: "D",  
         };
-  
         try {
           const response = await axios.post(
             'http://43.230.196.21/api/CoMst_Cobr/RetriveCobrMst',
@@ -634,11 +813,8 @@ const Company = () => {
             }
           );
   
-          // Check if the deletion was successful by checking the responseStatusCode
           if (response.data.responseStatusCode === 1) {
             toast.success(response.data.message || 'Branch deleted successfully');
-  
-            // Remove the branch from the local state after successful API deletion
             const newTableData = tableData.filter((_, index) => index !== selectedBranchIndex);
             const newBranches = branches.filter((_, index) => index !== selectedBranchIndex);
             setTableData(newTableData);
@@ -676,7 +852,6 @@ const Company = () => {
           toast.error('Error deleting branch');
         }
       } else {
-        // For locally added branches (unsaved), remove them from the local state
         const newTableData = tableData.filter((_, index) => index !== selectedBranchIndex);
         const newBranches = branches.filter((_, index) => index !== selectedBranchIndex);
         setTableData(newTableData);
@@ -739,8 +914,8 @@ const Company = () => {
     { id: 'branchName', label: 'Branch Name', minWidth: 150 },
     { id: 'gstNo', label: 'GSTIN', minWidth: 100 },
     { id: 'pinCode', label: 'Pincode', minWidth: 100 },
-    { id: 'branchAddress', label: 'City', minWidth: 100 },
-    { id: 'state', label: 'State', minWidth: 100 }
+    { id: 'city', label: 'City', minWidth: 180 },
+    { id: 'state', label: 'State', minWidth: 150 }
   ];
     const handleConfirmBranch = () => {
     if (mode === 'add') {
@@ -828,7 +1003,7 @@ const Company = () => {
     setCurrentBranch(clickedBranch);
     setIsMainBranchSelected(clickedBranch.branchCode === formData.companyCode);
     setIsBranchEditDeleteEnabled(true);
-    setIsAddButtonEnabled(false)
+    // setIsAddButtonEnabled(false)
     setIsFirstRowSelected(index === 0);
 
   };
@@ -838,7 +1013,7 @@ const Company = () => {
   };
   const handleInputChangePin = async (e) => {
     const { name, value } = e.target;
-
+console.log('e',e.target.value)
     setFormData(prevState => ({ ...prevState, [name]: value }));
 
     if (name === 'PinID' && value.length === 6) {
@@ -852,7 +1027,26 @@ const Company = () => {
           // Set area options
           setAreaOptions(data.map(item => item.name));
 
-          
+        }
+      } catch (error) {
+        console.error('Error fetching pin code data:', error);
+      }
+    }
+  };
+  const handleInputChangeBranchPin = async (e) => {
+    const { name, value } = e.target;
+console.log('e',e.target.value)
+    setCurrentBranch(prevState => ({ ...prevState, [name]: value }));
+
+    if (name === 'pinCode' && value.length === 6) {
+      try {
+        const response = await axios.post('http://43.230.196.21/api/pincodeMst/getdrppincodewisearea', {
+          PinCode: parseInt(value),
+        });
+        const data = response.data.data;
+        if (data && data.length > 0) {
+          setAreaOptions(data.map(item => item.name));
+
         }
       } catch (error) {
         console.error('Error fetching pin code data:', error);
@@ -1561,7 +1755,7 @@ const Company = () => {
                             />
                           </Grid>
                           <Grid item xs={12} md={6}>
-                            <TextField
+                            {/*<TextField
                               fullWidth
                               label="Jurisdiction"
                               name="jurisdiction"
@@ -1570,7 +1764,25 @@ const Company = () => {
                               variant="filled"
                               disabled={isFormDisabled}
                               className="custom-textfield"
-                            />
+                            />*/}
+                            <FormControl className='custom-textfield' fullWidth variant="filled" disabled={isFormDisabled}>
+                              <InputLabel>
+                                Jurisdiction <span style={{ color: 'red' }}>*</span>
+                              </InputLabel>
+                              <Select
+                                value={formData.jurisdiction}
+                                onChange={handleInputChange}
+                                name="jurisdiction"
+                                className="custom-textfield"
+                              helperText={!formData.jurisdiction ? "" : ""}
+
+                              >
+                                {cities?.map((option) => (
+                                  <MenuItem key={option.id} value={option.id}>{option.name}</MenuItem>
+                                ))}
+                              </Select>
+                              
+                            </FormControl>
                           </Grid>
                         </Grid>
 
@@ -1738,7 +1950,7 @@ const Company = () => {
                         </Grid>
                       </Box>
                     </Grid>
-                    <Grid item lg={12} md={12} xs={12}>
+                    {/* <Grid item lg={12} md={12} xs={12}>
                       <Box display="flex" flexDirection="column" gap={2}>
                         <Grid container spacing={3}>
                           <Grid item xs={12} md={4}>
@@ -1782,11 +1994,145 @@ const Company = () => {
                         </Grid>
                         
                       </Box>
+                    </Grid> */}
+
+<Grid item lg={12} md={12} xs={12}>
+                      <Box display="flex" flexDirection="column" gap={2}>
+                        <Grid container spacing={2}>
+                          {/* Pin Code TextField */}
+                          <Grid item xs={12} md={4}>
+                            <TextField
+                              fullWidth
+                              label={
+                                <span>
+                                  Pincode <span style={{ color: 'red' }}>*</span>
+                                </span>
+                              }
+                              name="pinCode"
+                              value={currentBranch.pinCode || ''}
+                              onChange={handleInputChangeBranchPin}
+                              variant="filled"
+                              disabled={isFormDisabled}
+                              className="custom-textfield"
+                              helperText={!currentBranch.pinCode ? "" : ""}
+
+                            />
+                          </Grid>
+
+                          {/* Area/Place Select Dropdown */}
+                          <Grid item xs={12} md={4}>
+                            <FormControl className='custom-textfield' fullWidth variant="filled" disabled={isFormDisabled}>
+                              <InputLabel>Area/Place</InputLabel>
+                              <Select
+                                value={currentBranch.area || ''}
+                                onChange={handleAreaChangeBranch}
+                                name="area"
+                                className="custom-textfield"
+                              >
+
+                                {areaOptions.map((option) => (
+                                  <MenuItem key={option} value={option}>{option}</MenuItem>
+                                ))}
+                              </Select>
+                            </FormControl>
+                          </Grid>
+
+                          {/* Country TextField */}
+                          <Grid item xs={12} md={4}>
+                            <TextField
+                              fullWidth
+                              label="Country"
+                              name="country"
+                              value={currentBranch.country || ''}
+                              onChange={handleBranchInputChangeNew}
+                              variant="filled"
+                              disabled={isFormDisabled}
+                              className="custom-textfield"
+                              InputLabelProps={{ shrink: true }}
+                            />
+                          </Grid>
+                        </Grid>
+                      </Box>
                     </Grid>
-                    
+                    <Grid item lg={12} md={12} xs={12}>
+
+<Box display="flex" flexDirection="column" gap={2}>
+  <Grid container spacing={3}>
+    <Grid item xs={12} md={4}>
+      <TextField
+        fullWidth
+        label="State"
+        name="state"
+        value={currentBranch.state}
+        onChange={handleBranchInputChangeNew}
+        variant="filled"
+        disabled={isFormDisabled}
+        className="custom-textfield"
+        InputLabelProps={{ shrink: true }}
+      />
+    </Grid>
+    <Grid item xs={12} md={4}>
+      <TextField
+        fullWidth
+        label="City"
+        name="city"
+        value={currentBranch.city}
+        onChange={handleBranchInputChangeNew}
+        variant="filled"
+        disabled={isFormDisabled}
+        className="custom-textfield"
+        InputLabelProps={{ shrink: true }}
+
+      />
+    </Grid>
+    <Grid item xs={12} md={4}>
+      <TextField
+        fullWidth
+        label="Remark1"
+        name="remark1"
+        value={currentBranch.remark1}
+        onChange={handleBranchInputChangeNew}
+        variant="filled"
+        disabled={isFormDisabled}
+        className="custom-textfield"
+      />
+    </Grid>
+
+  </Grid>
+</Box>
+
+</Grid>
                     <Grid item lg={12} md={12} xs={12}>
                       <Box display="flex" flexDirection="column" gap={2}>
                         <Grid container spacing={3}>
+                        <Grid item xs={12} md={4}>
+                            <TextField
+                              fullWidth
+                              label="Remark2"
+                              name="remark2"
+                              value={currentBranch.remark2}
+                              onChange={handleBranchInputChangeNew}
+                              variant="filled"
+                              disabled={isFormDisabled}
+                              className="custom-textfield"
+                              sx={{
+                                '& .MuiInputBase-root': {
+                                  height: '115px',
+                                },
+                                '& .MuiInputBase-input': {
+                                  resize: 'vertical',
+                                },
+                                '& .MuiFilledInput-root': {
+                                  '&:hover': {
+                                    backgroundColor: 'transparent',
+                                  },
+                                  '&.Mui-focused': {
+                                    backgroundColor: 'transparent',
+                                  },
+                                },
+                              }}
+                            />
+                          </Grid>
                           <Grid item xs={12} md={6} lg={4}>
                             <TextField
                               fullWidth
@@ -1848,7 +2194,7 @@ const Company = () => {
                             />
                           </Grid>
 
-                          <Grid item xs={12} md={6} lg={4}>
+                          {/* <Grid item xs={12} md={6} lg={4}>
                             <TextField
                               fullWidth
                               label="Bank Details2"
@@ -1877,7 +2223,7 @@ const Company = () => {
                                 },
                               }}
                             />
-                          </Grid>
+                          </Grid> */}
 
                         </Grid>
                       </Box>
