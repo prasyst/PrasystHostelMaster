@@ -78,6 +78,9 @@ import ComplaintType from './Components/Masters/Ticketing/ComplaintType';
 import ComplaintTypeTable from './Components/Masters/Ticketing/ComplaintTypeTable';
 import PartyMaster from './Components/Masters/ARAP/PartyMaster';
 
+// import GroupMaster from './Components/Masters/Property/GroupMaster';
+// import GroupTable from './Components/Masters/Property/GroupMasterTable';
+
 const DashboardLayout = ({ children }) => (
   <SidebarDrawar>{children}</SidebarDrawar>
 );
@@ -158,7 +161,8 @@ function App() {
     <Route path="/masters/residenttable/*" element={<DashboardLayout><ResidentTable /></DashboardLayout>} />
     <Route path="/masters/companytable/*" element={<DashboardLayout><CompanyTable /></DashboardLayout>} />
 
-
+    {/* <Route path="/group-master" element={<DashboardLayout><GroupMaster /></DashboardLayout>} />
+    <Route path="/groupTable" element={<DashboardLayout><GroupTable /></DashboardLayout>} /> */}
   </Routes>
   );
 }

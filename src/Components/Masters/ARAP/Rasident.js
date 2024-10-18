@@ -506,7 +506,7 @@ const getPartyBill=async()=>{
   const handleConfirmDelete = async () => {
     try {
       await fetchResidentData(currentResidentId, "D");
-      toast.success('Data deleted successfully');
+      // toast.success('Data deleted successfully');
       await fetchResidentData(currentResidentId, "N");
       setMode('view');
       setIsFormDisabled(true);

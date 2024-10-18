@@ -167,6 +167,32 @@ const Property = () => {
                 </Box>
               </Item>
             </Grid>
+            <Grid item xs={2}>
+              <Item>
+                <img 
+                  src={img1} 
+                  alt='' 
+                  style={{ width: '100px', height: '100px', borderRadius: '50%' }} 
+                />
+                
+                <Box sx={{ textAlign: 'center', marginTop: 1 }}>
+                   <Link to='/amenitytable'>Amenities Master</Link>
+                </Box>
+              </Item>
+            </Grid>
+            {/* <Grid item xs={2}>
+              <Item>
+                <img 
+                  src={img1} 
+                  alt='' 
+                  style={{ width: '100px', height: '100px', borderRadius: '50%' }} 
+                />
+                
+                <Box sx={{ textAlign: 'center', marginTop: 1 }}>
+                   <Link to='/grouptable'>Group Master</Link>
+                </Box>
+              </Item>
+            </Grid> */}
           </Grid>
         </Grid>
       </Grid>

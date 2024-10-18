@@ -155,8 +155,7 @@ export default function ResidentTable() {
                 <TableRow
                   sx={{ 
                     '& > th': { 
-                      padding: '2px  10px 2px  10px',
-                      textAlign:'center'
+                      padding: '2px  10px 2px  10px'
                     }
                   }}
                 >

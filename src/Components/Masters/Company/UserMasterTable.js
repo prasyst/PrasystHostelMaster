@@ -14,7 +14,7 @@ import { useNavigate } from 'react-router-dom';
 const columns = [
   { id: 'userName', label: 'UserName', minWidth: 170 },
   { id: 'pwd', label: 'Password', minWidth: 100 },
-  { id: 'mobileNo', label: 'MobileNo', minWidth: 100 },
+  { id: 'mobileNo', label: 'Mobile', minWidth: 100 },
   { id: 'emailId', label: 'Email ID', minWidth: 100 },
   { id: 'remark', label: 'Remark', minWidth: 100 }
 ];
@@ -94,9 +94,9 @@ export default function UserMasterTable() {
     });
   }, [searchTerms, rows]);
 
-  const handleRowDoubleClick = (empId) => {
+  const handleRowDoubleClick = (utId) => {
   
-    navigate('/employee', { state: { empId ,mode: 'view'}} );
+    navigate('/userMaster', { state: { utId ,mode: 'view'}} );
   };
   const handleLocationclick=()=>{
     navigate('/masters/company')
@@ -119,7 +119,7 @@ export default function UserMasterTable() {
               Home
             </Link>
             <Typography color="text.primary" onClick={handleLocationclick} sx={{cursor:'pointer'}}>Company</Typography>
-            <Typography color="text.primary">Employee Master</Typography>
+            <Typography color="text.primary">User Master</Typography>
           </Breadcrumbs>
 
           <Button
@@ -177,8 +177,8 @@ export default function UserMasterTable() {
                   .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                   .map((row) => {
                     return (
-                      <TableRow hover role="checkbox" tabIndex={-1} key={row.empId}
-                      onDoubleClick={() => handleRowDoubleClick(row.empId)}
+                      <TableRow hover role="checkbox" tabIndex={-1} key={row.utId}
+                      onDoubleClick={() => handleRowDoubleClick(row.utId)}
                       style={{ cursor: 'pointer' }}
                       sx={{ 
                         '& > td': { 

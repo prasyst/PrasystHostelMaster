@@ -13,7 +13,7 @@ import { useNavigate } from 'react-router-dom';
 
 const columns = [
   { id: 'roomId', label: 'Room No', minWidth: 100 },
-  { id: 'roombedName', label: 'Roombed No', minWidth: 170 },
+  { id: 'roombedName', label: 'Bed No', minWidth: 170 },
   { id: 'remark', label: 'Remark', minWidth: 170 }
 ];
 

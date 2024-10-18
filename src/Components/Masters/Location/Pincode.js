@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react';
 import { useRef } from 'react';
 import Grid from '@mui/material/Grid';
 import { styled } from '@mui/material/styles';
@@ -48,14 +48,13 @@ const Pincode = () => {
     areaName: '',
     city: '',
     areaAbrv: '',
-    state: ''
+    stateName: ''
   });
 
   const [error, setError] = useState({
     pinCode: false,
     areaName: false,
-    city: false,
-    state: false
+    city: false
   });
 
   const navigate = useNavigate();
@@ -102,7 +101,7 @@ const Pincode = () => {
           areaName: pincodeData.areaName,
           city: pincodeData.cityID.toString(),
           areaAbrv: pincodeData.areaAbrv,
-          state: pincodeData.state
+          stateName: pincodeData.stateName
         });
         setIsFormDisabled(true);
         setCurrentPinId(pincodeData.pinId);
@@ -225,7 +224,7 @@ const Pincode = () => {
         areaName: formData.areaName,
         cityID: parseInt(formData.city),
         areaAbrv: formData.areaAbrv,
-        state: formData.state,
+        stateName: formData.stateName,
         status: "1"
       };
 
@@ -280,7 +279,7 @@ const Pincode = () => {
       areaName: '',
       city: '',
       areaAbrv: '',
-      state: ''
+      stateName: ''
     });
     setCurrentPinId(null);
 
@@ -305,7 +304,7 @@ const Pincode = () => {
       areaName: '',
       city: '',
       areaAbrv: '',
-      state: ''
+      stateName: ''
     });
     setCurrentPinId(null);
     setMode('view');
@@ -498,13 +497,13 @@ const Pincode = () => {
           </Grid>
           <Grid item xs={12} md={6} lg={6} className='form_field'>
             <TextField
-              id="state"
-              name="state"
+              id="stateName"
+              name="stateName"
               label="State"
               variant="filled"
               fullWidth
               className="custom-textfield"
-              value={formData.state}
+              value={formData.stateName}
               onChange={handleInputChange}
               disabled={isFormDisabled}
               inputRef={stateRef}

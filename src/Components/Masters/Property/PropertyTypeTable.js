@@ -12,8 +12,8 @@ import { Breadcrumbs, Link, Typography, Box, Button, TextField } from '@mui/mate
 import { useNavigate } from 'react-router-dom';
 
 const columns = [
-  { id: 'propType', label: 'PropertyType', minWidth: 100 },
-  { id: 'propType_Desc', label: 'Description', minWidth: 100 },
+  { id: 'propType', label: 'Type', minWidth: 100 },
+  { id: 'propType_Desc', label: 'Description', minWidth: 105 },
   { id: 'remark', label: 'Remark', minWidth: 100 }
 ];
 

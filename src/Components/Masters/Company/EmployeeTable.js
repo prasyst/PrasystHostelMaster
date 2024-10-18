@@ -12,14 +12,12 @@ import { Breadcrumbs, Link, Typography, Box, Button, TextField } from '@mui/mate
 import { useNavigate } from 'react-router-dom';
 
 const columns = [
-  { id: 'empTypeName', label: 'EmpType', minWidth: 170 },
+  { id: 'empTypeName', label: 'Type', minWidth: 170 },
   { id: 'empName', label: 'Employee', minWidth: 100 },
   { id: 'mobile', label: 'Mobile', minWidth: 100 },
   { id: 'email', label: 'Email', minWidth: 100 },
   { id: 'panNo', label: 'Pan No', minWidth: 100 },
-  { id: 'pinId', label: 'Pincode', minWidth: 100 },
-  { id: 'permanentAddr', label: 'Permanent Address', minWidth: 100 },
-  { id: 'currentAddr', label: 'Current Address', minWidth: 100 }
+  { id: 'pinId', label: 'Pincode', minWidth: 100 }
 ];
 
 export default function EmployeeTable() {
@@ -49,9 +47,7 @@ export default function EmployeeTable() {
           mobile: emp.mobile || '',
           email: emp.email || '',
           panNo: emp.panNo || '',
-          pinId: emp.pinId || '',
-          permanentAddr: emp.permanentAddr || '',
-          currentAddr: emp.currentAddr || ''
+          pinId: emp.pinId || ''
         }));
         setRows(formattedData);
         console.log('data', response);
