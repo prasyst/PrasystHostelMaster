@@ -12,8 +12,8 @@ import { Breadcrumbs, Link, Typography, Box, Button, TextField } from '@mui/mate
 import { useNavigate } from 'react-router-dom';
 
 const columns = [
-  { id: 'facName', label: 'FacName', minWidth: 100 },
-  { id: 'facDesc', label: 'FacDesc', minWidth: 100 },
+  { id: 'facName', label: 'Facilities', minWidth: 100 },
+  { id: 'facDesc', label: 'Description', minWidth: 100 },
   { id: 'remark', label: 'Remark', minWidth: 100 }
 ];
 
@@ -161,7 +161,7 @@ export default function FacilitiesMasterTable() {
                         onChange={(e) => handleSearchChange(column.id, e.target.value)}
                         sx={{ mt: 1 ,margin:'0px' ,'& .MuiOutlinedInput-input': {
                          padding: '2px 6px',
-                         width: '110px'  
+                         width: '125px'  
                          },}}
 
                       />

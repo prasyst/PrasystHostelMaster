@@ -12,14 +12,14 @@ import { Breadcrumbs, Link, Typography, Box, Button, TextField } from '@mui/mate
 import { useNavigate } from 'react-router-dom';
 
 const columns = [
-  {id:'coMstId',label:'Co.Id',minWidth:50},
-  { id: 'companyName', label: 'Company Name', minWidth: 170 },
+  {id:'coMstId',label:'Co.Id',minWidth:115},
+  { id: 'companyName', label: 'Company', minWidth: 170 },
   { id: 'gstin', label: 'GSTIN', minWidth: 170 },
-  {id:'cityName',label:'City Name',minWidth:150},
-  {id:'cobrMstId',label:'Cobr_Id',minWidth:50},
-  {id:'cobrName',label:'Branch Name',minWidth:150},
-  {id:'cobr_GSTIN',label:'Branch GST',minWidth:150},
-  {id:'cobr_CityName',label:'Branch City',minWidth:120}
+  {id:'cityName',label:'City',minWidth:150},
+  {id:'cobrMstId',label:'Cobr_Id',minWidth:135},
+  {id:'cobrName',label:'Branch',minWidth:126},
+  {id:'cobr_GSTIN',label:'Branch GST',minWidth:156},
+  {id:'cobr_CityName',label:'Branch City',minWidth:155}
 ];
 
 export default function CompanyTable() {
@@ -146,8 +146,7 @@ export default function CompanyTable() {
                 <TableRow
                   sx={{ 
                     '& > th': { 
-                      padding: '2px  10px 2px  10px',
-                      textAlign:'center'
+                      padding: '2px  10px 2px  10px'
                     }
                   }}
                 >
@@ -184,8 +183,7 @@ export default function CompanyTable() {
                       style={{ cursor: 'pointer' }}
                       sx={{ 
                         '& > td': { 
-                          padding: '2px  14px 2px  19px',
-                          // textAlign: 'center'
+                          padding: '2px  14px 2px  19px'
                         }
                       }}
                       >

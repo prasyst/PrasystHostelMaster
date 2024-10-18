@@ -41,47 +41,42 @@ const CustomTextField = styled(TextField)(({ theme }) => ({
 
 const UserMaster = () => {
   const [formData, setFormData] = useState({
-    empTypeName: '',
-    empName: '',
-    mobile: '',
-    email: '',
-    panNo: '',
-    pinCode: '',
-    permanentAddr: '',
-    currentAddr: '',
-    photo: ''
+    userTypeName: '',
+    userName: '',
+    pwd: '',
+    mobileNo: '',
+    emailId: '',
+    remark: '',
   });
 
   const [error, setError] = useState({
-    empTypeName: false,
-    empName: false
+    userTypeName: false,
+    userName: false
   });
 
   const navigate = useNavigate();
 
   const [isEditMode, setIsEditMode] = useState(false);
   const [isFormDisabled, setIsFormDisabled] = useState(true);
-  const [empId, setEmpId] = useState(null);
+  const [utId, setUtId] = useState(null);
   const location = useLocation();
-  const [currentEmployeeId, setCurrentEmployeeId] = useState(null);
+  const [currentUtId, setCurrentUtId] = useState(null);
   const [isViewMode, setIsViewMode] = useState(false);
   const [mode, setMode] = useState('view');
-  const [lastInsertedEmployeeId, setLastInsertedEmployeeId] = useState(null);
+  const [lastInsertedUtId, setLastInsertedUtId] = useState(null);
   const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
 
-  const empTypeNameRef = useRef(null);
-  const empNameRef = useRef(null);
-  const mobileRef = useRef(null);
-  const emailRef = useRef(null);
-  const panNoRef = useRef(null);
-  const pinCodeRef = useRef(null);
-  const permanentAddrRef = useRef(null);
-  const currentAddrRef = useRef(null);
+  const userTypeNameRef = useRef(null);
+  const userNameRef = useRef(null);
+  const pwdRef = useRef(null);
+  const mobileNoRef = useRef(null);
+  const emailIdRef = useRef(null);
+  const remarkRef = useRef(null);
 
   useEffect(() => {
-    if (location.state && location.state.empId) {
-      setCurrentEmployeeId(location.state.empId);
-      fetchEmpData(location.state.empId);
+    if (location.state && location.state.utId) {
+      setCurrentUtId(location.state.utId);
+      fetchUserData(location.state.utId);
       setMode('view');
     } else {
       setMode('add');
@@ -89,48 +84,45 @@ const UserMaster = () => {
     }
   }, [location]);
 
-  const fetchEmpData = async (id, flag) => {
+  const fetchUserData = async (id, flag) => {
     try {
       const response = await axios.post(`${process.env.REACT_APP_API_URL}MstEmp/RetriveMstEmp`, {
-        empId: parseInt(id),
+        utId: parseInt(id),
         Flag: flag
       });
 
       if (response.data.status === 0 && response.data.responseStatusCode === 1) {
-        const empData = response.data.data[0];
+        const userData = response.data.data[0];
         setFormData({
-          empTypeName: empData.empTypeName,
-          empName: empData.empName,
-          mobile: empData.mobile,
-          email: empData.email,
-          panNo: empData.panNo,
-          pinCode: empData.pinCode,
-          permanentAddr: empData.permanentAddr,
-          currentAddr: empData.currentAddr,
-          photo: empData.photo
+          userTypeName: userData.userTypeName,
+          userName: userData.userName,
+          pwd: userData.pwd,
+          mobileNo: userData.mobileNo,
+          emailId: userData.emailId,
+          remark: userData.remark,
         });
         setIsFormDisabled(true);
-        setCurrentEmployeeId(empData.empId);
+        setCurrentUtId(userData.utId);
       } else if (response.data.status === 1 && response.data.responseStatusCode === 2) {
         toast.info(response.data.message);
       } else {
-        toast.error('Failed to fetch employee data');
+        toast.error('Failed to fetch user data');
       }
     } catch (error) {
-      console.error('Error fetching employee data:', error);
-      toast.error('Error fetching employee data. Please try again.');
+      console.error('Error fetching user data:', error);
+      toast.error('Error fetching user data. Please try again.');
     }
   };
 
   const handlePrevious = async () => {
-    if (currentEmployeeId && currentEmployeeId > 1) {
-      await fetchEmpData(currentEmployeeId, "P");
+    if (currentUtId && currentUtId > 1) {
+      await fetchUserData(currentUtId, "P");
     }
   };
 
   const handleNext = async () => {
-    if (currentEmployeeId) {
-      await fetchEmpData(currentEmployeeId, "N");
+    if (currentUtId) {
+      await fetchUserData(currentUtId, "N");
     }
   };
 
@@ -141,23 +133,23 @@ const UserMaster = () => {
       [name]: value
     }));
 
-    if (name === 'employee') {
+    if (name === 'user') {
       setFormData(prevState => ({
         ...prevState,
         state: ''
       }));
     }
 
-    if (name === 'employeeType' && value !== '') {
+    if (name === 'user' && value !== '') {
       setTimeout(() => {
-        currentAddrRef.current.focus();
+        remarkRef.current.focus();
       }, 100000);
     }
   };
 
   const handleKeyPress = (event) => {
     if (event.key === 'Enter') {
-      currentAddrRef.current.focus();
+      remarkRef.current.focus();
     }
   };
 
@@ -165,20 +157,20 @@ const UserMaster = () => {
 
     let hasError = false;
 
-    if (!formData.empTypeName) {
-      toast.error('EmployeeType Name is required');
-      setError(prev => ({ ...prev, empTypeName: true }));
+    if (!formData.userTypeName) {
+      toast.error('UserType Name is required');
+      setError(prev => ({ ...prev, userTypeName: true }));
       hasError = true;
     } else {
-      setError(prev => ({ ...prev, empTypeName: false }));
+      setError(prev => ({ ...prev, userTypeName: false }));
     }
 
-    if (!formData.empName) {
-      toast.error('Employee Name is required');
-      setError(prev => ({ ...prev, empName: true }));
+    if (!formData.userName) {
+      toast.error('User Name is required');
+      setError(prev => ({ ...prev, userName: true }));
       hasError = true;
     } else {
-      setError(prev => ({ ...prev, empName: false }));
+      setError(prev => ({ ...prev, userName: false }));
     }
 
     if (hasError) {
@@ -188,32 +180,29 @@ const UserMaster = () => {
 
     try {
       const payload = {
-        empTypeName: formData.empTypeName,
-        empName: formData.empName,
-        mobile: formData.mobile,
-        email: formData.email,
-        panNo: formData.panNo,
-        pinCode: formData.pinCode,
-        permanentAddr: formData.permanentAddr,
-        currentAddr: formData.currentAddr,
-        photo: formData.photo,
+        userTypeName: formData.userTypeName,
+        userName: formData.userName,
+        pwd: formData.pwd,
+        mobileNo: formData.mobileNo,
+        emailId: formData.emailId,
+        remark: formData.remark,
         status: "1"
       };
 
       let response;
       if (mode === 'edit') {
-        payload.empId = currentEmployeeId;
-        response = await axios.patch(`${process.env.REACT_APP_API_URL}MstEmp/UpdateMstEmp`, payload);
+        payload.utId = currentUtId;
+        response = await axios.patch(`${process.env.REACT_APP_API_URL}UserMst/UpdateUserMst`, payload);
       } else {
-        response = await axios.post(`${process.env.REACT_APP_API_URL}MstEmp/InsertMstEmp`, payload);
+        response = await axios.post(`${process.env.REACT_APP_API_URL}UserMst/InsertUserMst`, payload);
       }
 
       if (response.data.status === 0 && response.data.responseStatusCode === 1) {
         toast.success(response.data.message);
         if (mode === 'add') {
-          setLastInsertedEmployeeId(response.data.data)
+          setLastInsertedUtId(response.data.data)
           console.log(response.data.data)
-          await fetchEmpData(response.data.data);
+          await fetchUserData(response.data.data);
           // setFormData({
           //   country: '',
           //   state: '',
@@ -224,7 +213,7 @@ const UserMaster = () => {
           // });
           setMode('view');
           setIsFormDisabled(true);
-          setCurrentEmployeeId(response.data.data);
+          setCurrentUtId(response.data.data);
         } else {
           setMode('view');
         }
@@ -233,8 +222,8 @@ const UserMaster = () => {
         toast.error(response.data.message || 'Operation failed');
       }
     } catch (error) {
-      console.error('Error saving/updating employee:', error);
-      toast.error('Error saving/updating employee. Please try again.');
+      console.error('Error saving/updating user:', error);
+      toast.error('Error saving/updating user. Please try again.');
     }
   };
 
@@ -248,26 +237,23 @@ const UserMaster = () => {
     setMode('add');
     setIsFormDisabled(false);
     setFormData({
-      empTypeName: '',
-      empName: '',
-      mobile: '',
-      email: '',
-      panNo: '',
-      pinCode: '',
-      permanentAddr: '',
-      currentAddr: '',
-      photo: ''
+      userTypeName: '',
+      userName: '',
+      pwd: '',
+      mobileNo: '',
+      emailId: '',
+      remark: ''
     });
-    setCurrentEmployeeId(null);
+    setCurrentUtId(null);
 
     setTimeout(() => {
-      empNameRef.current.focus();
+      // remarkNameRef.current.focus();
     }, 0);
   };
 
   const handleCancel = async () => {
     try {
-      await fetchEmpData(1, "L");
+      await fetchUserData(1, "L");
       setMode('view');
       setIsFormDisabled(true);
     } catch (error) {
@@ -277,22 +263,19 @@ const UserMaster = () => {
 
   const resetForm = () => {
     setFormData({
-      empTypeName: '',
-      empName: '',
-      mobile: '',
-      email: '',
-      panNo: '',
-      pinCode: '',
-      permanentAddr: '',
-      currentAddr: '',
-      photo: ''
+      userTypeName: '',
+      userName: '',
+      pwd: '',
+      mobileNo: '',
+      emailId: '',
+      remark: ''
     });
-    setCurrentEmployeeId(null);
+    setCurrentUtId(null);
     setMode('view');
   };
 
   const handleExit = () => {
-    navigate('/employeetable')
+    navigate('/userMasterTable')
   }
 
   const handleDeleteClick = () => {
@@ -305,14 +288,14 @@ const UserMaster = () => {
   const handleConfirmDelete = async () => {
     setOpenConfirmDialog(false);
     try {
-      await fetchEmpData(currentEmployeeId, "D");
-      await fetchEmpData(currentEmployeeId, "N");
+      await fetchUserData(currentUtId, "D");
+      await fetchUserData(currentUtId, "N");
       setMode('view');
       setIsFormDisabled(true);
       // resetForm();
       // setMode('add');
     } catch (error) {
-      console.error('Error deleting employee:', error);
+      console.error('Error deleting user:', error);
       toast.error('Error occurred while deleting. Please try again.');
     }
   };
@@ -332,7 +315,7 @@ const UserMaster = () => {
                 size="small"
                 className='three-d-button-previous'
                 onClick={handlePrevious}
-                disabled={mode !== 'view' || !currentEmployeeId || currentEmployeeId === 1}
+                disabled={mode !== 'view' || !currentUtId || currentUtId === 1}
               >
                 <KeyboardArrowLeftIcon />
               </Button>
@@ -343,19 +326,19 @@ const UserMaster = () => {
                 sx={{ margin: '0px 10px' }}
                 className='three-d-button-next'
                 onClick={handleNext}
-                disabled={mode !== 'view' || !currentEmployeeId}
+                disabled={mode !== 'view' || !currentUtId}
               >
                 <NavigateNextIcon />
               </Button>
             </Grid>
-            <h3>Employee Master</h3>
+            <h3>User Master</h3>
             <Grid sx={{ display: 'flex', justifyContent: 'end' }}>
               <Button
                 variant="contained"
                 size="small"
                 sx={{ backgroundColor: '#7c3aed' }}
                 onClick={handleAdd}
-                disabled={mode !== 'view' || !currentEmployeeId}
+                disabled={mode !== 'view' || !currentUtId}
               >
                 <AddIcon />
               </Button>
@@ -364,7 +347,7 @@ const UserMaster = () => {
                 size="small"
                 sx={{ backgroundColor: '#7c3aed', margin: '0px 10px' }}
                 onClick={handleEdit}
-                disabled={mode !== 'view' || !currentEmployeeId}
+                disabled={mode !== 'view' || !currentUtId}
               >
                 <EditIcon />
               </Button>
@@ -373,7 +356,7 @@ const UserMaster = () => {
                 size="small"
                 sx={{ backgroundColor: '#7c3aed' }}
                 onClick={handleDeleteClick}
-                disabled={mode !== 'view' || !currentEmployeeId || currentEmployeeId === 1}
+                disabled={mode !== 'view' || !currentUtId || currentUtId === 1}
               >
                 <DeleteIcon />
               </Button>
@@ -383,7 +366,7 @@ const UserMaster = () => {
                 size="small"
                 sx={{ backgroundColor: '#7c3aed', margin: '0px 10px' }}
                 onClick={handleExit}
-                disabled={mode !== 'view' || !currentEmployeeId}
+                disabled={mode !== 'view' || !currentUtId}
               >
                 <CancelPresentationIcon />
               </Button>
@@ -394,12 +377,12 @@ const UserMaster = () => {
             <Grid container spacing={2}>
               <Grid item xs={12} md={6} className='form_field'>
                 <FormControl variant="filled" fullWidth className="custom-select">
-                  <InputLabel id="empTypeName-select-label">EmpTypeName</InputLabel>
+                  <InputLabel id="userTypeName-select-label">UserTypeName</InputLabel>
                   <Select
-                    labelId="empTypeName-select-label"
-                    id="empTypeName-select"
-                    name="empTypeName"
-                    value={formData.empTypeName}
+                    labelId="userTypeName-select-label"
+                    id="userTypeName-select"
+                    name="userTypeName"
+                    value={formData.userTypeName}
                     onChange={handleInputChange}
                     className="custom-textfield"
                   >
@@ -413,148 +396,79 @@ const UserMaster = () => {
               </Grid>
               <Grid item xs={12} md={6} lg={6}>
                 <TextField
-                  id="empName"
-                  name="empName"
-                  label="EmpName"
+                  id="userName"
+                  name="userName"
+                  label="UserName"
                   variant="filled"
                   fullWidth
                   className="custom-textfield"
-                  value={formData.empName}
+                  value={formData.userName}
                   onChange={handleInputChange}
                   disabled={isFormDisabled}
-                  inputRef={empNameRef}
+                  inputRef={userNameRef}
                   onKeyDown={handleKeyPress}
                 />
               </Grid>
               <Grid item xs={12} md={6} lg={6}>
                 <TextField
-                  id="mobile"
-                  name="mobile"
+                  id="pwd"
+                  name="pwd"
+                  label="Password"
+                  variant="filled"
+                  fullWidth
+                  className="custom-textfield"
+                  value={formData.pwd}
+                  onChange={handleInputChange}
+                  disabled={isFormDisabled}
+                  inputRef={remarkRef}
+                  onKeyDown={handleKeyPress}
+                />
+              </Grid>
+              <Grid item xs={12} md={6} lg={6}>
+                <TextField
+                  id="mobileNo"
+                  name="mobileNo"
                   label="Mobile"
                   variant="filled"
                   fullWidth
                   className="custom-textfield"
-                  value={formData.mobile}
+                  value={formData.mobileNo}
                   onChange={handleInputChange}
                   disabled={isFormDisabled}
-                  inputRef={mobileRef}
+                  inputRef={remarkRef}
                   onKeyDown={handleKeyPress}
                 />
               </Grid>
               <Grid item xs={12} md={6} lg={6}>
                 <TextField
-                  id="email"
-                  name="email"
-                  label="Email"
+                  id="emailId"
+                  name="emailId"
+                  label="Email ID"
                   variant="filled"
                   fullWidth
                   className="custom-textfield"
-                  value={formData.email}
+                  value={formData.emailId}
                   onChange={handleInputChange}
                   disabled={isFormDisabled}
-                  inputRef={emailRef}
+                  inputRef={remarkRef}
                   onKeyDown={handleKeyPress}
                 />
               </Grid>
               <Grid item xs={12} md={6} lg={6}>
                 <TextField
-                  id="panNo"
-                  name="panNo"
-                  label="Pan No"
+                  id="remark"
+                  name="remark"
+                  label="Remark"
                   variant="filled"
                   fullWidth
                   className="custom-textfield"
-                  value={formData.panNo}
+                  value={formData.remark}
                   onChange={handleInputChange}
                   disabled={isFormDisabled}
-                  inputRef={panNoRef}
+                  // inputRef={remarkRef}
                   onKeyDown={handleKeyPress}
                 />
               </Grid>
-              <Grid item xs={12} md={6} lg={6}>
-                <TextField
-                  id="pinCode"
-                  name="pinCode"
-                  label="Pincode"
-                  variant="filled"
-                  fullWidth
-                  className="custom-textfield"
-                  value={formData.pinCode}
-                  onChange={handleInputChange}
-                  disabled={isFormDisabled}
-                  inputRef={pinCodeRef}
-                  onKeyDown={handleKeyPress}
-                />
-              </Grid>
-              <Grid item lg={12} md={12} xs={12}>
-
-                      <Box display="flex" flexDirection="column" gap={2}>
-                        <Grid container spacing={3}>
-                          <Grid item xs={12} md={6} lg={6}>
-                            <TextField
-                              fullWidth
-                              label="Permanent Address"
-                              name="permanentAddr"
-                              value={formData.permanentAddr || ''}
-                              onChange={handleInputChange}
-                              multiline
-                              rows={2}
-                              variant="filled"
-                              disabled={isFormDisabled}
-                              className="custom-textfield"
-                              sx={{
-                                '& .MuiInputBase-root': {
-                                  height: '115px',
-                                },
-                                '& .MuiInputBase-input': {
-                                  resize: 'vertical',
-                                },
-                                '& .MuiFilledInput-root': {
-                                  '&:hover': {
-                                    backgroundColor: 'transparent',
-                                  },
-                                  '&.Mui-focused': {
-                                    backgroundColor: 'transparent',
-                                  },
-                                },
-                              }}
-                            />
-                          </Grid>
-                          <Grid item xs={12} md={6} lg={6}>
-                            <TextField
-                              fullWidth
-                              label="Current Address"
-                              name="currentAddr"
-                              value={formData.currentAddr || ''}
-                              onChange={handleInputChange}
-                              multiline
-                              rows={2}
-                              variant="filled"
-                              disabled={isFormDisabled}
-                              className="custom-textfield"
-                              sx={{
-                                '& .MuiInputBase-root': {
-                                  height: '115px',
-                                },
-                                '& .MuiInputBase-input': {
-                                  resize: 'vertical',
-                                },
-                                '& .MuiFilledInput-root': {
-                                  '&:hover': {
-                                    backgroundColor: 'transparent',
-                                  },
-                                  '&.Mui-focused': {
-                                    backgroundColor: 'transparent',
-                                  },
-                                },
-                              }}
-                            />
-                          </Grid>
-
-                        </Grid>
-                      </Box>
-
-                    </Grid>
                 </Grid>
               </Grid>
 

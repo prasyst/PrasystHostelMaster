@@ -12,7 +12,7 @@ import { Breadcrumbs, Link, Typography, Box, Button, TextField } from '@mui/mate
 import { useNavigate } from 'react-router-dom';
 
 const columns = [
-  { id: 'instituteName', label: 'Institute Name', minWidth: 100 },
+  { id: 'instituteName', label: 'Institute', minWidth: 100 },
   { id: 'addr', label: 'Address', minWidth: 100 },
   { id: 'remark', label: 'Remark', minWidth: 100 }
 ];

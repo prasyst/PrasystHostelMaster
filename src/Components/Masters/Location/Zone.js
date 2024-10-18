@@ -44,8 +44,7 @@ const Zone = () => {
   });
 
   const [error, setError] = useState({
-    zoneName: false,
-    zoneCode: false
+    zoneName: false
   });
 
   const navigate = useNavigate();
@@ -207,7 +206,7 @@ const handleSave = async () => {
         // });
         setMode('view');
         setIsFormDisabled(true);
-          setCurrentZoneId(response.data.data);
+        setCurrentZoneId(response.data.data);
       } else {
         setMode('view');
       }
@@ -318,7 +317,7 @@ const handleSave = async () => {
              <NavigateNextIcon />
           </Button>
           </Grid>
-          <h3 style={{ }}>Zone Master</h3>
+          <h3>Zone Master</h3>
           <Grid sx={{display:'flex', justifyContent:'end'}}>
           <Button 
             variant="contained" 
@@ -346,9 +345,7 @@ const handleSave = async () => {
             disabled={mode !== 'view' || !currentZoneId || currentZoneId === 1}
           >
             <DeleteIcon />
-          </Button>
-          {/* <h3 style={{ margin: 0 }}>Country Master</h3> */}
-        
+          </Button>       
       
           <Button 
             variant="contained" 
@@ -426,7 +423,6 @@ const handleSave = async () => {
                 Submit
               </Button>
               <Button variant="contained" sx={{ mr: 1 , background: 'linear-gradient(290deg, #a7c5e9, #ffffff)' }} onClick={handleEdit} 
-              // disabled={!currentZoneId}
               disabled
               >
               Cancel

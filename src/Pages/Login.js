@@ -213,22 +213,29 @@ const Login = () => {
                             display: { xs: 'none', md: 'block' }, // Hides on xs screens, shows on md and up
                         }}
                     >
-                        <Box
+                        {/* <Box
                             component="img"
                             src={hostel2}
                             alt="Feature Rich 3D Charts"
                             style={{ width: '200px', marginTop: '50px' }}
 
+                        /> */}
+                        <Box
+                            component="img"
+                            src={hostel2}
+                            alt="Feature Rich 3D Charts"
+                            style={{ width: '350px', height: '310px',  marginTop: '50px', borderRadius: '25px' }}
+
                         />
-                        <Typography variant="h6" gutterBottom>
+                        {/* <Typography variant="h6" gutterBottom>
                             Feature Rich 3D Charts
-                        </Typography>
+                        </Typography> */}
                         {/* <Typography variant="body2" color="textSecondary">
                             Donec justo tortor, malesuada vitae faucibus ac, tristique sit amet massa. Aliquam dignissim nec felis quis imperdiet.
                         </Typography> */}
-                        <Button variant="outlined" style={{ marginTop: 6, backgroundColor: '#635BFF', color: 'white', textTransform: 'capitalize' }}>
+                        {/* <Button variant="outlined" style={{ marginTop: 6, backgroundColor: '#635BFF', color: 'white', textTransform: 'capitalize' }}>
                             Learn More
-                        </Button>
+                        </Button> */}
                     </Grid>
                 </Grid>
             </Container>

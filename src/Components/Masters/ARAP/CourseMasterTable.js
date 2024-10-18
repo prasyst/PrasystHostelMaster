@@ -13,7 +13,7 @@ import { useNavigate } from 'react-router-dom';
 
 const columns = [
   // { id: 'instituteName', label: 'Institute Name', minWidth: 100 },
-  { id: 'courseName', label: 'Course Name', minWidth: 100 },
+  { id: 'courseName', label: 'Course', minWidth: 100 },
   { id: 'coursePeriod', label: 'Course Period', minWidth: 100 },
   { id: 'remark', label: 'Remark', minWidth: 100 }
 ];
@@ -161,8 +161,7 @@ export default function CourseMasterTable() {
                         placeholder={`Search ${column.label}`}
                         onChange={(e) => handleSearchChange(column.id, e.target.value)}
                         sx={{ mt: 1 ,margin:'0px' ,'& .MuiOutlinedInput-input': {
-                         padding: '2px 6px',
-                         width: '125px'  
+                         padding: '2px 6px'
                          },}}
 
                       />

@@ -4,10 +4,6 @@ import Grid from '@mui/material/Grid';
 import { styled } from '@mui/material/styles';
 import TextField from '@mui/material/TextField';
 import { Typography } from '@mui/material';
-import Select from '@mui/material/Select';
-import MenuItem from '@mui/material/MenuItem';
-import InputLabel from '@mui/material/InputLabel';
-import FormControl from '@mui/material/FormControl';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
@@ -27,20 +23,6 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import { FloorAutocomplete } from '../../../Components/AutoComplete/AutoComplete'
-
-const CustomTextField = styled(TextField)(({ theme }) => ({
-  '& .MuiFilledInput-root': {
-    backgroundColor: 'transparent',
-    border: '1px solid #e0e0e0',
-    borderRadius: '4px',
-  },
-  '& .Mui-focused': {
-    borderColor: '#673ab7',
-  },
-  '& .MuiFilledInput-root.Mui-focused': {
-    border: '1px solid #673ab7',
-  },
-}));
 
 const AmenityMaster = () => {
 
@@ -80,36 +62,21 @@ const AmenityMaster = () => {
   const floorRef = useRef(null);
   const remarkRef = useRef(null);
 
-  // const handleFileChange = (event) => {
-  //   const file = event.target.files[0];
-  //   if (file) {
-  //     const imageUrl = URL.createObjectURL(file);
-  //     setFormData({ ...formData, photo: imageUrl });
-  //     // setFormData((prevData) => ({
-  //     //   ...prevData,
-  //     //   photo: imageUrl,
-  //     // }));
-  //     setPhoto(imageUrl);
-  //   }
-  // };
-
   const handleFileChange = (event) => {
     const file = event.target.files[0];
     if (file) {
       const reader = new FileReader();
 
-      // Use a Promise to handle the file reading
       const readFileAsBase64 = (file) => {
         return new Promise((resolve, reject) => {
           reader.onloadend = () => {
-            resolve(reader.result); // This will be the Base64 string
+            resolve(reader.result); 
           };
           reader.onerror = reject;
           reader.readAsDataURL(file);
         });
       };
 
-      // Read the file and update the state
       readFileAsBase64(file)
         .then(base64String => {
           setFormData(prevData => ({
@@ -152,7 +119,7 @@ const AmenityMaster = () => {
           remark: amenityData.remark,
           floorName: amenityData.floorId.toString(),
           areaSqFt: amenityData.areaSqFt,
-          photo: amenityData.photo || ''
+          photo: amenityData.photo
         });
         setIsFormDisabled(true);
         setCurrentAmenityId(amenityData.amenityId);
@@ -168,9 +135,11 @@ const AmenityMaster = () => {
   };
 
   useEffect(() => {
-    const fetchFloors = async () => {
+    const fetchFloors = async (flag) => {
       try {
-        const response = await axios.post(`${process.env.REACT_APP_API_URL}FloorMst/getFloorMstdrp`);
+        const response = await axios.post(`${process.env.REACT_APP_API_URL}FloorMst/getFloorMstdrp`, {
+          Flag: flag
+        });
         if (response.data.status === 0 && response.data.responseStatusCode === 1) {
           setFloors(response.data.data);
         } else {
@@ -265,7 +234,7 @@ const AmenityMaster = () => {
         floorId: parseInt(formData.floorName),
         areaSqFt: formData.areaSqFt,
         remark: formData.remark,
-        photo: formData?.photo || '',
+        photo: formData.photo,
         status: "1"
       };
 
@@ -283,14 +252,7 @@ const AmenityMaster = () => {
           setLastInsertedAmenityId(response.data.data)
           console.log(response.data.data)
           await fetchAmenityMasterData(response.data.data);
-          // setFormData({
-          //   country: '',
-          //   state: '',
-          //   zone: '',
-          //   city: '',
-          //   shortName: '',
-          //   cityCode: ''
-          // });
+
           setMode('view');
           setIsFormDisabled(true);
           setCurrentAmenityId(response.data.data);
@@ -372,8 +334,7 @@ const AmenityMaster = () => {
       await fetchAmenityMasterData(currentAmenityId, "N");
       setMode('view');
       setIsFormDisabled(true);
-      // resetForm();
-      // setMode('add');
+      
     } catch (error) {
       console.error('Error deleting Amenity Master:', error);
       toast.error('Error occurred while deleting. Please try again.');
@@ -452,12 +413,11 @@ const AmenityMaster = () => {
             </Grid>
           </Grid>
 
-          {/* <Grid container spacing={2}> */}
-          {/* <Grid container spacing={2}> */}
+         
           <Grid item lg={8} md={8} xs={12}>
             <Box display="flex" flexDirection="column" gap={2}>
               <Grid item lg={12} md={12} xs={12}>
-                {/* <Grid container spacing={3}> */}
+                
                 <Box display="flex" flexDirection="column" gap={2}>
                   <Grid container spacing={2}>
                     <Grid item xs={12} md={6} lg={6}>
@@ -504,24 +464,6 @@ const AmenityMaster = () => {
               </Grid>
               <Grid container spacing={2}>
                 <Grid item xs={12} md={6} lg={6} className='form_field'>
-                  {/* <FormControl variant="filled" fullWidth className="custom-select">
-                    <InputLabel id="floor-select-label">Floors</InputLabel>
-                    <Select
-                      labelId="floor-select-label"
-                      id="floor-select"
-                      name="floor"
-                      // disabled={isFormDisabled}
-                      value={formData.floor}
-                      onChange={handleInputChange}
-                      className="custom-textfield"
-                    >
-                      {floors.map((floor) => (
-                        <MenuItem key={floor.id} value={floor.id}>
-                          {floor.name}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl> */}
                   <FloorAutocomplete
                     floors={floors}
                     value={floors.find(floorName => floorName.id == formData.floorName) || null}
@@ -622,10 +564,6 @@ const AmenityMaster = () => {
               </Button>
             </label>
           </Grid>
-
-          {/* </Grid> */}
-
-          {/* </Grid> */}
 
           <Grid item xs={12} className="form_button">
             {mode === 'view' && (

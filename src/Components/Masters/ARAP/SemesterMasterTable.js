@@ -13,7 +13,7 @@ import { useNavigate } from 'react-router-dom';
 
 const columns = [
   // { id: 'courseName', label: 'Course', minWidth: 100 },
-  { id: 'semesterName', label: 'Semester Name', minWidth: 100 },
+  { id: 'semesterName', label: 'Semester', minWidth: 100 },
   { id: 'remark', label: 'Remark', minWidth: 100 }
 ];
 
