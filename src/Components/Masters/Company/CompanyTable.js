@@ -69,7 +69,7 @@ export default function CompanyTable() {
   };
 
   const handleClick = () => {
-    navigate('/CompanyMst');
+    navigate('/company');
   };
 
   const handleHomeClick = () => {
@@ -98,7 +98,7 @@ export default function CompanyTable() {
 
   const handleRowDoubleClick = (companyId) => {
      console.log('companyid',companyId)
-    navigate('/CompanyMst', { state: { companyId ,mode: 'view'}} );
+    navigate('/company', { state: { companyId ,mode: 'view'}} );
   };
   const handleLocationclick=()=>{
     navigate('/masters/company')
