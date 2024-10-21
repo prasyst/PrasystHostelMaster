@@ -12,7 +12,7 @@ import { Breadcrumbs, Link, Typography, Box, Button, TextField } from '@mui/mate
 import { useNavigate } from 'react-router-dom';
 
 const columns = [
-  { id: 'instituteName', label: 'Institute Name', minWidth: 100 },
+  { id: 'instituteName', label: 'Institute', minWidth: 100 },
   { id: 'addr', label: 'Address', minWidth: 100 },
   { id: 'remark', label: 'Remark', minWidth: 100 }
 ];
@@ -95,7 +95,7 @@ export default function InstituteMasterTable() {
     navigate('/institute-master', { state: { instituteId ,mode: 'view'}} );
   };
   const handleLocationclick=()=>{
-    navigate('/masters/people')
+    navigate('/masters/arap')
   }
 
   return (
@@ -114,7 +114,7 @@ export default function InstituteMasterTable() {
             <Link onClick={handleHomeClick} className="text-d-none" underline="hover" color="inherit" sx={{cursor:'pointer'}}>
               Home
             </Link>
-            <Typography color="text.primary" onClick={handleLocationclick} sx={{cursor:'pointer'}}>AR/AP</Typography>
+            <Typography color="text.primary" onClick={handleLocationclick} sx={{cursor:'pointer'}}>ARAP</Typography>
             <Typography color="text.primary">Institute Master</Typography>
           </Breadcrumbs>
 

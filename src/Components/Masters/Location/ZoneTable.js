@@ -39,7 +39,9 @@ export default function ZoneTable() {
       if (response.data.status === 0) {
         const formattedData = response.data.data.map(zone => ({
           ...zone,
-          zone: zone.zoneName || 'N/A',
+          zone: zone.zoneName || '',
+          zoneCode: zone.zoneCode || '',
+          shortName: zone.shortName
         }));
         setRows(formattedData);
       } else {
@@ -131,7 +133,7 @@ export default function ZoneTable() {
             Add New Record
           </Button>
         </Box>
-        <Paper sx={{ width: '90%', overflow: 'hidden', margin: '0px 0px 0px 50px', border:'1px solid lightgray' }}>
+        <Paper sx={{ width: '50%', overflow: 'hidden', margin: '0px 0px 0px 50px', border:'1px solid lightgray' }}>
           <TableContainer sx={{ maxHeight: 450 }}>
             <Table stickyHeader aria-label="sticky table">
             <TableHead>

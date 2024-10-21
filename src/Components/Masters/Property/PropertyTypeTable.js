@@ -12,8 +12,8 @@ import { Breadcrumbs, Link, Typography, Box, Button, TextField } from '@mui/mate
 import { useNavigate } from 'react-router-dom';
 
 const columns = [
-  { id: 'propType', label: 'PropertyType', minWidth: 100 },
-  { id: 'propType_Desc', label: 'Description', minWidth: 100 },
+  { id: 'propType', label: 'Type', minWidth: 100 },
+  { id: 'propType_Desc', label: 'Description', minWidth: 105 },
   { id: 'remark', label: 'Remark', minWidth: 100 }
 ];
 
@@ -39,8 +39,8 @@ export default function PropertyTypeTable() {
       if (response.data.status === 0) {
         const formattedData = response.data.data.map(propertyType => ({
           ...propertyType,
-          PropType: propertyType.propType || 'N/A',
-          PropType_Desc: propertyType.propType_Desc || 'N/A',
+          PropType: propertyType.propType || '',
+          PropType_Desc: propertyType.propType_Desc || '',
           Remark: propertyType.remark
         }));
         setRows(formattedData);

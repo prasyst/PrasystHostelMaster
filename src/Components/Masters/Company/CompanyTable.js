@@ -12,14 +12,14 @@ import { Breadcrumbs, Link, Typography, Box, Button, TextField } from '@mui/mate
 import { useNavigate } from 'react-router-dom';
 
 const columns = [
-  {id:'coMstId',label:'Co.Id',minWidth:50},
-  { id: 'companyName', label: 'Company Name', minWidth: 170 },
+  {id:'coMstId',label:'Co.Id',minWidth:115},
+  { id: 'companyName', label: 'Company', minWidth: 170 },
   { id: 'gstin', label: 'GSTIN', minWidth: 170 },
-  {id:'cityName',label:'City Name',minWidth:150},
-  {id:'cobrMstId',label:'Cobr_Id',minWidth:50},
-  {id:'cobrName',label:'Branch Name',minWidth:150},
-  {id:'cobr_GSTIN',label:'Branch GST',minWidth:150},
-  {id:'cobr_CityName',label:'Branch City',minWidth:120}
+  {id:'cityName',label:'City',minWidth:150},
+  {id:'cobrMstId',label:'Cobr_Id',minWidth:135},
+  {id:'cobrName',label:'Branch',minWidth:126},
+  {id:'cobr_GSTIN',label:'Branch GST',minWidth:156},
+  {id:'cobr_CityName',label:'Branch City',minWidth:155}
 ];
 
 export default function CompanyTable() {
@@ -44,9 +44,9 @@ export default function CompanyTable() {
         const formattedData = response.data.data.map(company => ({
           ...company,
           companyId:company.coMstId,
-          companyName: company.coName || 'N/A', 
+          companyName: company.coName || '', 
           gstin: company.gstin,
-          cityName:company.cityName || 'N/A',
+          cityName:company.cityName || '',
           cobr_GSTIN:company.cobr_GSTIN
         }));
         console.log('for',formattedData)
@@ -146,8 +146,7 @@ export default function CompanyTable() {
                 <TableRow
                   sx={{ 
                     '& > th': { 
-                      padding: '2px  10px 2px  10px',
-                      textAlign:'center'
+                      padding: '2px  10px 2px  10px'
                     }
                   }}
                 >
@@ -175,37 +174,6 @@ export default function CompanyTable() {
                 </TableRow>
               </TableHead>
               <TableBody>
-  {filteredRows
-    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-    .map((row,index) => {
-      // Create a unique key
-      const uniqueKey = `${row.companyId}-${row.cityName}`; 
-      return (
-        <TableRow
-          hover
-          role="checkbox"
-          tabIndex={-1}
-          key={index}
-          onDoubleClick={() => handleRowDoubleClick(row.companyId)}
-          style={{ cursor: 'pointer' }}
-          sx={{ 
-            '& > td': { 
-              padding: '2px 14px 2px 19px',
-            }
-          }}
-        >
-          {columns.map((column) => {
-            const value = row[column.id];
-            return (
-              <TableCell key={column.id} align={column.align}>
-                {value}
-              </TableCell>
-            );
-          })}
-        </TableRow>
-      );
-    })}
-</TableBody>
             </Table>
           </TableContainer>
           <TablePagination

@@ -13,7 +13,9 @@ import { useNavigate } from 'react-router-dom';
 
 const columns = [
   { id: 'amenityName', label: 'Amenity', minWidth: 170 },
-  { id: 'amenity_Desc', label: 'Desc', minWidth: 170 },
+  { id: 'amenity_Desc', label: 'Description', minWidth: 170 },
+  { id: 'floorName', label: 'Floor', minWidth: 170 },
+  { id: 'areaSqFt', label: 'AreaSqFt', minWidth: 100 },
   { id: 'remark', label: 'Remark', minWidth: 170 }
 ];
 
@@ -42,6 +44,8 @@ export default function AmenityMasterTable() {
           ...amenity,
           amenityName: amenity.amenityName || '',
           amenity_Desc: amenity.amenity_Desc || '',
+          floorName: amenity.floorName || '',
+          areaSqFt: amenity.areaSqFt || '',
           remark: amenity.remark
         }));
         setRows(formattedData);
@@ -134,7 +138,7 @@ export default function AmenityMasterTable() {
             Add New Record
           </Button>
         </Box>
-        <Paper sx={{ width: '54%', overflow: 'hidden', margin: '0px 0px 0px 50px', border:'1px solid lightgray' }}>
+        <Paper sx={{ width: '71%', overflow: 'hidden', margin: '0px 0px 0px 50px', border:'1px solid lightgray' }}>
           <TableContainer sx={{ maxHeight: 450 }}>
             <Table stickyHeader aria-label="sticky table">
             <TableHead>
@@ -161,7 +165,7 @@ export default function AmenityMasterTable() {
                         onChange={(e) => handleSearchChange(column.id, e.target.value)}
                         sx={{ mt: 1 ,margin:'0px' ,'& .MuiOutlinedInput-input': {
                          padding: '2px 6px',
-                         width: '110px'  
+                         width: '124px'  
                          },}}
 
                       />

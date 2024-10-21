@@ -16,7 +16,7 @@ const columns = [
   { id: 'area', label: 'Area', minWidth: 100 },
   { id: 'areaAbrv', label: 'Short Name', minWidth: 100 },
   { id: 'city', label: 'City Name', minWidth: 170 },
-  { id: 'state', label: 'State', minWidth: 170 },
+  { id: 'stateName', label: 'State', minWidth: 170 },
 ];
 
 export default function PincodeTable() {
@@ -42,10 +42,10 @@ export default function PincodeTable() {
       if (response.data.status === 0) {
         const formattedData = response.data.data.map(pinCode => ({
           ...pinCode,
-          area: pinCode.areaName || 'NA', 
-          areaAbrv: pinCode.areaAbrv || 'NA',
+          area: pinCode.areaName || '', 
+          areaAbrv: pinCode.areaAbrv || '',
           city: pinCode.cityName,
-          state: pinCode.state
+          stateName: pinCode.stateName
         }));
         setRows(formattedData);
         console.log("data", response);
@@ -199,6 +199,7 @@ export default function PincodeTable() {
                     }
                   }}
                 >
+                  
                   {columns.map((column) => (
                     <TableCell 
                       key={column.id} 

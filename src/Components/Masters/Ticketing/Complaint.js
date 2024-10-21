@@ -381,7 +381,7 @@ const Complaint = () => {
             <Grid container spacing={2}>
             <Grid item xs={12} md={6} lg={6} className='form_field'>
             <FormControl variant="filled" fullWidth className="custom-select">
-              <InputLabel id="compTypeName-select-label">CompTypeName</InputLabel>
+              <InputLabel id="compTypeName-select-label">ComplaintType</InputLabel>
               <Select
                 labelId="compTypeName-select-label"
                 id="compTypeName-select"
@@ -389,7 +389,6 @@ const Complaint = () => {
                 value={formData.compTypeName}
                 onChange={handleInputChange}
                 className="custom-textfield"
-                disabled={isFormDisabled}
                 inputRef={compTypeNameRef}
                 onKeyDown={handleKeyPress}
               >
@@ -435,7 +434,7 @@ const Complaint = () => {
                 <TextField
                   id="compAbrv"
                   name="compAbrv"
-                  label="CompAbrv"
+                  label="Abrv"
                   variant="filled"
                   fullWidth
                   className="custom-textfield"
@@ -449,7 +448,7 @@ const Complaint = () => {
               <Grid item xs={12} md={6}>
                 <TextField
                   fullWidth
-                  label="CompRemark"
+                  label="Remark"
                   name="compRemark"
                   value={formData.compRemark}
                   onChange={handleInputChange}

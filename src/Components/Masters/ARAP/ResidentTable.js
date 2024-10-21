@@ -49,9 +49,9 @@ export default function ResidentTable() {
       if (response.data.status === 0) {
         const formattedData = response.data.data.map(resident => ({
           ...resident,
-          firstName: resident.firstName || 'N/A', 
-          middleName: resident.midName || 'N/A',
-          lastName: resident.lastName || 'N/A',
+          firstName: resident.firstName || '', 
+          middleName: resident.midName || '',
+          lastName: resident.lastName || '',
           country: resident.countryName,
           gender:resident.gender,
           email:resident.email,
@@ -110,7 +110,7 @@ export default function ResidentTable() {
     navigate('/resident', { state: { residentId ,mode: 'view'}} );
   };
   const handleLocationclick=()=>{
-    navigate('/masters/people')
+    navigate('/masters/arap')
   }
 
   return (
@@ -129,7 +129,7 @@ export default function ResidentTable() {
             <Link onClick={handleHomeClick} className="text-d-none" underline="hover" color="inherit" sx={{cursor:'pointer'}}>
               Home
             </Link>
-            <Typography color="text.primary" onClick={handleLocationclick} sx={{cursor:'pointer'}}>People</Typography>
+            <Typography color="text.primary" onClick={handleLocationclick} sx={{cursor:'pointer'}}>ARAP</Typography>
             <Typography color="text.primary">Resident Master</Typography>
           </Breadcrumbs>
 
@@ -155,8 +155,7 @@ export default function ResidentTable() {
                 <TableRow
                   sx={{ 
                     '& > th': { 
-                      padding: '2px  10px 2px  10px',
-                      textAlign:'center'
+                      padding: '2px  10px 2px  10px'
                     }
                   }}
                 >

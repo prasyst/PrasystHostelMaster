@@ -357,7 +357,7 @@ const ComplaintType = () => {
                   name="compTypeName"
                   label={
                     <span>
-                      CompTypeName <span style={{ color: 'red' }}>*</span>
+                      ComplaintType <span style={{ color: 'red' }}>*</span>
                     </span>
                   }
                   variant="filled"
@@ -376,7 +376,7 @@ const ComplaintType = () => {
                 <TextField
                   id="compTypeAbrv"
                   name="compTypeAbrv"
-                  label="CompTypeAbrv"
+                  label="Abrv"
                   variant="filled"
                   fullWidth
                   className="custom-textfield"
@@ -390,7 +390,7 @@ const ComplaintType = () => {
               <Grid item xs={12} md={6}>
                 <TextField
                   fullWidth
-                  label="CompTypeRemark"
+                  label="Remark"
                   name="compTypeRemark"
                   value={formData.compTypeRemark}
                   onChange={handleInputChange}

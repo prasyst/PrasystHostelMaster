@@ -76,11 +76,6 @@ import Complaint from './Components/Masters/Ticketing/Complaint';
 import ComplaintTable from './Components/Masters/Ticketing/ComplaintTable';
 import ComplaintType from './Components/Masters/Ticketing/ComplaintType';
 import ComplaintTypeTable from './Components/Masters/Ticketing/ComplaintTypeTable';
-import HouseKeepingTable from './Components/HouseKeepingTable';
-import HouseKeepTabData from './Components/HouseKeepTabData';
-import CompanyMst from './Components/Masters/Company/CompanyMst';
-import CompanyMstTable from './Components/Masters/Company/CompanyMstTable';
-
 
 const DashboardLayout = ({ children }) => (
   <SidebarDrawar>{children}</SidebarDrawar>
@@ -138,6 +133,7 @@ function App() {
     <Route path="/propertytable" element={<DashboardLayout><PropertyMasterTable /></DashboardLayout>} />
     <Route path="/wing" element={<DashboardLayout><Wing /></DashboardLayout>} />
     <Route path="/floor" element={<DashboardLayout><Floor /></DashboardLayout>} />
+    <Route path="/partymaster" element={<DashboardLayout><PartyMaster /></DashboardLayout>} />
     <Route path="/roomType" element={<DashboardLayout><RoomType /></DashboardLayout>} />
     <Route path="/propertyType-master" element={<DashboardLayout><PropertyType /></DashboardLayout>} />
     <Route path="/roomBedType" element={<DashboardLayout><RoomBedType /></DashboardLayout>} />
@@ -167,7 +163,8 @@ function App() {
     
     
 
-
+    {/* <Route path="/group-master" element={<DashboardLayout><GroupMaster /></DashboardLayout>} />
+    <Route path="/groupTable" element={<DashboardLayout><GroupTable /></DashboardLayout>} /> */}
   </Routes>
   );
 }

@@ -1,8 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Box, Grid, Button, TextField, Typography, Stepper, Step, StepLabel,
-  FormControl, InputLabel, Select, MenuItem, Autocomplete
+  FormControl, InputLabel, Select, MenuItem, Autocomplete, Checkbox, Menu
 } from '@mui/material';
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Link } from '@mui/material';
+import TablePagination from '@mui/material/TablePagination';
 import {
   KeyboardArrowLeft as KeyboardArrowLeftIcon,
   NavigateNext as NavigateNextIcon,
@@ -11,27 +13,30 @@ import {
   Delete as DeleteIcon,
   CancelPresentation as CancelPresentationIcon
 } from '@mui/icons-material';
-import axios from 'axios';
-import { toast, ToastContainer } from 'react-toastify';
+import Paper from '@mui/material/Paper';
 import '../../../index.css'
-import { FormLabel, RadioGroup, FormControlLabel, Radio, StepConnector } from '@mui/material';
+import { FormLabel, RadioGroup, FormControlLabel, Radio, StepConnector, List, ListItem } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { Navigate, useNavigate, useLocation } from 'react-router-dom';
-import Paper from '@mui/material/Paper';
+import axios from 'axios';
+import { toast, ToastContainer } from 'react-toastify';
+import { ConfirmDialog } from '../../ReusablePopup/CustomModel';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+
+import { z } from 'zod';
 
 const steps = ['Property Details', 'Floor Configuration', 'Amenity Configuration'];
-
 const CustomStepConnector = styled(StepConnector)(({ theme }) => ({
   '& .MuiStepConnector-line': {
     borderColor: '#e0e0e0',
     borderTopWidth: 3,
     borderRadius: 1,
-    margin: '7px 30px 20px 30px'
+    marginBottom: '20px',
 
   },
 }));
@@ -56,54 +61,87 @@ const CustomStepLabel = styled(StepLabel)({
     marginTop: '5px',
   },
 });
-const PropertyMaster = () => {
 
+const formSchema = z.object({
+  firstName: z.string().min(1, "First Name is required"),
+  PinId: z.string().length(6, "Pin Code must be 6 digits"),
+  // Add other fields as needed
+});
+
+const columns = [
+  { id: 'wingName', label: 'Wing', minWidth: 170 },
+  { id: 'floorName', label: 'Floor', minWidth: 100 },
+  { id: 'totalRooms', label: 'TotalRooms', minWidth: 100 },
+  { id: 'startNo', label: 'Start No', minWidth: 100 }
+];
+
+const column = [
+  { id: 'amenityName', label: 'Amenity', minWidth: 170 }
+];
+
+const StepperForm = () => {
   const [activeStep, setActiveStep] = useState(0);
+  const [errors, setErrors] = useState({});
+  const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
   const [mode, setMode] = useState('view');
-  const [isEditMode, setIsEditMode] = useState(false);
-  const [isViewMode, setIsViewMode] = useState(false);
-  const location = useLocation();
-  const [currentId, setCurrentId] = useState(null);
   const [currentPropId, setCurrentPropId] = useState(null);
   const [hods, setHods] = useState([]);
+  const [propertyId, setPropertyId] = useState();
   const [sites, setSites] = useState([]);
+  const [propImg, setPropImg] = useState('');
+  const [data, setData] = useState([]);
+  const [error, setError] = useState(null);
+  const [file, setFile] = useState(null);
   const [companies, setCompanies] = useState([]);
   const [wardens, setWardens] = useState([]);
   const [area, setArea] = useState([]);
+  const [floorConfig, setFloorConfig] = useState([]);
   const [branch, setBranch] = useState([]);
   const [propType, setPropType] = useState([]);
+  const [wings, setWings] = useState([]);
+  const [floors, setFloors] = useState([]);
+  const location = useLocation();
   const [isFormDisabled, setIsFormDisabled] = useState(true);
-  const [completedSteps, setCompletedSteps] = useState([]);
-  const [lastInsertedPropId, setLastInsertedPropId] = useState(null);
-  const [propId, setPropId] = useState()
+  const [isEditing, setIsEditing] = useState(false);
   const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
-  const [formData, setFormData] = useState({
-    coName: '',
-    branch: '',
-    propName: '',
-    sqFt: '',
-    pinCode: '',
-    areaName: '',
-    cityName: '',
-    stateName: '',
-    countryName: '',
-    propEmail: '',
-    propTel: '',
-    propTypName: '',
-    propMob: '',
-    totalRooms: '',
-    totalBeds: '',
-    propImg: '',
-    hodEmpName: '',
-    wardenEmpName: '',
-    propAdd: ''
-  });
-  const navigate = useNavigate()
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [searchTerms, setSearchTerms] = useState({});
+  const [rows, setRows] = useState([]);
+  const [anchorEl, setAnchorEl] = React.useState(null);
+  const open = Boolean(anchorEl);
+  const [editState, setEditState] = useState({});
+  const [tableData, setTableData] = useState([]);
+  const [selectAll, setSelectAll] = useState(false);
+
+  // Toggle the "Select All" checkbox
+  const handleSelectAll = () => {
+    const newSelectAll = !selectAll;
+    setSelectAll(newSelectAll);
+    const updatedItems = floors.map((item) => ({
+      ...item,
+      isChecked: newSelectAll,
+    }));
+    setFloors(updatedItems);
+  };
+
+  // Handle individual checkbox toggle
+  const handleCheckboxChange = (id) => {
+    const updatedItems = floors.map((item) =>
+      item.id === id ? { ...item, isChecked: !item.isChecked } : item
+    );
+    setFloors(updatedItems);
+
+    // Update "Select All" checkbox based on individual selections
+    const allChecked = updatedItems.every((item) => item.isChecked);
+    setSelectAll(allChecked);
+  };
 
   useEffect(() => {
-    if (location.state && location.state.propId) {
-      setPropId(location.state.propId);
-      fetchPropertyData(location.state.propId);
+    console.log('111', location?.state?.propertyId)
+    if (location.state && location.state?.propertyId) {
+      setPropertyId(location.state.propertyId);
+      fetchPropertyData(location.state?.propertyId);
       setMode('view');
     } else {
       setMode('add');
@@ -120,16 +158,18 @@ const PropertyMaster = () => {
 
       if (response.data.status === 0 && response.data.responseStatusCode === 1) {
         const propertyData = response.data.data[0];
+        console.log('propertyData', propertyData)
         setFormData({
-          coName: propertyData.coName,
-          branch: propertyData.branch,
+          propId: propertyData.propId,
+          companyName: propertyData.companyName,
+          branchName: propertyData.cobrMstId.toString(),
           propName: propertyData.propName,
           sqFt: propertyData.sqFt,
-          pinCode: propertyData.pinCode,
+          pinCode: propertyData.pinId.toString(),
           areaName: propertyData.areaName,
-          cityName: propertyData.cityName,
           stateName: propertyData.stateName,
           countryName: propertyData.countryName,
+          cityName: propertyData.cityId.toString(),
           propEmail: propertyData.propEmail,
           propTel: propertyData.propTel,
           propTypName: propertyData.propTypeId.toString(),
@@ -137,12 +177,16 @@ const PropertyMaster = () => {
           totalRooms: propertyData.totalRooms,
           totalBeds: propertyData.totalBeds,
           propImg: propertyData.propImg,
-          hodEmpName: propertyData.hodEmpName,
-          wardenEmpName: propertyData.wardenEmpName,
-          propAdd: propertyData.propAdd
-        })
+          hodEmpName: propertyData.hodEmpId.toString(),
+          wardenEmpName: propertyData.wardenEmpId.toString(),
+          propAdd: propertyData.propAdd,
+          propGPSLoc: propertyData.propGPSLoc,
+          Status: propertyData.status || '1',
+          remark: propertyData.remark || '',
+          CreatedBy: propertyData.createdBy ? propertyData.createdBy.toString() : '1'
+        });
         setIsFormDisabled(true);
-        setCurrentPropId(propertyData.propId);
+        setPropertyId(propertyData?.propId);
       } else if (response.data.status === 1 && response.data.responseStatusCode === 2) {
         toast.info(response.data.message);
       } else {
@@ -154,21 +198,32 @@ const PropertyMaster = () => {
     }
   };
 
-  const handleInputChange = (event) => {
-    const { name, value } = event.target;
-    setFormData(prevData => ({
-      ...prevData,
-      [name]: value,
-
-    }));
-
-    if (name === 'property') {
-      setFormData(prevState => ({
-        ...prevState,
-        state: ''
-      }));
-    }
-  };
+  const [formData, setFormData] = useState({
+    companyName: '',
+    branchName: '',
+    propName: '',
+    name: '' ,
+    sqFt: '',
+    pinCode: '',
+    areaName: '',
+    cityName: '',
+    stateName: '',
+    countryName: '',
+    propEmail: '',
+    propTel: '',
+    propTypName: '',
+    propMob: '',
+    totalRooms: '',
+    totalBeds: '',
+    propImg: '',
+    hodEmpName: '',
+    wardenEmpName: '',
+    propAdd: '',
+    propGPSLoc: '',
+    Status: '1',
+    remark: '',
+    CreatedBy: '1'
+  });
 
   useEffect(() => {
     const fetchPropType = async () => {
@@ -223,11 +278,11 @@ const PropertyMaster = () => {
       }
     };
 
-    if (formData.coName) {
-      fetchBranch(formData.coName);
+    if (formData.companyName) {
+      fetchBranch(formData.companyName);
     }
 
-  }, [formData.coName]);
+  }, [formData.companyName]);
 
   useEffect(() => {
     const fetchArea = async (pinCode) => {
@@ -268,9 +323,10 @@ const PropertyMaster = () => {
             stateName,
             countryName,
           }));
-        } else {
-          toast.error('Failed to fetch PincodeArea');
         }
+        // else {
+        //   toast.error('Failed to fetch PincodeArea');
+        // }
       } catch (error) {
         console.error('Error fetching PincodeArea:', error);
         toast.error('Error fetching PincodeArea. Please try again.');
@@ -323,93 +379,291 @@ const PropertyMaster = () => {
     fetchWardens();
   }, []);
 
-  const handlePrevious = async () => {
-    if (currentPropId && currentPropId > 1) {
-      await fetchPropertyData(currentPropId, "P");
+  useEffect(() => {
+    const fetchWings = async (flag) => {
+      try {
+        const response = await axios.post(`${process.env.REACT_APP_API_URL}WingMst/getMstWingdrp`, {
+          Flag: flag
+        });
+        if (response.data.status === 0 && response.data.responseStatusCode === 1) {
+          setWings(response.data.data);
+        } else {
+          toast.error('Failed to fetch Wings');
+        }
+      } catch (error) {
+        console.error('Error fetching Wings:', error);
+        toast.error('Error fetching Wings. Please try again.');
+      }
+    };
+
+    fetchWings();
+  }, []);
+
+  useEffect(() => {
+    const fetchFloors = async (flag) => {
+      try {
+        const response = await axios.post(`${process.env.REACT_APP_API_URL}FloorMst/getFloorMstdrp`, {
+          Flag: flag
+        });
+        if (response.data.status === 0 && response.data.responseStatusCode === 1) {
+          setFloors(response.data.data);
+        } else {
+          toast.error('Failed to fetch Floors');
+        }
+      } catch (error) {
+        console.error('Error fetching Floors:', error);
+        toast.error('Error fetching Floors. Please try again.');
+      }
+    };
+
+    fetchFloors();
+  }, []);
+
+  // useEffect(() => {
+  //   GetSourceName()
+  //   GetSemesterName()
+  //   GetInstituteeName()
+  //   GetCourceName()
+  //   getJobTitle()
+  // }, [])
+
+  useEffect(() => {
+    fetchFloorConfig();
+  }, []);
+
+  const fetchFloorConfig = async (id) => {
+    
+    try {
+      const response = await axios.post(`${process.env.REACT_APP_API_URL}MstPropFloorConfig/GetMstPropAmenityConfigDashBoard`, {
+        propId: id,
+        amenityId: id
+      });
+      
+      if (response.data.status === 0 && response.data.responseStatusCode === 1) {
+        setFloorConfig(response.data.data);
+        
+      } else {
+        console.error('Error fetching floor configuration data:', response.data.message);
+      }
+      console.log(response, "res")
+    } catch (error) {
+      console.error('Error fetching floor configuration data:', error);
     }
   };
 
-  const handleNext = async () => {
-    if (currentPropId) {
-      await fetchPropertyData(currentPropId, "N");
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(+event.target.value);
+    setPage(0);
+  };
+
+  const handleClick = () => {
+    navigate('/floor');
+  };
+
+  const handleSearchChange = (columnId, value) => {
+    setSearchTerms(prev => ({ ...prev, [columnId]: value }));
+    setPage(0);
+  };
+
+  const handleEditChange = (propId, columnId, value) => {
+    setEditState(prev => ({
+      ...prev,
+      [propId]: {
+        ...prev[propId],
+        [columnId]: value,
+      },
+    }));
+  };
+
+  const filteredRows = React.useMemo(() => {
+    return rows.filter(row => {
+      return Object.entries(searchTerms).every(([columnId, term]) => {
+        if (!term) return true;
+        const value = row[columnId];
+        if (typeof value === 'string') {
+          return value.toLowerCase().includes(term.toLowerCase());
+        } else if (typeof value === 'number') {
+          return value.toString().includes(term);
+        }
+        return true;
+      });
+    });
+  }, [searchTerms, rows]);
+
+  const handleRowDoubleClick = () => {
+
+    navigate('', { state: { mode: 'view' } });
+  };
+
+  const navigate = useNavigate()
+  const handleInputChange = (event) => {
+    const { name, value } = event.target;
+    console.log('2', event.target.value)
+    setFormData(prevData => ({
+      ...prevData,
+      [name]: value,
+
+    }));
+    setErrors(prevErrors => ({
+      ...prevErrors,
+      [name]: undefined
+    }));
+  };
+  const validateStep = (step) => {
+    let stepValid = true;
+    let newErrors = {};
+
+    if (step === 0) {
+      try {
+        formSchema.parse(formData);
+      } catch (error) {
+        if (error instanceof z.ZodError) {
+          error.errors.forEach(err => {
+            newErrors[err.path[0]] = err.message;
+          });
+          stepValid = false;
+        }
+      }
+    }
+
+    setErrors(newErrors);
+    return stepValid;
+  };
+
+  const changeHandler = (event) => {
+    const { name, value } = event.target;
+    setFormData(prevData => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
+
+  const inputChangeHandler = (event) => {
+    const { name, value } = event.target;
+    setFormData(prevData => ({
+      ...prevData,
+      [name]: value,
+      // profession: event.target.value
+    }));
+    console.log('55', setFormData(prevData => ({
+      ...prevData,
+      [name]: value,
+      // profession: event.target.value
+    })))
+  };
+
+  const handleNextdata = async () => {
+    if (propertyId) {
+      await fetchPropertyData(propertyId, "N");
+    }
+  }
+
+  const handleBackdata = async () => {
+    if (propertyId && propertyId > 1) {
+      await fetchPropertyData(propertyId, "P");
+    }
+  }
+
+  const handleNext = () => {
+    if (activeStep === steps.length - 1) {
+      handleSubmit();
+    } else {
+      setActiveStep((prevActiveStep) => prevActiveStep + 1);
     }
   };
 
-  const handleSave = async () => {
+  const handleBack = () => {
+    setActiveStep((prevActiveStep) => prevActiveStep - 1);
+  };
+
+  const handleMenuClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleSubmit = async () => {
+    const payload = {
+      PropId: propertyId || 0,
+      companyName: parseInt(formData.companyName),
+      cobrMstId: parseInt(formData.branchName),
+      propName: formData.propName,
+      sqFt: formData.sqFt,
+      pinId: parseInt(formData.pinId),
+      pinId: parseInt(formData.pinCode),
+      // pincode: formData.pincode,
+      areaName: formData.areaName,
+      cityId: parseInt(formData.cityName) || 1,
+      // stateName: formData.stateName,
+      // countryName: formData.countryName,
+      propEmail: formData.propEmail,
+      propTel: formData.propTel,
+      propTypeId: parseInt(formData.propTypName),
+      propMob: formData.propMob,
+      totalRooms: formData.totalRooms,
+      totalBeds: formData.totalBeds,
+      propImg: formData.propImg,
+      hodEmpId: parseInt(formData.hodEmpName),
+      wardenEmpId: parseInt(formData.wardenEmpName),
+      propAdd: formData.propAdd,
+      propGPSLoc: formData.propGPSLoc,
+      Status: formData.Status || '1',
+      Remark: formData.remark || '',
+      CreatedBy: "1",
+      UpdatedBy: "1" // Include this for update operations
+    };
+
+    console.log('Payload:', payload);
 
     try {
-      const payload = {
-        coName: formData.coName,
-        branch: formData.branch,
-        propName: formData.propName,
-        sqFt: formData.sqFt,
-        pinCode: formData.pinCode,
-        areaName: formData.areaName,
-        cityName: formData.cityName,
-        stateName: formData.stateName,
-        countryName: formData.countryName,
-        propEmail: formData.propEmail,
-        propTel: formData.propTel,
-        propTypeId: parseInt(formData.propTypName),
-        propMob: formData.propMob,
-        totalRooms: formData.totalRooms,
-        totalBeds: formData.totalBeds,
-        propImg: formData.propImg,
-        hodEmpName: formData.hodEmpName,
-        wardenEmpName: formData.wardenEmpName,
-        propAdd: formData.propAdd,
-        status: "1"
-      };
+      const endpoint = propertyId
+        ? `${process.env.REACT_APP_API_URL}PropertyMst/UpdatePropertyMst`
+        : `${process.env.REACT_APP_API_URL}PropertyMst/InsertPropertyMst`;
 
-      let response;
-      if (mode === 'edit') {
-        payload.propId = currentPropId;
-        response = await axios.patch(`${process.env.REACT_APP_API_URL}PropertyMst/UpdatePropertyMst`, payload);
-      } else {
-        response = await axios.post(`${process.env.REACT_APP_API_URL}PropertyMst/InsertPropertyMst`, payload);
-      }
+      const response = await axios.post(endpoint, payload);
 
-      if (response.data.status === 0 && response.data.responseStatusCode === 1) {
+      if (response.data.status === 0) {
         toast.success(response.data.message);
-        if (mode === 'add') {
-          setLastInsertedPropId(response.data.data)
-          console.log(response.data.data)
-          await fetchPropertyData(response.data.data);
-          // setFormData({
-          //   country: '',
-          //   state: '',
-          //   zone: '',
-          //   city: '',
-          //   shortName: '',
-          //   cityCode: ''
-          // });
-          setMode('view');
-          setIsFormDisabled(true);
-          setCurrentPropId(response.data.data);
-        } else {
-          setMode('view');
-        }
+        setIsEditing(false);
         setIsFormDisabled(true);
+        if (!propertyId) {
+          setPropertyId(response.data.data.propertyId); // Assuming the API returns the new ID
+        }
       } else {
-        toast.error(response.data.message || 'Operation failed');
+        toast.error(response.data.message || "An error occurred");
       }
     } catch (error) {
-      console.error('Error saving/updating property:', error);
-      toast.error('Error saving/updating property. Please try again.');
+      console.error('API call failed:', error);
+      toast.error("Something went wrong. Please try again.");
     }
   };
 
-  const handleEdit = () => {
-    setMode('edit');
-    setIsFormDisabled(false);
+
+  const handleSelect = () => {
+    // Collect the selected data
+    const selectedFloors = floors.filter((floor) => floor.isChecked);
+    const newTableData = selectedFloors.map((floor) => ({
+      wing: formData.name,
+      floor: floor.name,
+    }));
+
+    // Update table data state
+    setTableData(newTableData);
+    handleClose(); // Close the menu after selection
   };
 
   const handleAdd = () => {
     setMode('add');
     setIsFormDisabled(false);
+    setPropertyId(null);
     setFormData({
-      coName: '',
-      branch: '',
+      companyName: '',
+      branchName: '',
       propName: '',
       sqFt: '',
       pinCode: '',
@@ -425,80 +679,127 @@ const PropertyMaster = () => {
       totalBeds: '',
       propImg: '',
       hodEmpName: '',
+      name: '' ,
       wardenEmpName: '',
-      propAdd: ''
+      propAdd: '',
+      propGPSLoc: '',
+      Status: '1',
+      remark: '',
+      CreatedBy: '1'
     });
-    setCurrentPropId(null);
+
+    setActiveStep(0);
+    setErrors({});
+    setPropImg('');
+
+    toast.info("Form cleared for new entry");
   };
 
+  const handleEdit = () => {
+    setMode('edit')
+    setIsFormDisabled(false);
+  };
+
+  const handleSave = () => {
+    // Implement save logic
+    setMode('view');
+  };
+
+
   const handleCancel = async () => {
+    if (mode === 'add') {
+      try {
+        await fetchPropertyData(1, "L");
+        setMode('view');
+        setIsFormDisabled(true);
+      } catch (error) {
+        toast.error('Error occurred while cancelling. Please try again.');
+      }
+    } else if (mode === 'edit') {
+      if (propertyId) {
+        await fetchPropertyData(propertyId);
+      }
+      setMode('view');
+      setIsFormDisabled(true);
+    }
+
+  };
+
+  const deleteItem = () => {
+    setOpenConfirmDialog(true);
+  };
+
+  const closeConfirmation = () => {
+    setOpenConfirmDialog(false);
+  };
+
+  const onDeleteConfirm = async () => {
     try {
-      await fetchPropertyData(1, "L");
+      await fetchPropertyData(propertyId, "D");
+      // toast.success('Data deleted successfully');
+      await fetchPropertyData(propertyId, "N");
       setMode('view');
       setIsFormDisabled(true);
     } catch (error) {
-      toast.error('Error occurred while cancelling. Please try again.');
+      toast.error('Error deleting property. Please try again.');
     }
+    setOpenConfirmDialog(false);
   };
 
-  const resetForm = () => {
-    setFormData({
-      coName: '',
-      branch: '',
-      propName: '',
-      sqFt: '',
-      pinCode: '',
-      areaName: '',
-      cityName: '',
-      stateName: '',
-      countryName: '',
-      propEmail: '',
-      propTel: '',
-      propTypName: '',
-      propMob: '',
-      totalRooms: '',
-      totalBeds: '',
-      propImg: '',
-      hodEmpName: '',
-      wardenEmpName: '',
-      propAdd: ''
-    });
-    setCurrentPropId(null);
-    setMode('view');
+  const handleDelete = () => {
+    setIsConfirmDialogOpen(true);
+  };
+
+  const handleCloseConfirmDialog = () => {
+    setIsConfirmDialogOpen(false);
+  };
+
+  const handleConfirmDelete = async () => {
+    try {
+      await fetchPropertyData(propertyId, "D");
+      // toast.success('Data deleted successfully');
+      await fetchPropertyData(propertyId, "N");
+      setMode('view');
+      setIsFormDisabled(true);
+    } catch (error) {
+      toast.error('Error deleting property. Please try again.');
+    }
+    setIsConfirmDialogOpen(false);
   };
 
   const handleExit = () => {
     navigate('/propertytable')
-  }
-
-  const handleDeleteClick = () => {
-    setOpenConfirmDialog(true);
   };
 
-  const handleCloseConfirmDialog = () => {
-    setOpenConfirmDialog(false);
-  };
-  const handleConfirmDelete = async () => {
-    setOpenConfirmDialog(false);
-    try {
-      await fetchPropertyData(currentPropId, "D");
-      await fetchPropertyData(currentPropId, "N");
-      setMode('view');
-      setIsFormDisabled(true);
-      // resetForm();
-      // setMode('add');
-    } catch (error) {
-      console.error('Error deleting Property:', error);
-      toast.error('Error occurred while deleting. Please try again.');
-    }
-  };
-
-  const [selectedImage, setSelectedImage] = useState(null);
-
+  // Handle file input change
   const handleImageChange = (event) => {
     const file = event.target.files[0];
     if (file) {
-      setSelectedImage(URL.createObjectURL(file));
+      const reader = new FileReader();
+
+      // Use a Promise to handle the file reading
+      const readFileAsBase64 = (file) => {
+        return new Promise((resolve, reject) => {
+          reader.onloadend = () => {
+            resolve(reader.result); // This will be the Base64 string
+          };
+          reader.onerror = reject;
+          reader.readAsDataURL(file);
+        });
+      };
+
+      // Read the file and update the state
+      readFileAsBase64(file)
+        .then(base64String => {
+          setFormData(prevData => ({
+            ...prevData,
+            propImg: base64String
+          }));
+        })
+        .catch(err => {
+          console.error('Error reading file:', err);
+          toast.error('Error reading file. Please try again.');
+        });
     }
   };
 
@@ -519,18 +820,18 @@ const PropertyMaster = () => {
                             <Grid container spacing={2}>
                               <Grid item xs={12} md={6} className='form_field'>
                                 <FormControl variant="filled" fullWidth className="custom-select">
-                                  <InputLabel id="coName-select-label">Company Name</InputLabel>
+                                  <InputLabel id="companyName-select-label">Company Name</InputLabel>
                                   <Select
-                                    labelId="coName-select-label"
-                                    id="coName-select"
-                                    name="coName"
-                                    value={formData.coName}
+                                    labelId="companyName-select-label"
+                                    id="companyName-select"
+                                    name="companyName"
+                                    value={formData.companyName}
                                     onChange={handleInputChange}
                                     className="custom-textfield"
                                   >
-                                    {companies.map((coName) => (
-                                      <MenuItem key={coName.id} value={coName.id}>
-                                        {coName.name}
+                                    {companies.map((companyName) => (
+                                      <MenuItem key={companyName.id} value={companyName.id}>
+                                        {companyName.name}
                                       </MenuItem>
                                     ))}
                                   </Select>
@@ -663,9 +964,9 @@ const PropertyMaster = () => {
                         overflow="hidden"
                         position="relative"
                       >
-                        {selectedImage ? (
+                        {formData.propImg ? (
                           <img
-                            src={selectedImage}
+                            src={formData.propImg}
                             alt="Uploaded Preview"
                             style={{
                               width: '100%',
@@ -913,7 +1214,371 @@ const PropertyMaster = () => {
               );
             case 1:
               return (
-                ''
+                <>
+                  <Box sx={{ maxWidth: '100vw', overflowX: 'hidden' }}>
+                    <Grid container gap={2}
+                      sx={{
+                        padding: '20px 30px',
+                        justifyContent: 'center',
+                        alignItems: 'center'
+                      }}
+                    >
+                      <Button
+                        variant="contained"
+                        onClick={deleteItem}
+                        sx={{
+                          backgroundColor: '#7c3aed ',
+                          color: 'white',
+                          '&:hover': {
+                            backgroundColor: '#7c3aed ',
+                          },
+                        }}
+                      >
+                        Add Floor
+                      </Button>
+                      <Button
+                        variant="contained"
+                        onClick={deleteItem}
+                        sx={{
+                          backgroundColor: '#7c3aed ',
+                          color: 'white',
+                          '&:hover': {
+                            backgroundColor: '#7c3aed ',
+                          },
+                        }}
+                      >
+                        Clear All
+                      </Button>
+                    </Grid>
+                    <Paper sx={{ width: '80%', overflow: 'hidden', margin: '0px 0px 0px 50px', border: '1px solid lightgray' }}>
+                      <TableContainer sx={{ maxHeight: 450 }}>
+                        <Table stickyHeader aria-label="sticky table">
+                          <TableHead>
+                            <TableRow
+                              sx={{
+                                '& > th': {
+                                  padding: '2px  10px 2px  24px',
+                                },
+                              }}
+                            >
+                              {columns.map(column => (
+                                <TableCell key={column.id} align={column.align} style={{ minWidth: column.minWidth }}>
+                                  <Typography variant="subtitle1" fontWeight="bold">
+                                    {column.label}
+                                  </Typography>
+                                  <TextField
+                                    size="small"
+                                    variant="outlined"
+                                    placeholder={`Search ${column.label}`}
+                                    onChange={e => handleSearchChange(column.id, e.target.value)}
+                                    sx={{
+                                      mt: 1,
+                                      margin: '0px',
+                                      '& .MuiOutlinedInput-input': {
+                                        padding: '2px 6px',
+                                      },
+                                    }}
+                                  />
+                                </TableCell>
+                              ))}
+                            </TableRow>
+                            {/* <Button
+                              variant="contained"
+                              onClick={handleClick}
+                              size='small'
+                              sx={{
+                                backgroundColor: '#635BFF',
+                                color: 'white',
+                                '&:hover': {
+                                  backgroundColor: '#5249f',
+                                },
+                                height: '22.5px',
+                                bottom: 2
+                              }}
+                            >
+                              Delete
+                            </Button> */}
+                          </TableHead>
+                          <TableBody>
+                            {filteredRows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(row => {
+                              return (
+                                <TableRow
+                                  hover
+                                  role="checkbox"
+                                  tabIndex={-1}
+                                  key={row}
+                                  onDoubleClick={() => handleRowDoubleClick(row)}
+                                  style={{ cursor: 'pointer' }}
+                                  sx={{
+                                    '& > td': {
+                                      padding: '2px  14px 2px  24px',
+                                    },
+                                  }}
+                                >
+                                  {columns.map(column => {
+                                    const value = editState[row.propId]?.[column.id] ?? row[column.id];
+                                    return (
+                                      <TableCell key={column.id} align={column.align}>
+                                        {['totalRooms', 'startNo'].includes(column.id) ? (
+                                          <TextField
+                                            size="small"
+                                            value={value}
+                                            onChange={e => handleEditChange(row.propId, column.id, e.target.value)}
+                                            sx={{
+                                              '& .MuiOutlinedInput-input': {
+                                                padding: '2px 6px',
+                                              },
+                                            }}
+                                          />
+                                        ) : (
+                                          value
+                                        )}
+                                      </TableCell>
+                                    );
+                                  })}
+                                </TableRow>
+                              );
+                            })}
+                          </TableBody>
+                        </Table>
+                      </TableContainer>
+                      <TablePagination
+                        rowsPerPageOptions={[5, 10, 15, 100]}
+                        component="div"
+                        count={filteredRows.length}
+                        rowsPerPage={rowsPerPage}
+                        page={page}
+                        onPageChange={handleChangePage}
+                        onRowsPerPageChange={handleChangeRowsPerPage}
+                      />
+                    </Paper>
+                  </Box>
+                </>
+              );
+            case 2:
+              return (
+                <>
+                  <Box sx={{ maxWidth: '100vw', overflowX: 'hidden' }}>
+                    <Grid container gap={2}
+                      sx={{
+                        padding: '20px 30px',
+                        justifyContent: 'center',
+                        alignItems: 'center'
+                      }}
+                    >
+                      <Button
+                        id="basic-button"
+                        aria-controls={open ? 'basic-menu' : undefined}
+                        aria-haspopup="true"
+                        aria-expanded={open ? 'true' : undefined}
+                        onClick={handleMenuClick}
+                        sx={{
+                          backgroundColor: '#7c3aed ',
+                          color: 'white',
+                          '&:hover': {
+                            backgroundColor: '#7c3aed ',
+                          },
+                        }}
+                        variant="contained"
+                      >
+                        Add Amenity
+                      </Button>
+                      <Menu
+                        id="basic-menu"
+                        anchorEl={anchorEl}
+                        open={open}
+                        onClose={handleClose}
+                        MenuListProps={{
+                          'aria-labelledby': 'basic-button',
+                        }}
+                      >
+                        <>
+                          <List>
+                            <ListItem style={{ height: '450px', width: '200px', overflowY: 'auto' }}>
+                              <div>
+                                <h3>Select Floors</h3>
+                                <label>
+                                  <input
+                                    type="checkbox"
+                                    checked={selectAll}
+                                    onChange={handleSelectAll}
+                                  />
+                                  Select All
+                                </label>
+
+                                {floors.map((item) => (
+                                  <div key={item.id}>
+                                    <label>
+                                      <input
+                                        type="checkbox"
+                                        checked={item.isChecked}
+                                        onChange={() => handleCheckboxChange(item.id)}
+                                      />
+                                      {item.name}
+                                    </label>
+                                  </div>
+                                ))}
+                              </div>
+                            </ListItem>
+                          </List>
+                        </>
+                      </Menu>
+                      <Button
+                        variant="contained"
+                        onClick={deleteItem}
+                        sx={{
+                          backgroundColor: '#7c3aed ',
+                          color: 'white',
+                          '&:hover': {
+                            backgroundColor: '#7c3aed ',
+                          },
+                        }}
+                      >
+                        Clear All
+                      </Button>
+                    </Grid>
+                    <Grid item xs={12} className='form_field'>
+                      <Grid container spacing={1} gap={2}
+                        sx={{
+                          margin: '10px 0',
+                          justifyContent: 'center',
+                          alignItems: 'center'
+                        }}
+                      >
+                        <Button
+                          variant="contained"
+                          onClick={deleteItem}
+                          sx={{
+                            backgroundColor: '#7c3aed ',
+                            color: 'white',
+                            '&:hover': {
+                              backgroundColor: '#7c3aed ',
+                            },
+                            bottom: -3
+                          }}
+                        >
+                          Select
+                        </Button>
+                        <Button
+                          variant="contained"
+                          onClick={deleteItem}
+                          sx={{
+                            backgroundColor: '#7c3aed ',
+                            color: 'white',
+                            '&:hover': {
+                              backgroundColor: '#7c3aed ',
+                            },
+                            bottom: -3
+                          }}
+                        >
+                          Cancel
+                        </Button>
+                      </Grid>
+                    </Grid>
+                    <Paper sx={{ width: '34%', overflow: 'hidden', margin: '0px 0px 0px 50px', border: '1px solid lightgray' }}>
+                      <TableContainer sx={{ maxHeight: 450 }}>
+                        <Table stickyHeader aria-label="sticky table">
+                          <TableHead>
+                            <TableRow
+                              sx={{
+                                '& > th': {
+                                  padding: '2px  10px 2px  24px'
+                                },
+                              }}
+                            >
+                              {column.map(column => (
+                                <TableCell key={column.id} align={column.align} style={{ minWidth: column.minWidth }}>
+                                  <Typography variant="subtitle1" fontWeight="bold">
+                                    {column.label}
+                                  </Typography>
+                                  <TextField
+                                    size="small"
+                                    variant="outlined"
+                                    placeholder={`Search ${column.label}`}
+                                    onChange={e => handleSearchChange(column.id, e.target.value)}
+                                    sx={{
+                                      mt: 1,
+                                      margin: '0px',
+                                      '& .MuiOutlinedInput-input': {
+                                        padding: '2px 6px',
+                                      },
+                                    }}
+                                  />
+                                </TableCell>
+                              ))}
+                            </TableRow>
+                            {/* <Button
+                              variant="contained"
+                              onClick={handleClick}
+                              size='small'
+                              sx={{
+                                backgroundColor: '#635BFF',
+                                color: 'white',
+                                '&:hover': {
+                                  backgroundColor: '#5249f',
+                                },
+                                height: '22.5px',
+                                bottom: 2
+                              }}
+                            >
+                              Delete
+                            </Button> */}
+                          </TableHead>
+                          <TableBody>
+                            {filteredRows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(row => {
+                              return (
+                                <TableRow
+                                  hover
+                                  role="checkbox"
+                                  tabIndex={-1}
+                                  key={row}
+                                  onDoubleClick={() => handleRowDoubleClick(row)}
+                                  style={{ cursor: 'pointer' }}
+                                  sx={{
+                                    '& > td': {
+                                      padding: '2px  14px 2px  24px',
+                                    },
+                                  }}
+                                >
+                                  {columns.map(column => {
+                                    const value = editState[row.propId]?.[column.id] ?? row[column.id];
+                                    return (
+                                      <TableCell key={column.id} align={column.align}>
+                                        {['amenityName'].includes(column.id) ? (
+                                          <TextField
+                                            size="small"
+                                            value={value}
+                                            onChange={e => handleEditChange(row.propId, column.id, e.target.value)}
+                                            sx={{
+                                              '& .MuiOutlinedInput-input': {
+                                                padding: '2px 6px',
+                                              },
+                                            }}
+                                          />
+                                        ) : (
+                                          value
+                                        )}
+                                      </TableCell>
+                                    );
+                                  })}
+                                </TableRow>
+                              );
+                            })}
+                          </TableBody>
+                        </Table>
+                      </TableContainer>
+                      <TablePagination
+                        rowsPerPageOptions={[5, 10, 15, 100]}
+                        component="div"
+                        count={filteredRows.length}
+                        rowsPerPage={rowsPerPage}
+                        page={page}
+                        onPageChange={handleChangePage}
+                        onRowsPerPageChange={handleChangeRowsPerPage}
+                      />
+                    </Paper>
+                  </Box>
+                </>
               );
             default:
               return null;
@@ -923,7 +1588,7 @@ const PropertyMaster = () => {
     );
   };
   const handleStepClick = (step) => {
-    if (mode === 'view' || 'add') {
+    if (mode === 'view') {
       setActiveStep(step);
     }
   };
@@ -931,6 +1596,7 @@ const PropertyMaster = () => {
   return (
     <Grid >
       <Box className="form-container">
+        <ToastContainer />
         <Grid container spacing={2} className='rasidant_grid'>
           <Grid item xs={12} className='form_title' sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '20px' }}>
             <Grid>
@@ -939,8 +1605,8 @@ const PropertyMaster = () => {
                 size="small"
                 sx={{ backgroundColor: '#635BFF' }}
                 className='three-d-button-previous'
-                onClick={handlePrevious}
-                disabled={mode !== 'view' || !currentPropId || currentPropId === 1}
+                onClick={handleBackdata}
+                disabled={activeStep.length === 0 || mode !== 'view'}
               >
                 <KeyboardArrowLeftIcon />
               </Button>
@@ -949,20 +1615,22 @@ const PropertyMaster = () => {
                 size="small"
                 className='three-d-button-next'
                 sx={{ backgroundColor: '#635BFF', margin: '0px 10px' }}
-                onClick={handleNext}
-                disabled={mode !== 'view' || !currentPropId}
+                onClick={handleNextdata}
+                disabled={activeStep === steps.length - 1 || mode !== 'view'}
               >
                 <NavigateNextIcon />
               </Button>
             </Grid>
-            <Typography sx={{ color: 'Brown' }} variant="h5">Property Master</Typography>
+
+            <Typography variant="h5">Property Master</Typography>
+
             <Grid sx={{ display: 'flex', justifyContent: 'end' }}>
               <Button
                 variant="contained"
                 size="small"
                 sx={{ backgroundColor: '#7c3aed' }}
                 onClick={handleAdd}
-                disabled={mode !== 'view' || !currentPropId}
+                disabled={mode !== 'view'}
               >
                 <AddIcon />
               </Button>
@@ -971,7 +1639,7 @@ const PropertyMaster = () => {
                 size="small"
                 sx={{ backgroundColor: '#7c3aed', margin: '0px 10px' }}
                 onClick={handleEdit}
-                disabled={mode !== 'view' || !currentPropId}
+                disabled={mode !== 'view'}
               >
                 <EditIcon />
               </Button>
@@ -979,8 +1647,8 @@ const PropertyMaster = () => {
                 variant="contained"
                 size="small"
                 sx={{ backgroundColor: '#7c3aed' }}
-                onClick={handleDeleteClick}
-                disabled={mode !== 'view' || !currentPropId || currentPropId === 1}
+                onClick={handleDelete}
+                disabled={mode !== 'view'}
               >
                 <DeleteIcon />
               </Button>
@@ -989,16 +1657,16 @@ const PropertyMaster = () => {
                 size="small"
                 sx={{ backgroundColor: '#7c3aed', margin: '0px 10px' }}
                 onClick={handleExit}
-                disabled={mode !== 'view' || !currentPropId}
+                disabled={mode !== 'view'}
               >
                 <CancelPresentationIcon />
               </Button>
             </Grid>
           </Grid>
           <Grid item xs={12} >
-            <Stepper activeStep={activeStep} connector={<CustomStepConnector />} alternativeLabel>
+            <Stepper activeStep={activeStep} connector={<CustomStepConnector />} >
               {steps.map((label, index) => (
-                <Step key={label} onClick={() => handleStepClick(index)} style={{ cursor: mode === 'view' || 'add' ? 'pointer' : 'default' }}>
+                <Step key={label} onClick={() => handleStepClick(index)} style={{ cursor: mode === 'view' ? 'pointer' : 'default' }}>
                   <CustomStepLabel
                     StepIconComponent={(props) => (
                       <CustomStepIcon ownerState={{ ...props, active: activeStep === index }}>
@@ -1013,61 +1681,165 @@ const PropertyMaster = () => {
             </Stepper>
           </Grid>
 
-          {activeStep === 1 ? (<>
-            <Paper sx={{ width: '90%', overflow: 'hidden', margin: '0px 0px 0px 50px', border: '1px solid lightgray' }}>
-
-            </Paper>
-          </>) : ('')
-          }
-
           <Grid item xs={12}>
             {renderStepContent(activeStep)}
           </Grid>
 
           <Grid item xs={12} className="form_button">
-            {mode === 'view' && (
-              <>
-                <Button variant="contained" sx={{ mr: 1, background: 'linear-gradient(290deg, #d4d4d4, #ffffff)' }} onClick={handleAdd} disabled>
-                  Submit
-                </Button>
-                <Button variant="contained" sx={{ mr: 1, background: 'linear-gradient(290deg, #a7c5e9, #ffffff)' }} onClick={handleEdit}
-                  disabled
-                >
-                  Cancel
-                </Button>
-              </>
-            )}
-            {(mode === 'edit' || mode === 'add') && (
-              <>
+            <Button
+              variant="contained"
+              size="small"
+              // sx={{ backgroundColor: '#7c3aed', mr: 1 }}
+              sx={{ mr: 1, background: 'linear-gradient(290deg, #b9d0e9, #e9f2fa)' }}
+              onClick={handleBack}
+              disabled={activeStep === 0 || mode === 'view'}
 
-                <Button variant="contained" sx={{ mr: 1 }} onClick={handleSave}>
-                  Submit
-                </Button>
-                <Button variant="contained" sx={{ mr: 1 }} onClick={handleCancel}>
-                  Cancel
-                </Button>
+            >
+              {/* {activeStep === steps.length - 1 ? 'Previous' : ''} */}
+              Previous
+            </Button>
+            <Button
+              variant="contained"
+              onClick={handleNext}
+              // sx={{ mr: 1 }}
+              sx={{ mr: 1, background: 'linear-gradient(290deg, #d4d4d4, #d4d4d4)' }}
+              disabled={mode === "view"}
+            >
+              {activeStep === steps.length - 1 ? 'Submit' : 'Next'}
 
-              </>
-            )}
+            </Button>
+            <Button
+              variant="contained"
+              onClick={handleCancel}
+              // sx={{ mr: 1 }}
+              disabled={mode === "view"}
+              sx={{ mr: 1, background: 'linear-gradient(290deg, #b9d0e9, #e9f2fa)' }}
+            >
+              Cancel
+            </Button>
           </Grid>
         </Grid>
       </Box>
+      <ConfirmDialog
+        open={isConfirmDialogOpen}
+        onClose={() => setIsConfirmDialogOpen(false)}
+        title="Confirm Delete"
+        content="Are you sure you want to delete this data?"
+        onConfirm={handleConfirmDelete}
+      />
 
-      {/* Delete Confirmation Modal */}
+      {/* Floor Modal */}
       <Dialog
         open={openConfirmDialog}
-        onClose={handleCloseConfirmDialog}
+        onClose={closeConfirmation}
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
+        sx={{
+          '& .MuiDialog-paper': {
+            width: '500px',
+            height: '230px',
+            padding: '20px'
+            // maxWidth: 'none'
+          }
+        }}
       >
         <DialogTitle id="alert-dialog-title">
-          {"Confirm Deletion"}
+          <Grid item lg={12} md={12} xs={12}>
+
+            <Box display="flex" justifyContent="space-between" gap={2}>
+              <Grid container spacing={2} >
+                <Grid item xs={12} md={6} className='form_field'>
+                  <FormControl variant="filled" fullWidth className="custom-select">
+                    <InputLabel id="name-select-label">Wing</InputLabel>
+                    <Select
+                      labelId="name-select-label"
+                      id="name-select"
+                      name="name"
+                      value={formData.name}
+                      onChange={handleInputChange}
+                      className="custom-textfield"
+                    >
+                      {wings.map((name) => (
+                        <MenuItem key={name.id} value={name.id}>
+                          {name.name}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                </Grid>
+                <Grid item xs={12} md={6} >
+                  <Button
+                    variant="contained"
+                    size="small"
+                    sx={{ backgroundColor: '#7c3aed' }}
+                    onClick={handleClick}
+                  // disabled={mode !== 'view'}
+                  >
+                    <AddIcon /><Typography style={{ marginLeft: '2px' }}>Add Floors</Typography>
+                  </Button>
+                </Grid>
+              </Grid>
+            </Box>
+            <Grid item xs={12} md={6} className='form_field' style={{ marginTop: '20px' }}>
+              <Button
+                id="basic-button"
+                aria-controls={open ? 'basic-menu' : undefined}
+                aria-haspopup="true"
+                aria-expanded={open ? 'true' : undefined}
+                onClick={handleMenuClick}
+                variant="contained"
+              >
+                Floors
+              </Button>
+              <Menu
+                id="basic-menu"
+                anchorEl={anchorEl}
+                open={open}
+                onClose={handleClose}
+                MenuListProps={{
+                  'aria-labelledby': 'basic-button',
+                }}
+              >
+                <>
+                  <List>
+                    <ListItem style={{ height: '450px', width: '200px', overflowY: 'auto' }}>
+                      <div>
+                        <h3>Select Floors</h3>
+                        <label>
+                          <input
+                            type="checkbox"
+                            checked={selectAll}
+                            onChange={handleSelectAll}
+                          />
+                          Select All
+                        </label>
+
+                        {floors.map((item) => (
+                          <div key={item.id}>
+                            <label>
+                              <input
+                                type="checkbox"
+                                checked={item.isChecked}
+                                onChange={() => handleCheckboxChange(item.id)}
+                              />
+                              {item.name}
+                            </label>
+                          </div>
+                        ))}
+                      </div>
+                    </ListItem>
+                  </List>
+                </>
+              </Menu>
+
+            </Grid>
+          </Grid>
         </DialogTitle>
-        <DialogContent>
+        {/* <DialogContent>
           <DialogContentText id="alert-dialog-description">
-            Are you sure you want to delete this record?
+            Are you sure you want to select this record?
           </DialogContentText>
-        </DialogContent>
+        </DialogContent> */}
         <DialogActions>
           <Button
             sx={{
@@ -1078,9 +1850,9 @@ const PropertyMaster = () => {
                 color: 'white'
               }
             }}
-            onClick={handleConfirmDelete}
+          onClick={handleConfirmDelete}
           >
-            Yes
+            Select
           </Button>
           <Button
             sx={{
@@ -1091,9 +1863,9 @@ const PropertyMaster = () => {
                 color: 'white'
               }
             }}
-            onClick={handleCloseConfirmDialog}
+            onClick={closeConfirmation}
           >
-            No
+            Cancel
           </Button>
         </DialogActions>
       </Dialog>
@@ -1101,4 +1873,4 @@ const PropertyMaster = () => {
   );
 };
 
-export default PropertyMaster;
+export default StepperForm;

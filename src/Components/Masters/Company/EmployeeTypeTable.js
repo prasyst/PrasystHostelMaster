@@ -12,7 +12,7 @@ import { Breadcrumbs, Link, Typography, Box, Button, TextField } from '@mui/mate
 import { useNavigate } from 'react-router-dom';
 
 const columns = [
-  { id: 'empTypeName', label: 'EmpType', minWidth: 100 },
+  { id: 'empTypeName', label: 'Type', minWidth: 100 },
   { id: 'remark', label: 'Remark', minWidth: 100 }
 ];
 
@@ -38,8 +38,8 @@ export default function EmployeeTypeTable() {
       if (response.data.status === 0) {
         const formattedData = response.data.data.map(empType => ({
           ...empType,
-          empTypeName: empType.empTypeName || '',
-          remark: empType.remark
+          empTypeName: empType.empTypeName || 'NA',
+          remark: empType.remark || 'NA'
         }));
         setRows(formattedData);
         console.log('data', response);

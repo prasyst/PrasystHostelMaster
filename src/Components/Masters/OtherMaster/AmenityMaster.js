@@ -3,7 +3,7 @@ import { useRef } from 'react';
 import Grid from '@mui/material/Grid';
 import { styled } from '@mui/material/styles';
 import TextField from '@mui/material/TextField';
-import {Typography} from '@mui/material';
+import { Typography } from '@mui/material';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
@@ -22,34 +22,22 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
-
-const CustomTextField = styled(TextField)(({ theme }) => ({
-  '& .MuiFilledInput-root': {
-    backgroundColor: 'transparent',
-    border: '1px solid #e0e0e0',
-    borderRadius: '4px',
-  },
-  '& .Mui-focused': {
-    borderColor: '#673ab7',
-  },
-  '& .MuiFilledInput-root.Mui-focused': {
-    border: '1px solid #673ab7',
-  },
-}));
+import { FloorAutocomplete } from '../../../Components/AutoComplete/AutoComplete'
 
 const AmenityMaster = () => {
 
   const [formData, setFormData] = useState({
     amenityName: '',
     amenity_Desc: '',
+    floorName: '',
+    areaSqFt: '',
     remark: '',
     photo: ''
   });
 
   const [error, setError] = useState({
     amenityName: false,
-    amenity_Desc: false,
-    remark: false
+    amenity_Desc: false
   });
 
   const navigate = useNavigate();
@@ -61,6 +49,8 @@ const AmenityMaster = () => {
   const [currentAmenityId, setCurrentAmenityId] = useState(null);
   const [isViewMode, setIsViewMode] = useState(false);
   const [mode, setMode] = useState('view');
+  const [wings, setWings] = useState([]);
+  const [floors, setFloors] = useState([]);
   const [photo, setPhoto] = useState('');
   const [file, setFile] = useState(null);
   const [lastInsertedAmenityId, setLastInsertedAmenityId] = useState(null);
@@ -68,20 +58,39 @@ const AmenityMaster = () => {
 
   const amenityNameRef = useRef(null);
   const amenity_DescRef = useRef(null);
+  const areaSqFtRef = useRef(null);
+  const floorRef = useRef(null);
   const remarkRef = useRef(null);
 
   const handleFileChange = (event) => {
     const file = event.target.files[0];
     if (file) {
-      const imageUrl = URL.createObjectURL(file);
-      setFormData({ ...formData, photo: imageUrl });
-      // setFormData((prevData) => ({
-      //   ...prevData,
-      //   photo: imageUrl,
-      // }));
-      setPhoto(imageUrl);
+      const reader = new FileReader();
+
+      const readFileAsBase64 = (file) => {
+        return new Promise((resolve, reject) => {
+          reader.onloadend = () => {
+            resolve(reader.result); 
+          };
+          reader.onerror = reject;
+          reader.readAsDataURL(file);
+        });
+      };
+
+      readFileAsBase64(file)
+        .then(base64String => {
+          setFormData(prevData => ({
+            ...prevData,
+            photo: base64String
+          }));
+        })
+        .catch(err => {
+          console.error('Error reading file:', err);
+          toast.error('Error reading file. Please try again.');
+        });
     }
   };
+
 
   useEffect(() => {
     if (location.state && location.state.amenityId) {
@@ -108,6 +117,8 @@ const AmenityMaster = () => {
           amenityName: amenityData.amenityName,
           amenity_Desc: amenityData.amenity_Desc,
           remark: amenityData.remark,
+          floorName: amenityData.floorId.toString(),
+          areaSqFt: amenityData.areaSqFt,
           photo: amenityData.photo
         });
         setIsFormDisabled(true);
@@ -122,6 +133,26 @@ const AmenityMaster = () => {
       toast.error('Error fetching AmenityMaster data. Please try again.');
     }
   };
+
+  useEffect(() => {
+    const fetchFloors = async (flag) => {
+      try {
+        const response = await axios.post(`${process.env.REACT_APP_API_URL}FloorMst/getFloorMstdrp`, {
+          Flag: flag
+        });
+        if (response.data.status === 0 && response.data.responseStatusCode === 1) {
+          setFloors(response.data.data);
+        } else {
+          toast.error('Failed to fetch Floors');
+        }
+      } catch (error) {
+        console.error('Error fetching Floors:', error);
+        toast.error('Error fetching Floors. Please try again.');
+      }
+    };
+
+    fetchFloors();
+  }, []);
 
   const handlePrevious = async () => {
     if (currentAmenityId && currentAmenityId > 1) {
@@ -159,10 +190,14 @@ const AmenityMaster = () => {
 
   const handleKeyPress = (event) => {
     if (event.key === 'Enter') {
-      if (event.target === amenity_DescRef.current) {
-        remarkRef.current.focus();
-      } else {
+      if (event.target === amenityNameRef.current) {
         amenity_DescRef.current.focus();
+      } else if (event.target === amenity_DescRef.current){
+        floorRef.current.focus();
+      }else if (event.target === floorRef.current){
+        areaSqFtRef.current.focus();
+      }else {
+        remarkRef.current.focus();
       }
     }
   };
@@ -180,46 +215,26 @@ const AmenityMaster = () => {
       setError(prev => ({ ...prev, amenityName: false }));
     }
 
-    if (!formData.amenity_Desc) {
-      toast.error('Amenity_Desc is required');
-      setError(prev => ({ ...prev, amenity_Desc: true }));
+    if (!formData.floorName) {
+      toast.error('Floor is required');
+      setError(prev => ({ ...prev, floorName: true }));
       hasError = true;
     } else {
-      setError(prev => ({ ...prev, amenity_Desc: false }));
-    }
-
-    if (!formData.photo) {
-      toast.error('Photo is required');
-      setError(prev => ({ ...prev, photo: true }));
-      hasError = true;
-    } else {
-      setError(prev => ({ ...prev, photo: false }));
+      setError(prev => ({ ...prev, floorName: false }));
     }
 
     if (hasError) {
       return;
     }
 
-    // const convertToBase64 = (file) => {
-    //   return new Promise((resolve, reject) => {
-    //     const reader = new FileReader();
-    //     reader.readAsDataURL(file);
-    //     reader.onloadend = () => {
-    //       resolve(reader.result);
-    //     };
-    //     reader.onerror = reject;
-    //   });
-    // };
-
-    // const photoBase64 = await convertToBase64(formData.photo);
-
     try {
       const payload = {
         amenityName: formData.amenityName,
         amenity_Desc: formData.amenity_Desc,
+        floorId: parseInt(formData.floorName),
+        areaSqFt: formData.areaSqFt,
         remark: formData.remark,
         photo: formData.photo,
-        // photo: photoBase64,
         status: "1"
       };
 
@@ -237,14 +252,7 @@ const AmenityMaster = () => {
           setLastInsertedAmenityId(response.data.data)
           console.log(response.data.data)
           await fetchAmenityMasterData(response.data.data);
-          // setFormData({
-          //   country: '',
-          //   state: '',
-          //   zone: '',
-          //   city: '',
-          //   shortName: '',
-          //   cityCode: ''
-          // });
+
           setMode('view');
           setIsFormDisabled(true);
           setCurrentAmenityId(response.data.data);
@@ -274,6 +282,8 @@ const AmenityMaster = () => {
       amenityName: '',
       amenity_Desc: '',
       remark: '',
+      areaSqFt: '',
+      floorName: '',
       photo: ''
     });
     setCurrentAmenityId(null);
@@ -298,6 +308,8 @@ const AmenityMaster = () => {
       amenityName: '',
       amenity_Desc: '',
       remark: '',
+      areaSqFt: '',
+      floorName: '',
       photo: ''
     });
     setCurrentAmenityId(null);
@@ -322,8 +334,7 @@ const AmenityMaster = () => {
       await fetchAmenityMasterData(currentAmenityId, "N");
       setMode('view');
       setIsFormDisabled(true);
-      // resetForm();
-      // setMode('add');
+      
     } catch (error) {
       console.error('Error deleting Amenity Master:', error);
       toast.error('Error occurred while deleting. Please try again.');
@@ -402,132 +413,157 @@ const AmenityMaster = () => {
             </Grid>
           </Grid>
 
-          {/* <Grid container spacing={2}> */}
-            {/* <Grid container spacing={2}> */}
-              <Grid item lg={8} md={8} xs={12}>
+         
+          <Grid item lg={8} md={8} xs={12}>
+            <Box display="flex" flexDirection="column" gap={2}>
+              <Grid item lg={12} md={12} xs={12}>
+                
                 <Box display="flex" flexDirection="column" gap={2}>
-                  <Grid item lg={12} md={12} xs={12}>
-                    {/* <Grid container spacing={3}> */}
-                    <Box display="flex" flexDirection="column" gap={2}>
-                      <Grid container spacing={2}>
-                        <Grid item xs={12} md={6} lg={6}>
-                          <TextField
-                            id="amenityName"
-                            name="amenityName"
-                            label={
-                              <span>
-                                Amenity Name <span style={{ color: 'red' }}>*</span>
-                              </span>
-                            }
-                            variant="filled"
-                            fullWidth
-                            className="custom-textfield"
-                            value={formData.amenityName}
-                            onChange={handleInputChange}
-                            disabled={isFormDisabled}
-                            error={error.amenityName}
-                            helperText={error.amenityName && ""}
-                            inputRef={amenityNameRef}
-                            onKeyDown={handleKeyPress}
-                          />
-                        </Grid>
-                        <Grid item xs={12} md={6} lg={6}>
-                          <TextField
-                            id="amenity_Desc"
-                            name="amenity_Desc"
-                            label="Amenity Desc"
-                            variant="filled"
-                            fullWidth
-                            className="custom-textfield"
-                            value={formData.amenity_Desc}
-                            onChange={handleInputChange}
-                            disabled={isFormDisabled}
-                            error={error.amenity_Desc}
-                            helperText={error.amenity_Desc && ""}
-                            inputRef={amenity_DescRef}
-                            onKeyDown={handleKeyPress}
-                          />
-                        </Grid>
-                      </Grid>
-                    </Box>
-
-                  </Grid>
                   <Grid container spacing={2}>
                     <Grid item xs={12} md={6} lg={6}>
                       <TextField
-                        id="remark"
-                        name="remark"
-                        label="Remark"
+                        id="amenityName"
+                        name="amenityName"
+                        label={
+                          <span>
+                            Amenity Name <span style={{ color: 'red' }}>*</span>
+                          </span>
+                        }
                         variant="filled"
                         fullWidth
                         className="custom-textfield"
-                        value={formData.remark}
+                        value={formData.amenityName}
                         onChange={handleInputChange}
                         disabled={isFormDisabled}
-                        error={error.remark}
-                        helperText={error.remark && ""}
-                        inputRef={remarkRef}
+                        error={error.amenityName}
+                        helperText={error.amenityName && ""}
+                        inputRef={amenityNameRef}
+                        onKeyDown={handleKeyPress}
+                      />
+                    </Grid>
+                    <Grid item xs={12} md={6} lg={6}>
+                      <TextField
+                        id="amenity_Desc"
+                        name="amenity_Desc"
+                        label="Description"
+                        variant="filled"
+                        fullWidth
+                        className="custom-textfield"
+                        value={formData.amenity_Desc}
+                        onChange={handleInputChange}
+                        disabled={isFormDisabled}
+                        error={error.amenity_Desc}
+                        helperText={error.amenity_Desc && ""}
+                        inputRef={amenity_DescRef}
+                        onKeyDown={handleKeyPress}
                       />
                     </Grid>
                   </Grid>
+                </Box>
 
-                </Box>
               </Grid>
-              <Grid item lg={4} md={4} xs={12} display="flex" alignItems="center" justifyContent="center">
-                <Box
-                  display="flex"
-                  flexDirection="column"
-                  alignItems="center"
-                  justifyContent="center"
-                  gap={2}
-                  border="1px solid #ccc"
-                  borderRadius={1}
-                  width={130}
-                  height={150}
-                  overflow="hidden"
-                  position="relative"
-                >
-                  {formData.photo ? (
-                    <img
-                      src={formData.photo}
-                      alt="Uploaded Preview"
-                      style={{
-                        width: '100%',
-                        height: '100%',
-                        objectFit: 'cover',
-                      }}
-                    />
-                  ) : (
-                    <Typography
-                      variant="body2"
-                      color="textSecondary"
-                      style={{ textAlign: 'center' }}
-                    >
-                      Photo
-                    </Typography>
-                  )}
-                </Box>
-                <input
-                  accept="image/*"
-                  style={{ display: 'none' }}
-                  id="upload-photo"
-                  type="file"
-                  onChange={handleFileChange}
+              <Grid container spacing={2}>
+                <Grid item xs={12} md={6} lg={6} className='form_field'>
+                  <FloorAutocomplete
+                    floors={floors}
+                    value={floors.find(floorName => floorName.id == formData.floorName) || null}
+                    onChange={handleInputChange}
+                    disabled={isFormDisabled}
+                    error={error.floorName}
+                    helperText={error.floorName ? '' : ''}
+                    ref={floorRef}
+                    onKeyDown={handleKeyPress}
+                  />
+                </Grid>
+                <Grid item xs={12} md={6} lg={6}>
+                  <TextField
+                    id="areaSqFt"
+                    name="areaSqFt"
+                    label="AreaSqFt"
+                    variant="filled"
+                    fullWidth
+                    className="custom-textfield"
+                    value={formData.areaSqFt}
+                    onChange={handleInputChange}
+                    disabled={isFormDisabled}
+                    error={error.areaSqFt}
+                    helperText={error.areaSqFt && ""}
+                    inputRef={areaSqFtRef}
+                    onKeyDown={handleKeyPress}
+                  />
+                </Grid>
+                <Grid item xs={12} md={12} lg={12}>
+                  <TextField
+                    id="remark"
+                    name="remark"
+                    label="Remark"
+                    variant="filled"
+                    fullWidth
+                    className="custom-textfield"
+                    value={formData.remark}
+                    onChange={handleInputChange}
+                    disabled={isFormDisabled}
+                    error={error.remark}
+                    helperText={error.remark && ""}
+                    inputRef={remarkRef}
+                  />
+                </Grid>
+              </Grid>
+
+            </Box>
+          </Grid>
+          <Grid item lg={4} md={4} xs={12} display="flex" alignItems="center" justifyContent="center">
+            <Box
+              display="flex"
+              flexDirection="column"
+              alignItems="center"
+              justifyContent="center"
+              gap={2}
+              border="1px solid #ccc"
+              borderRadius={1}
+              width={130}
+              height={150}
+              overflow="hidden"
+              position="relative"
+            >
+              {formData.photo ? (
+                <img
+                  src={formData.photo}
+                  alt="Uploaded Preview"
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                    objectFit: 'cover',
+                  }}
                 />
-                <label htmlFor="upload-photo">
-                  <Button
-                    // variant="contained"
-                    component="span"
-                    style={{ marginTop: '5px' }}
-                  >
-                    Upload Image
-                  </Button>
-                </label>
-              </Grid>
-
-            {/* </Grid> */}
-
-          {/* </Grid> */}
+              ) : (
+                <Typography
+                  variant="body2"
+                  color="textSecondary"
+                  style={{ textAlign: 'center' }}
+                >
+                  Photo
+                </Typography>
+              )}
+            </Box>
+            <input
+              accept="image/*"
+              style={{ display: 'none' }}
+              disabled={isFormDisabled}
+              id="upload-photo"
+              type="file"
+              onChange={handleFileChange}
+            />
+            <label htmlFor="upload-photo">
+              <Button
+                // variant="contained"
+                component="span"
+                style={{ marginTop: '5px' }}
+              >
+                Upload Image
+              </Button>
+            </label>
+          </Grid>
 
           <Grid item xs={12} className="form_button">
             {mode === 'view' && (
@@ -536,7 +572,6 @@ const AmenityMaster = () => {
                   Submit
                 </Button>
                 <Button variant="contained" sx={{ mr: 1, background: 'linear-gradient(290deg, #a7c5e9, #ffffff)' }} onClick={handleEdit}
-                  // disabled={!currentZoneId}
                   disabled
                 >
                   Cancel

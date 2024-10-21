@@ -12,8 +12,8 @@ import { Breadcrumbs, Link, Typography, Box, Button, TextField } from '@mui/mate
 import { useNavigate } from 'react-router-dom';
 
 const columns = [
-  { id: 'instituteName', label: 'Institute Name', minWidth: 100 },
-  { id: 'courseName', label: 'Course Name', minWidth: 100 },
+  // { id: 'instituteName', label: 'Institute Name', minWidth: 100 },
+  { id: 'courseName', label: 'Course', minWidth: 100 },
   { id: 'coursePeriod', label: 'Course Period', minWidth: 100 },
   { id: 'remark', label: 'Remark', minWidth: 100 }
 ];
@@ -40,7 +40,7 @@ export default function CourseMasterTable() {
       if (response.data.status === 0) {
         const formattedData = response.data.data.map(course => ({
           ...course,
-          instituteName: course.instituteName || '',
+          // instituteName: course.instituteName || '',
           courseName: course.courseName || '',
           coursePeriod: course.coursePeriod || '',
           remark: course.remark
@@ -97,7 +97,7 @@ export default function CourseMasterTable() {
     navigate('/course', { state: { courseId ,mode: 'view'}} );
   };
   const handleLocationclick=()=>{
-    navigate('/masters/people')
+    navigate('/masters/arap')
   }
 
   return (
@@ -116,7 +116,7 @@ export default function CourseMasterTable() {
             <Link onClick={handleHomeClick} className="text-d-none" underline="hover" color="inherit" sx={{cursor:'pointer'}}>
               Home
             </Link>
-            <Typography color="text.primary" onClick={handleLocationclick} sx={{cursor:'pointer'}}>AR/AP</Typography>
+            <Typography color="text.primary" onClick={handleLocationclick} sx={{cursor:'pointer'}}>ARAP</Typography>
             <Typography color="text.primary">Course Master</Typography>
           </Breadcrumbs>
 
@@ -161,8 +161,7 @@ export default function CourseMasterTable() {
                         placeholder={`Search ${column.label}`}
                         onChange={(e) => handleSearchChange(column.id, e.target.value)}
                         sx={{ mt: 1 ,margin:'0px' ,'& .MuiOutlinedInput-input': {
-                         padding: '2px 6px',
-                         width: '125px'  
+                         padding: '2px 6px'
                          },}}
 
                       />

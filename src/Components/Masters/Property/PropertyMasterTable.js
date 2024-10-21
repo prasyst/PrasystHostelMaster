@@ -12,26 +12,18 @@ import { Breadcrumbs, Link, Typography, Box, Button, TextField } from '@mui/mate
 import { useNavigate } from 'react-router-dom';
 
 const columns = [
-  { id: 'coName', label: 'Company Name', minWidth: 100 },
-  { id: 'branchName', label: 'Branch Name', minWidth: 100 },
-  { id: 'propName', label: 'PropName', minWidth: 170 },
+  { id: 'propName', label: 'Property', minWidth: 170 },
   { id: 'sqFt', label: 'SqFt', minWidth: 100 },
   { id: 'pinCode', label: 'Pincode', minWidth: 100 },
-  { id: 'areaName', label: 'Area', minWidth: 100 },
-  // { id: 'cityName', label: 'City', minWidth: 100 },
-  // { id: 'stateName', label: 'State', minWidth: 100 },
-  // { id: 'countryName', label: 'Country', minWidth: 100 },
-  { id: 'propEmail', label: 'PropEmail', minWidth: 100 },
-  { id: 'propTel', label: 'PropTel', minWidth: 100 },
-  { id: 'propTypName', label: 'PropTypName', minWidth: 100 },
-  { id: 'propMob', label: 'PropMob', minWidth: 100 },
-  { id: 'totalRooms', label: 'TotalRooms', minWidth: 100 },
-  { id: 'totalBeds', label: 'TotalBeds', minWidth: 100 },
-  // { id: 'propImg', label: 'PropImage', minWidth: 100 },
-  { id: 'hodEmpName', label: 'HodEmp Name', minWidth: 100 },
-  { id: 'wardenEmpName', label: 'WardenEmp Name', minWidth: 100 },
-  { id: 'propAdd', label: 'PropAddress', minWidth: 100 },
-  // { id: 'propGPSLoc', label: 'PropGPSLoc', minWidth: 100 },
+  { id: 'cityName', label: 'City', minWidth: 100 },
+  { id: 'propEmail', label: 'Email ID', minWidth: 100 },
+  { id: 'propTel', label: 'Telephone', minWidth: 100 },
+  { id: 'propTypName', label: 'Type', minWidth: 100 },
+  { id: 'propMob', label: 'Mobile', minWidth: 100 },
+  { id: 'totalRooms', label: 'Rooms', minWidth: 100 },
+  { id: 'totalBeds', label: 'Beds', minWidth: 100 },
+  { id: 'hodEmpName', label: 'Hod', minWidth: 100 },
+  { id: 'wardenEmpName', label: 'Warden', minWidth: 100 }
 ];
 
 export default function PropertyTable() {
@@ -47,43 +39,39 @@ export default function PropertyTable() {
 
   const fetchPropertyData = async () => {
     try {
-      const response = await axios.post('http://43.230.196.21/api/PropertyMst/getAllPropertyMstDashBoard', {
+      const response = await axios.post(`${process.env.REACT_APP_API_URL}PropertyMst/getAllPropertyMstDashBoard`, {
         start: 1,
         PageSize: 1,
         SearchText: ""
       });
-      
       if (response.data.status === 0) {
         const formattedData = response.data.data.map(property => ({
           ...property,
-          coName: property.coName || '',
+          propertyId: property.propId,
+          companyName: property.companyName || '',
           branchName: property.branchName || '',
           propName: property.propName || '',
           sqFt: property.sqFt || '',
           pinCode: property.pinCode || '',
           areaName: property.areaName || '',
-          // cityName: property.cityName || '',
-          // stateName: property.stateName || '',
-          // countryName: property.countryName || '',
+          cityName: property.cityName || '',
           propEmail: property.propEmail || '',
           propTel: property.propTel || '',
           propTypName: property.propTypName || '',
           propMob: property.propMob || '',
           totalRooms: property.totalRooms || '',
           totalBeds: property.totalBeds || '',
-          // propImg: property.propImg || '',
-          hodEmpName: property.hodEmpName || '',
-          wardenEmpName: property.wardenEmpName || '',
+          hodEmpName: property.hodEmpName,
+          wardenEmpName: property.wardenEmpName,
           propAdd: property.propAdd
-          // propGPSLoc: property.propGPSLoc
         }));
+        console.log('for',formattedData)
         setRows(formattedData);
-        console.log('data', response);
       } else {
-        console.error('Error fetching property data:', response.data.message);
+        console.error('Error fetching company data:', response.data.message);
       }
     } catch (error) {
-      console.error('Error fetching property data:', error);
+      console.error('Error fetching company data:', error);
     }
   };
 
@@ -124,9 +112,9 @@ export default function PropertyTable() {
     });
   }, [searchTerms, rows]);
 
-  const handleRowDoubleClick = (propId) => {
-  
-    navigate('/property-master', { state: { propId ,mode: 'view'}} );
+  const handleRowDoubleClick = (propertyId) => {
+     console.log('propertyid',propertyId)
+    navigate('/property-master', { state: { propertyId ,mode: 'view'}} );
   };
   const handleLocationclick=()=>{
     navigate('/masters/property')
@@ -167,14 +155,14 @@ export default function PropertyTable() {
             Add New Record
           </Button>
         </Box>
-        <Paper sx={{ width: '100%', overflow: 'hidden', margin: '0px 0px 0px 50px', border:'1px solid lightgray' }}>
+        <Paper sx={{ width: '90%', overflow: 'hidden', margin: '0px 0px 0px 50px', border:'1px solid lightgray' }}>
           <TableContainer sx={{ maxHeight: 450 }}>
             <Table stickyHeader aria-label="sticky table">
             <TableHead>
                 <TableRow
                   sx={{ 
                     '& > th': { 
-                      padding: '2px  10px 2px  10px' 
+                      padding: '2px  10px 2px  10px'
                     }
                   }}
                 >
@@ -193,8 +181,7 @@ export default function PropertyTable() {
                         placeholder={`Search ${column.label}`}
                         onChange={(e) => handleSearchChange(column.id, e.target.value)}
                         sx={{ mt: 1 ,margin:'0px' ,'& .MuiOutlinedInput-input': {
-                         padding: '2px 6px',
-                         width: '125px'  
+                         padding: '2px 6px',  
                          },}}
 
                       />
@@ -207,8 +194,8 @@ export default function PropertyTable() {
                   .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                   .map((row) => {
                     return (
-                      <TableRow hover role="checkbox" tabIndex={-1} key={row.propId}
-                      onDoubleClick={() => handleRowDoubleClick(row.propId)}
+                      <TableRow hover role="checkbox" tabIndex={-1} key={row.propertyId}
+                      onDoubleClick={() => handleRowDoubleClick(row.propertyId)}
                       style={{ cursor: 'pointer' }}
                       sx={{ 
                         '& > td': { 

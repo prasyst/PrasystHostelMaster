@@ -38,7 +38,7 @@ const OtherMaster = () => {
                 </Box>
               </Item>
             </Grid>
-            <Grid item xs={3}>
+            {/* <Grid item xs={3}>
               <Item>
                 <img 
                   src={img1} 
@@ -46,10 +46,10 @@ const OtherMaster = () => {
                   style={{ width: '100px', height: '100px', borderRadius: '50%' }} 
                 />
                 <Box sx={{ textAlign: 'center', marginTop: 1 }}>
-                  <Link to='/amenitytable'>Amenities Master</Link>
+                  <Link to='#'>Amenities Master</Link>
                 </Box>
               </Item>
-            </Grid>
+            </Grid> */}
             <Grid item xs={3}>
               <Item>
                 <img 

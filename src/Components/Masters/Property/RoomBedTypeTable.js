@@ -12,7 +12,7 @@ import { Breadcrumbs, Link, Typography, Box, Button, TextField } from '@mui/mate
 import { useNavigate } from 'react-router-dom';
 
 const columns = [
-  { id: 'roomBedTypeName', label: 'RoomBedType Name', minWidth: 100 },
+  { id: 'roomBedTypeName', label: 'Type', minWidth: 100 },
   { id: 'remark', label: 'Remark', minWidth: 100 }
 ];
 
@@ -40,8 +40,8 @@ export default function RoomBedTypeTable() {
       if (response.data.status === 0) {
         const formattedData = response.data.data.map(roomBedType => ({
           ...roomBedType,
-          roomBedTypeName: roomBedType.roomBedTypeName || 'N/A',
-          remark: roomBedType.remark || 'N/A'
+          roomBedTypeName: roomBedType.roomBedTypeName || '',
+          remark: roomBedType.remark || ''
         }));
         setRows(formattedData);
         console.log('data:', response);
