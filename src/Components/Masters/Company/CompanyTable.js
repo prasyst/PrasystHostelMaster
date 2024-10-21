@@ -174,31 +174,6 @@ export default function CompanyTable() {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {filteredRows
-                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                  .map((row) => {
-                    return (
-                      <TableRow hover role="checkbox" tabIndex={-1} key={row.companyId}
-                      onDoubleClick={() => handleRowDoubleClick(row.companyId)}
-                      style={{ cursor: 'pointer' }}
-                      sx={{ 
-                        '& > td': { 
-                          padding: '2px  14px 2px  19px'
-                        }
-                      }}
-                      >
-                        {columns.map((column) => {
-                          const value = row[column.id];
-                          return (
-                            <TableCell key={column.id} align={column.align}>
-                              {value}
-                            </TableCell>
-                          );
-                        })}
-                      </TableRow>
-                    );
-                  })}
-              </TableBody>
             </Table>
           </TableContainer>
           <TablePagination

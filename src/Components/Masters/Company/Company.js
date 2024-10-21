@@ -94,48 +94,6 @@ const Company = () => {
     const selectedArea = e.target.value;
     setFormData(prevState => ({ ...prevState, area: selectedArea }));
 
-    try {
-      const response = await axios.post('http://43.230.196.21/api/pincodeMst/getdrppincodeAreawise_datafill', {
-        PinCode: formData.PinID,
-        AreaName: selectedArea
-      });
-      const data = response.data.data[0];
-      console.log('Area data', data);
-      if (data) {
-        setFormData(prevState => ({
-          ...prevState,
-          state: data.stateName || '',
-          city: data.cityName || '',
-          country: data.countryName ,
-        }));
-      }
-    } catch (error) {
-      console.error('Error fetching area data:', error);
-    }
-  };
-  const handleAreaChangeBranch = async (e) => {
-    console.log('test',e.target.value)
-    const selectedArea = e.target.value;
-    setCurrentBranch(prevState => ({ ...prevState, area: selectedArea }));
-
-    try {
-      const response = await axios.post('http://43.230.196.21/api/pincodeMst/getdrppincodeAreawise_datafill', {
-        PinCode: currentBranch.pinCode,
-        AreaName: selectedArea
-      });
-      const data = response.data.data[0];
-      console.log('Area data', data);
-      if (data) {
-        setCurrentBranch(prevState => ({
-          ...prevState,
-          state: data.stateName || '',
-          city: data.cityName || '',
-          country: data.countryName,
-        }));
-      }
-    } catch (error) {
-      console.error('Error fetching area data:', error);
-    }
   };
   const fetchCities = async () => {
     try {
@@ -770,6 +728,7 @@ const Company = () => {
     setCompanyId(null);
    setTableData([])
   };
+
 
   const handleEdit = () => {
     setMode('edit');
