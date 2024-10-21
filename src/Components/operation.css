@@ -1,0 +1,41 @@
+
+.All-div{
+      display : flex;
+     justify-content: space-between;
+      align-items: center;
+      padding: 10px;
+      
+}
+ 
+.div-style{
+    display : flex; 
+    flex-direction: column;
+    text-align: left;
+    font-size:  15px;
+    font-family: "Arial", sans-serif;
+    font-weight: bold;
+    color:  rgb(87, 141, 217);
+    padding-left: 10px;
+    gap : 5px;
+}
+
+.single-text{
+     display:  flex;
+     align-items: center;
+     gap : 15px;
+}
+
+.single-text:hover{
+     color: gray;
+}
+.link{
+
+      text-decoration: none;
+      margin-top: -10px;
+      font-size: large;
+   
+      
+}
+
+
+

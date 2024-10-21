@@ -69,7 +69,7 @@ export default function CompanyTable() {
   };
 
   const handleClick = () => {
-    navigate('/company');
+    navigate('/CompanyMst');
   };
 
   const handleHomeClick = () => {
@@ -98,7 +98,7 @@ export default function CompanyTable() {
 
   const handleRowDoubleClick = (companyId) => {
      console.log('companyid',companyId)
-    navigate('/company', { state: { companyId ,mode: 'view'}} );
+    navigate('/CompanyMst', { state: { companyId ,mode: 'view'}} );
   };
   const handleLocationclick=()=>{
     navigate('/masters/company')
@@ -175,32 +175,37 @@ export default function CompanyTable() {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {filteredRows
-                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                  .map((row) => {
-                    return (
-                      <TableRow hover role="checkbox" tabIndex={-1} key={row.companyId}
-                      onDoubleClick={() => handleRowDoubleClick(row.companyId)}
-                      style={{ cursor: 'pointer' }}
-                      sx={{ 
-                        '& > td': { 
-                          padding: '2px  14px 2px  19px',
-                          // textAlign: 'center'
-                        }
-                      }}
-                      >
-                        {columns.map((column) => {
-                          const value = row[column.id];
-                          return (
-                            <TableCell key={column.id} align={column.align}>
-                              {value}
-                            </TableCell>
-                          );
-                        })}
-                      </TableRow>
-                    );
-                  })}
-              </TableBody>
+  {filteredRows
+    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+    .map((row,index) => {
+      // Create a unique key
+      const uniqueKey = `${row.companyId}-${row.cityName}`; 
+      return (
+        <TableRow
+          hover
+          role="checkbox"
+          tabIndex={-1}
+          key={index}
+          onDoubleClick={() => handleRowDoubleClick(row.companyId)}
+          style={{ cursor: 'pointer' }}
+          sx={{ 
+            '& > td': { 
+              padding: '2px 14px 2px 19px',
+            }
+          }}
+        >
+          {columns.map((column) => {
+            const value = row[column.id];
+            return (
+              <TableCell key={column.id} align={column.align}>
+                {value}
+              </TableCell>
+            );
+          })}
+        </TableRow>
+      );
+    })}
+</TableBody>
             </Table>
           </TableContainer>
           <TablePagination

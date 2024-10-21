@@ -87,6 +87,7 @@ const Company = () => {
 
 
   const handleAddClick = () => {
+    
     setIsAdding(true); 
   };
 
@@ -592,6 +593,9 @@ const Company = () => {
   //   }
   
   // };
+
+
+
   const handleAdd = () => {
     setMode('add');
     setIsFormDisabled(false)
@@ -642,6 +646,7 @@ const Company = () => {
     }]);
     setCompanyId(null);
   };
+
 
   const handleEdit = () => {
     setMode('edit');
