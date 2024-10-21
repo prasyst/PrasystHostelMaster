@@ -252,11 +252,11 @@ console.log('tableData',tableData)
       } else if (response.data.status === 1 && response.data.responseStatusCode === 2) {
         toast.info(response.data.message);
       } else {
-        toast.error('Failed to fetch city data');
+        toast.error('Failed to fetch company data');
       }
     } catch (error) {
-      console.error('Error fetching city data:', error);
-      toast.error('Error fetching city data. Please try again.');
+      console.error('Error fetching company data:', error);
+      toast.error('Error fetching company data. Please try again.');
     }
   };
   const handleBranchEdit = () => {
