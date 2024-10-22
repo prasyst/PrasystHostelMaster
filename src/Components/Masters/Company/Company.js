@@ -364,7 +364,7 @@ const handleCancel =()=>{
             ) }
           
             <Typography variant="h5" sx={{margin : "Auto" }}>
-              Company Master
+              Company Master1
             </Typography>
             {activeStep != 1 && (
               <Grid sx={{ display: "flex", justifyContent: "end" }}>
