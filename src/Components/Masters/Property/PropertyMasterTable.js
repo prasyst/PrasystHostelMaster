@@ -48,8 +48,6 @@ export default function PropertyTable() {
         const formattedData = response.data.data.map(property => ({
           ...property,
           propertyId: property.propId,
-          companyName: property.companyName || '',
-          branchName: property.branchName || '',
           propName: property.propName || '',
           sqFt: property.sqFt || '',
           pinCode: property.pinCode || '',
@@ -113,7 +111,6 @@ export default function PropertyTable() {
   }, [searchTerms, rows]);
 
   const handleRowDoubleClick = (propertyId) => {
-     console.log('propertyid',propertyId)
     navigate('/property-master', { state: { propertyId ,mode: 'view'}} );
   };
   const handleLocationclick=()=>{

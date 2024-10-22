@@ -69,14 +69,17 @@ const formSchema = z.object({
 });
 
 const columns = [
-  { id: 'wingName', label: 'Wing', minWidth: 170 },
-  { id: 'floorName', label: 'Floor', minWidth: 100 },
-  { id: 'totalRooms', label: 'TotalRooms', minWidth: 100 },
-  { id: 'startNo', label: 'Start No', minWidth: 100 }
+  { id: 'wingName', label: 'WingName', minWidth: 100 },
+  { id: 'floorName', label: 'FloorName', minWidth: 100 },
+  { id: 'totalRooms', label: 'Total Rooms', minWidth: 100 },
+  { id: 'startNo', label: 'Start No.', minWidth: 100 },
 ];
 
-const column = [
-  { id: 'amenityName', label: 'Amenity', minWidth: 170 }
+const fields = [
+  { id: 'amenityName', label: 'Amenity', minWidth: 170 },
+  { id: 'amenity_Desc', label: 'Description', minWidth: 170 },
+  { id: 'floorName', label: 'Floor', minWidth: 170 },
+  { id: 'areaSqFt', label: 'AreaSqFt', minWidth: 100 }
 ];
 
 const StepperForm = () => {
@@ -85,17 +88,15 @@ const StepperForm = () => {
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
   const [mode, setMode] = useState('view');
   const [currentPropId, setCurrentPropId] = useState(null);
-  const [hods, setHods] = useState([]);
   const [propertyId, setPropertyId] = useState();
+  const [hods, setHods] = useState([]);
   const [sites, setSites] = useState([]);
   const [propImg, setPropImg] = useState('');
-  const [data, setData] = useState([]);
-  const [error, setError] = useState(null);
   const [file, setFile] = useState(null);
   const [companies, setCompanies] = useState([]);
   const [wardens, setWardens] = useState([]);
   const [area, setArea] = useState([]);
-  const [floorConfig, setFloorConfig] = useState([]);
+  const [amenities, setAmenities] = useState([]);
   const [branch, setBranch] = useState([]);
   const [propType, setPropType] = useState([]);
   const [wings, setWings] = useState([]);
@@ -107,12 +108,17 @@ const StepperForm = () => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [searchTerms, setSearchTerms] = useState({});
+  const [amenityEntries, setAmenityEntries] = useState([]);
   const [rows, setRows] = useState([]);
+  const [entries, setEntries] = useState([]);
+  const [field, setField] = useState([]);
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
   const [editState, setEditState] = useState({});
-  const [tableData, setTableData] = useState([]);
+
   const [selectAll, setSelectAll] = useState(false);
+  const [wingSelectAll, setWingSelectAll] = useState(false);
+  const [amenitySelectAll, setAmenitySelectAll] = useState(false);
 
   // Toggle the "Select All" checkbox
   const handleSelectAll = () => {
@@ -125,6 +131,26 @@ const StepperForm = () => {
     setFloors(updatedItems);
   };
 
+  const wingsSelectAll = () => {
+    const newSelectAll = !wingSelectAll;
+    setWingSelectAll(newSelectAll);
+    const updatedItems = wings.map((item) => ({
+      ...item,
+      isChecked: newSelectAll,
+    }));
+    setWings(updatedItems);
+  };
+
+  const amenitiesSelectAll = () => {
+    const newSelectAll = !amenitySelectAll;
+    setAmenitySelectAll(newSelectAll);
+    const updatedItems = amenities.map((item) => ({
+      ...item,
+      isChecked: newSelectAll,
+    }));
+    setAmenities(updatedItems);
+  };
+
   // Handle individual checkbox toggle
   const handleCheckboxChange = (id) => {
     const updatedItems = floors.map((item) =>
@@ -135,6 +161,26 @@ const StepperForm = () => {
     // Update "Select All" checkbox based on individual selections
     const allChecked = updatedItems.every((item) => item.isChecked);
     setSelectAll(allChecked);
+  };
+
+  const wingCheckboxChange = (id) => {
+    const updatedItems = wings.map((item) =>
+      item.id === id ? { ...item, isChecked: !item.isChecked } : item
+    );
+    setWings(updatedItems);
+
+    const allChecked = updatedItems.every((item) => item.isChecked);
+    setWingSelectAll(allChecked);
+  };
+
+  const amenityCheckboxChange = (id) => {
+    const updatedItems = amenities.map((item) =>
+      item.id === id ? { ...item, isChecked: !item.isChecked } : item
+    );
+    setAmenities(updatedItems);
+
+    const allChecked = updatedItems.every((item) => item.isChecked);
+    setAmenitySelectAll(allChecked);
   };
 
   useEffect(() => {
@@ -202,7 +248,6 @@ const StepperForm = () => {
     companyName: '',
     branchName: '',
     propName: '',
-    name: '' ,
     sqFt: '',
     pinCode: '',
     areaName: '',
@@ -219,10 +264,23 @@ const StepperForm = () => {
     hodEmpName: '',
     wardenEmpName: '',
     propAdd: '',
+    name: '',
     propGPSLoc: '',
     Status: '1',
     remark: '',
     CreatedBy: '1'
+  });
+
+  const [formData1, setFormData1] = useState({
+
+    wingName: '',
+    floorName: '',
+    totalRooms: '',
+    startNo: ''
+  });
+
+  const [formData2, setFormData2] = useState({
+    amenityName: ''
   });
 
   useEffect(() => {
@@ -419,6 +477,24 @@ const StepperForm = () => {
     fetchFloors();
   }, []);
 
+  useEffect(() => {
+    const fetchAmenities = async () => {
+      try {
+        const response = await axios.post(`${process.env.REACT_APP_API_URL}AmenityMst/getMstAmenitydrp`);
+        if (response.data.status === 0 && response.data.responseStatusCode === 1) {
+          setAmenities(response.data.data);
+        } else {
+          toast.error('Failed to fetch Amenities');
+        }
+      } catch (error) {
+        console.error('Error fetching Amenities:', error);
+        toast.error('Error fetching Amenities. Please try again.');
+      }
+    };
+
+    fetchAmenities();
+  }, []);
+
   // useEffect(() => {
   //   GetSourceName()
   //   GetSemesterName()
@@ -427,29 +503,34 @@ const StepperForm = () => {
   //   getJobTitle()
   // }, [])
 
-  useEffect(() => {
-    fetchFloorConfig();
-  }, []);
+  // useEffect(() => {
+  //   fetchFloorConfig();
+  // }, []);
 
-  const fetchFloorConfig = async (id) => {
-    
-    try {
-      const response = await axios.post(`${process.env.REACT_APP_API_URL}MstPropFloorConfig/GetMstPropAmenityConfigDashBoard`, {
-        propId: id,
-        amenityId: id
-      });
-      
-      if (response.data.status === 0 && response.data.responseStatusCode === 1) {
-        setFloorConfig(response.data.data);
-        
-      } else {
-        console.error('Error fetching floor configuration data:', response.data.message);
-      }
-      console.log(response, "res")
-    } catch (error) {
-      console.error('Error fetching floor configuration data:', error);
-    }
-  };
+  // const fetchFloorConfig = async (id) => {
+  //   console.log("Iddd", id)
+  //   try {
+  //     const response = await axios.post('http://43.230.196.21/api/MstPropFloorConfig/GetMstPropFloorConfigDashBoard', {
+  //       propId: id,
+  //       wingId: id
+  //     });
+
+  //     if (response.data.status === 0) {
+  //       const formattedData = response.data.data.map(floorConfig => ({
+  //         ...floorConfig,
+  //         wingName: floorConfig.wingName,
+  //         floorName: floorConfig.floorName,
+  //         totalRooms: floorConfig.totalRooms,
+  //         startNo: floorConfig.startNo
+  //       }));
+  //       setRows(formattedData);
+  //     } else {
+  //       console.error('Error fetching floor configuration data:', response.data.message);
+  //     }
+  //   } catch (error) {
+  //     console.error('Error fetching floor configuration data:', error);
+  //   }
+  // };
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -469,15 +550,16 @@ const StepperForm = () => {
     setPage(0);
   };
 
-  const handleEditChange = (propId, columnId, value) => {
-    setEditState(prev => ({
-      ...prev,
-      [propId]: {
-        ...prev[propId],
-        [columnId]: value,
+  const handleEditChange = (propertyId, columnId, newValue) => {
+    setEditState(prevState => ({
+      ...prevState,
+      [propertyId]: {
+        ...prevState[propertyId],
+        [columnId]: newValue, // Update only the specific column
       },
     }));
   };
+
 
   const filteredRows = React.useMemo(() => {
     return rows.filter(row => {
@@ -494,12 +576,28 @@ const StepperForm = () => {
     });
   }, [searchTerms, rows]);
 
+  const filteredEntries = React.useMemo(() => {
+    return entries.filter(row => {
+      return Object.entries(searchTerms).every(([columnId, term]) => {
+        if (!term) return true;
+        const value = row[columnId];
+        if (typeof value === 'string') {
+          return value.toLowerCase().includes(term.toLowerCase());
+        } else if (typeof value === 'number') {
+          return value.toString().includes(term);
+        }
+        return true;
+      });
+    });
+  }, [searchTerms, entries]);
+
   const handleRowDoubleClick = () => {
 
     navigate('', { state: { mode: 'view' } });
   };
 
   const navigate = useNavigate()
+
   const handleInputChange = (event) => {
     const { name, value } = event.target;
     console.log('2', event.target.value)
@@ -513,6 +611,29 @@ const StepperForm = () => {
       [name]: undefined
     }));
   };
+
+  const handleInputValue = (event) => {
+    const { name, value } = event.target;
+    console.log('3', event.target.value)
+    setFormData1(prevData => ({
+      ...prevData,
+      [name]: value,
+
+    }));
+    
+  };
+
+  const handleChangeValue = (event) => {
+    const { name, value } = event.target;
+    console.log('4', event.target.value)
+    setFormData2(prevData => ({
+      ...prevData,
+      [name]: value,
+
+    }));
+    
+  };
+
   const validateStep = (step) => {
     let stepValid = true;
     let newErrors = {};
@@ -546,13 +667,11 @@ const StepperForm = () => {
     const { name, value } = event.target;
     setFormData(prevData => ({
       ...prevData,
-      [name]: value,
-      // profession: event.target.value
+      [name]: value
     }));
     console.log('55', setFormData(prevData => ({
       ...prevData,
-      [name]: value,
-      // profession: event.target.value
+      [name]: value
     })))
   };
 
@@ -587,6 +706,70 @@ const StepperForm = () => {
     setAnchorEl(null);
   };
 
+  const handleSelect = () => {
+    const selectedFloors = floors.filter((item) => item.isChecked);
+    const selectedWings = wings.filter((item) => item.isChecked);
+
+    const dataToDisplay = [];
+
+    selectedFloors.forEach((floor) => {
+      selectedWings.forEach((wing) => {
+        dataToDisplay.push({
+          floorId: floor.floorId,
+          floorName: floor.name,
+          wingId: wing.wingId,
+          wingName: wing.name,
+        });
+      });
+    });
+
+    setRows(dataToDisplay);
+
+    // Reset the checkboxes
+    const resetFloors = floors.map((floor) => ({
+      ...floor,
+      isChecked: false,
+    }));
+
+    const resetWings = wings.map((wing) => ({
+      ...wing,
+      isChecked: false,
+    }));
+
+    // Update the state with the reset arrays
+    setFloors(resetFloors);
+    setWings(resetWings);
+
+    setWingSelectAll(false);
+    setSelectAll(false);
+
+    setOpenConfirmDialog(false);
+  };
+
+  const amenitySelect = () => {
+    const selectedAmenities = amenities.filter((item) => item.isChecked);
+
+    const dataToDisplay = [];
+
+    selectedAmenities.forEach((amenity) => {
+      dataToDisplay.push({
+        amenityId: amenity.amenityId,
+        amenityName: amenity.name,
+      });
+    });
+
+    setEntries(dataToDisplay);
+
+    const resetAmenities = amenities.map((amenity) => ({
+      ...amenity,
+      isChecked: false,
+    }));
+
+    setAmenities(resetAmenities);
+
+    setAmenitySelectAll(false);
+  };
+
   const handleSubmit = async () => {
     const payload = {
       PropId: propertyId || 0,
@@ -618,44 +801,76 @@ const StepperForm = () => {
       UpdatedBy: "1" // Include this for update operations
     };
 
-    console.log('Payload:', payload);
+    console.log('formData', formData);
+
+    const payload1 = {
+      PropId: propertyId || 0,
+      wingId: parseInt(formData1.wingName),
+      floorId: parseInt(formData1.floorName),
+      totalRooms: parseInt(formData1.totalRooms),
+      startNo: parseInt(formData1.startNo)
+    };
+
+    // const jsonString = '{ "PropFloorConfig":[ { "propId": 4, "wingId": 2, "floorId": 5, "totalRooms": 50, "startNo":2 }, { "propId": 12, "wingId": 13, "floorId": 13, "totalRooms": 20, "startNo": 4001 } ]}';
+
+    // // Parse the JSON string
+    // const parsedJson = JSON.parse(jsonString);
+
+    const result = {
+      PropFloorConfig: [payload1]
+    };
+
+    console.log('formData1', formData1);
+
+    const payload2 = {
+      PropId: propertyId || 0,
+      amenityId: parseInt(formData2.amenityName),
+    };
+
+    console.log('Payload2:', payload2);
+
+    let jsonData = JSON.stringify(result);
+
+    jsonData = jsonData.replace(/\\/g, '\\\\').replace(/\"/g, '\\"');
+    jsonData = '"' + jsonData + '"';
+
+    console.log(jsonData, "jsonData2");
 
     try {
-      const endpoint = propertyId
-        ? `${process.env.REACT_APP_API_URL}PropertyMst/UpdatePropertyMst`
-        : `${process.env.REACT_APP_API_URL}PropertyMst/InsertPropertyMst`;
-
-      const response = await axios.post(endpoint, payload);
-
-      if (response.data.status === 0) {
-        toast.success(response.data.message);
-        setIsEditing(false);
-        setIsFormDisabled(true);
-        if (!propertyId) {
-          setPropertyId(response.data.data.propertyId); // Assuming the API returns the new ID
+      const response = await axios.post(
+        'http://43.230.196.21/api/MstPropFloorConfig/ManageMstPropFloorConfig',
+        jsonData,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+          },
         }
+      );
+      toast.success(response.data.message);
+      setActiveStep(0)
+      if (isEditing) {
+        setIsEditing(false);
+        setMode('view');
+        setIsFormDisabled(true);
+
       } else {
-        toast.error(response.data.message || "An error occurred");
+        if (response.data.data && response.data.data.propId) {
+          const newPropertyId = response.data.data.propId;
+          console.log('new', newPropertyId);
+          setPropertyId(newPropertyId);
+          await fetchPropertyData(newPropertyId, 'R');
+          console.log('newPropertyId', newPropertyId);
+        }
+        setMode('view');
+        setIsFormDisabled(true);
       }
     } catch (error) {
-      console.error('API call failed:', error);
-      toast.error("Something went wrong. Please try again.");
+      toast.error('Error submitting form');
     }
   };
 
 
-  const handleSelect = () => {
-    // Collect the selected data
-    const selectedFloors = floors.filter((floor) => floor.isChecked);
-    const newTableData = selectedFloors.map((floor) => ({
-      wing: formData.name,
-      floor: floor.name,
-    }));
 
-    // Update table data state
-    setTableData(newTableData);
-    handleClose(); // Close the menu after selection
-  };
 
   const handleAdd = () => {
     setMode('add');
@@ -679,7 +894,6 @@ const StepperForm = () => {
       totalBeds: '',
       propImg: '',
       hodEmpName: '',
-      name: '' ,
       wardenEmpName: '',
       propAdd: '',
       propGPSLoc: '',
@@ -688,6 +902,16 @@ const StepperForm = () => {
       CreatedBy: '1'
     });
 
+    setFormData1({
+      wingName: '',
+      floorName: '',
+      totalRooms: '',
+      startNo: ''
+    });
+
+    setFormData2({
+      amenityName: ''
+    });
     setActiveStep(0);
     setErrors({});
     setPropImg('');
@@ -1250,7 +1474,7 @@ const StepperForm = () => {
                         Clear All
                       </Button>
                     </Grid>
-                    <Paper sx={{ width: '80%', overflow: 'hidden', margin: '0px 0px 0px 50px', border: '1px solid lightgray' }}>
+                    <Paper sx={{ width: '100%', overflow: 'hidden', margin: '0px 0px 0px 0px', border: '1px solid lightgray' }}>
                       <TableContainer sx={{ maxHeight: 450 }}>
                         <Table stickyHeader aria-label="sticky table">
                           <TableHead>
@@ -1282,22 +1506,6 @@ const StepperForm = () => {
                                 </TableCell>
                               ))}
                             </TableRow>
-                            {/* <Button
-                              variant="contained"
-                              onClick={handleClick}
-                              size='small'
-                              sx={{
-                                backgroundColor: '#635BFF',
-                                color: 'white',
-                                '&:hover': {
-                                  backgroundColor: '#5249f',
-                                },
-                                height: '22.5px',
-                                bottom: 2
-                              }}
-                            >
-                              Delete
-                            </Button> */}
                           </TableHead>
                           <TableBody>
                             {filteredRows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(row => {
@@ -1306,7 +1514,7 @@ const StepperForm = () => {
                                   hover
                                   role="checkbox"
                                   tabIndex={-1}
-                                  key={row}
+                                  key={row.propertyId}
                                   onDoubleClick={() => handleRowDoubleClick(row)}
                                   style={{ cursor: 'pointer' }}
                                   sx={{
@@ -1316,14 +1524,14 @@ const StepperForm = () => {
                                   }}
                                 >
                                   {columns.map(column => {
-                                    const value = editState[row.propId]?.[column.id] ?? row[column.id];
+                                    const value = editState[row.propertyId]?.[column.id] ?? row[column.id];
                                     return (
                                       <TableCell key={column.id} align={column.align}>
                                         {['totalRooms', 'startNo'].includes(column.id) ? (
                                           <TextField
                                             size="small"
                                             value={value}
-                                            onChange={e => handleEditChange(row.propId, column.id, e.target.value)}
+                                            onChange={e => handleEditChange(row.propertyId, column.id, e.target.newValue)}
                                             sx={{
                                               '& .MuiOutlinedInput-input': {
                                                 padding: '2px 6px',
@@ -1358,225 +1566,149 @@ const StepperForm = () => {
             case 2:
               return (
                 <>
-                  <Box sx={{ maxWidth: '100vw', overflowX: 'hidden' }}>
-                    <Grid container gap={2}
-                      sx={{
-                        padding: '20px 30px',
-                        justifyContent: 'center',
-                        alignItems: 'center'
-                      }}
-                    >
-                      <Button
-                        id="basic-button"
-                        aria-controls={open ? 'basic-menu' : undefined}
-                        aria-haspopup="true"
-                        aria-expanded={open ? 'true' : undefined}
-                        onClick={handleMenuClick}
-                        sx={{
-                          backgroundColor: '#7c3aed ',
-                          color: 'white',
-                          '&:hover': {
-                            backgroundColor: '#7c3aed ',
-                          },
-                        }}
-                        variant="contained"
-                      >
-                        Add Amenity
-                      </Button>
-                      <Menu
-                        id="basic-menu"
-                        anchorEl={anchorEl}
-                        open={open}
-                        onClose={handleClose}
-                        MenuListProps={{
-                          'aria-labelledby': 'basic-button',
-                        }}
-                      >
-                        <>
-                          <List>
-                            <ListItem style={{ height: '450px', width: '200px', overflowY: 'auto' }}>
-                              <div>
-                                <h3>Select Floors</h3>
-                                <label>
-                                  <input
-                                    type="checkbox"
-                                    checked={selectAll}
-                                    onChange={handleSelectAll}
-                                  />
-                                  Select All
-                                </label>
+                  <Box sx={{ maxWidth: '100vw' }}>
+                    <Grid item lg={12} md={12} xs={12}>
 
-                                {floors.map((item) => (
-                                  <div key={item.id}>
-                                    <label>
-                                      <input
-                                        type="checkbox"
-                                        checked={item.isChecked}
-                                        onChange={() => handleCheckboxChange(item.id)}
-                                      />
-                                      {item.name}
-                                    </label>
-                                  </div>
-                                ))}
-                              </div>
-                            </ListItem>
-                          </List>
-                        </>
-                      </Menu>
-                      <Button
-                        variant="contained"
-                        onClick={deleteItem}
-                        sx={{
-                          backgroundColor: '#7c3aed ',
-                          color: 'white',
-                          '&:hover': {
-                            backgroundColor: '#7c3aed ',
-                          },
-                        }}
-                      >
-                        Clear All
-                      </Button>
-                    </Grid>
-                    <Grid item xs={12} className='form_field'>
-                      <Grid container spacing={1} gap={2}
-                        sx={{
-                          margin: '10px 0',
-                          justifyContent: 'center',
-                          alignItems: 'center'
-                        }}
-                      >
-                        <Button
-                          variant="contained"
-                          onClick={deleteItem}
-                          sx={{
-                            backgroundColor: '#7c3aed ',
-                            color: 'white',
-                            '&:hover': {
-                              backgroundColor: '#7c3aed ',
-                            },
-                            bottom: -3
-                          }}
-                        >
-                          Select
-                        </Button>
-                        <Button
-                          variant="contained"
-                          onClick={deleteItem}
-                          sx={{
-                            backgroundColor: '#7c3aed ',
-                            color: 'white',
-                            '&:hover': {
-                              backgroundColor: '#7c3aed ',
-                            },
-                            bottom: -3
-                          }}
-                        >
-                          Cancel
-                        </Button>
-                      </Grid>
-                    </Grid>
-                    <Paper sx={{ width: '34%', overflow: 'hidden', margin: '0px 0px 0px 50px', border: '1px solid lightgray' }}>
-                      <TableContainer sx={{ maxHeight: 450 }}>
-                        <Table stickyHeader aria-label="sticky table">
-                          <TableHead>
-                            <TableRow
-                              sx={{
-                                '& > th': {
-                                  padding: '2px  10px 2px  24px'
-                                },
-                              }}
-                            >
-                              {column.map(column => (
-                                <TableCell key={column.id} align={column.align} style={{ minWidth: column.minWidth }}>
-                                  <Typography variant="subtitle1" fontWeight="bold">
-                                    {column.label}
-                                  </Typography>
-                                  <TextField
-                                    size="small"
-                                    variant="outlined"
-                                    placeholder={`Search ${column.label}`}
-                                    onChange={e => handleSearchChange(column.id, e.target.value)}
-                                    sx={{
-                                      mt: 1,
-                                      margin: '0px',
-                                      '& .MuiOutlinedInput-input': {
-                                        padding: '2px 6px',
-                                      },
-                                    }}
-                                  />
-                                </TableCell>
-                              ))}
-                            </TableRow>
-                            {/* <Button
-                              variant="contained"
-                              onClick={handleClick}
-                              size='small'
-                              sx={{
-                                backgroundColor: '#635BFF',
-                                color: 'white',
-                                '&:hover': {
-                                  backgroundColor: '#5249f',
-                                },
-                                height: '22.5px',
-                                bottom: 2
-                              }}
-                            >
-                              Delete
-                            </Button> */}
-                          </TableHead>
-                          <TableBody>
-                            {filteredRows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(row => {
-                              return (
-                                <TableRow
-                                  hover
-                                  role="checkbox"
-                                  tabIndex={-1}
-                                  key={row}
-                                  onDoubleClick={() => handleRowDoubleClick(row)}
-                                  style={{ cursor: 'pointer' }}
-                                  sx={{
-                                    '& > td': {
-                                      padding: '2px  14px 2px  24px',
-                                    },
-                                  }}
-                                >
-                                  {columns.map(column => {
-                                    const value = editState[row.propId]?.[column.id] ?? row[column.id];
-                                    return (
-                                      <TableCell key={column.id} align={column.align}>
-                                        {['amenityName'].includes(column.id) ? (
+                      <Box display="flex" justifyContent="space-between" gap={2}>
+                        <Grid container spacing={2} >
+                          <Grid item xs={12} md={2} className='form_field'>
+                            <List>
+                              <ListItem style={{ height: '200px', width: '200px' }}>
+                                <div>
+                                  <h3>Select Amenities</h3>
+                                  <label>
+                                    <input
+                                      type="checkbox"
+                                      checked={amenitySelectAll}
+                                      onChange={amenitiesSelectAll}
+                                    />
+                                    Select All
+                                  </label>
+
+                                  {amenities.map((item) => (
+                                    <div key={item.id}>
+                                      <label>
+                                        <input
+                                          type="checkbox"
+                                          checked={item.isChecked}
+                                          onChange={() => amenityCheckboxChange(item.id)}
+                                        />
+                                        {item.name}
+                                      </label>
+                                    </div>
+                                  ))}
+                                </div>
+                              </ListItem>
+                            </List>
+                            <Grid sx={{ marginTop: '20px' }}>
+                              <Button
+                                sx={{
+                                  backgroundColor: '#635BFF',
+                                  color: 'white',
+                                  '&:hover': {
+                                    backgroundColor: '#1565c0',
+                                    color: 'white'
+                                  }
+                                }}
+                                onClick={amenitySelect}
+                              >
+                                Confirm
+                              </Button>
+                              <Button
+                                sx={{
+                                  backgroundColor: '#635BFF',
+                                  color: 'white',
+                                  '&:hover': {
+                                    backgroundColor: '#1565c0',
+                                    color: 'white'
+                                  },
+                                  marginLeft: '10px'
+                                }}
+                                onClick={closeConfirmation}
+                              >
+                                Cancel
+                              </Button>
+                            </Grid>
+                          </Grid>
+                          <Grid item xs={12} md={10} className='form_field'>
+                            <Paper sx={{ width: '90%', overflow: 'hidden', margin: '0px 0px 0px 50px', border: '1px solid lightgray' }}>
+                              <TableContainer sx={{ maxHeight: 450 }}>
+                                <Table stickyHeader aria-label="sticky table">
+                                  <TableHead>
+                                    <TableRow
+                                      sx={{
+                                        '& > th': {
+                                          padding: '2px  10px 2px  10px'
+                                        }
+                                      }}
+                                    >
+                                      {fields.map((column) => (
+                                        <TableCell
+                                          key={column.id}
+                                          align={column.align}
+                                          style={{ minWidth: column.minWidth }}
+                                        >
+                                          <Typography variant="subtitle1" fontWeight="bold">
+                                            {column.label}
+                                          </Typography>
                                           <TextField
                                             size="small"
-                                            value={value}
-                                            onChange={e => handleEditChange(row.propId, column.id, e.target.value)}
+                                            variant="outlined"
+                                            placeholder={`Search ${column.label}`}
+                                            onChange={(e) => handleSearchChange(column.id, e.target.value)}
                                             sx={{
-                                              '& .MuiOutlinedInput-input': {
+                                              mt: 1, margin: '0px', '& .MuiOutlinedInput-input': {
                                                 padding: '2px 6px',
                                               },
                                             }}
+
                                           />
-                                        ) : (
-                                          value
-                                        )}
-                                      </TableCell>
-                                    );
-                                  })}
-                                </TableRow>
-                              );
-                            })}
-                          </TableBody>
-                        </Table>
-                      </TableContainer>
-                      <TablePagination
-                        rowsPerPageOptions={[5, 10, 15, 100]}
-                        component="div"
-                        count={filteredRows.length}
-                        rowsPerPage={rowsPerPage}
-                        page={page}
-                        onPageChange={handleChangePage}
-                        onRowsPerPageChange={handleChangeRowsPerPage}
-                      />
-                    </Paper>
+                                        </TableCell>
+                                      ))}
+                                    </TableRow>
+                                  </TableHead>
+                                  <TableBody>
+                                    {filteredEntries
+                                      .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                                      .map((row) => {
+                                        return (
+                                          <TableRow hover role="checkbox" tabIndex={-1} key={row.propertyId}
+                                            onDoubleClick={() => handleRowDoubleClick(row.propertyId)}
+                                            style={{ cursor: 'pointer' }}
+                                            sx={{
+                                              '& > td': {
+                                                padding: '2px  14px 2px  19px'
+                                              }
+                                            }}
+                                          >
+                                            {fields.map((column) => {
+                                              const value = row[column.id];
+                                              return (
+                                                <TableCell key={column.id} align={column.align}>
+                                                  {value}
+                                                </TableCell>
+                                              );
+                                            })}
+                                          </TableRow>
+                                        );
+                                      })}
+                                  </TableBody>
+                                </Table>
+                              </TableContainer>
+                              <TablePagination
+                                rowsPerPageOptions={[5, 10, 15, 100]}
+                                component="div"
+                                count={filteredRows.length}
+                                rowsPerPage={rowsPerPage}
+                                page={page}
+                                onPageChange={handleChangePage}
+                                onRowsPerPageChange={handleChangeRowsPerPage}
+                              />
+                            </Paper>
+                          </Grid>
+                        </Grid>
+                      </Box>
+                    </Grid>
                   </Box>
                 </>
               );
@@ -1692,7 +1824,7 @@ const StepperForm = () => {
               // sx={{ backgroundColor: '#7c3aed', mr: 1 }}
               sx={{ mr: 1, background: 'linear-gradient(290deg, #b9d0e9, #e9f2fa)' }}
               onClick={handleBack}
-              disabled={activeStep === 0 || mode === 'view'}
+              disabled={activeStep === 0 || !mode === 'view'}
 
             >
               {/* {activeStep === steps.length - 1 ? 'Previous' : ''} */}
@@ -1703,7 +1835,7 @@ const StepperForm = () => {
               onClick={handleNext}
               // sx={{ mr: 1 }}
               sx={{ mr: 1, background: 'linear-gradient(290deg, #d4d4d4, #d4d4d4)' }}
-              disabled={mode === "view"}
+              disabled={!mode === "view"}
             >
               {activeStep === steps.length - 1 ? 'Submit' : 'Next'}
 
@@ -1736,82 +1868,67 @@ const StepperForm = () => {
         aria-describedby="alert-dialog-description"
         sx={{
           '& .MuiDialog-paper': {
-            width: '500px',
-            height: '230px',
-            padding: '20px'
-            // maxWidth: 'none'
+            // width: '500%',
+            // height: '600px',
+            padding: '10px',
+            overflow: 'hidden'
           }
         }}
       >
         <DialogTitle id="alert-dialog-title">
           <Grid item lg={12} md={12} xs={12}>
 
-            <Box display="flex" justifyContent="space-between" gap={2}>
+            <Box display="flex" justifyContent="space-between"
+              style={{
+                border: '5px solid transparent',
+                backgroundImage: 'linear-gradient(to right, #3498db, #9b59b6)',
+                backgroundClip: 'padding-box',
+                borderRadius: '15px'
+              }}
+              gap={2}>
               <Grid container spacing={2} >
                 <Grid item xs={12} md={6} className='form_field'>
-                  <FormControl variant="filled" fullWidth className="custom-select">
-                    <InputLabel id="name-select-label">Wing</InputLabel>
-                    <Select
-                      labelId="name-select-label"
-                      id="name-select"
-                      name="name"
-                      value={formData.name}
-                      onChange={handleInputChange}
-                      className="custom-textfield"
-                    >
-                      {wings.map((name) => (
-                        <MenuItem key={name.id} value={name.id}>
-                          {name.name}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
-                </Grid>
-                <Grid item xs={12} md={6} >
-                  <Button
-                    variant="contained"
-                    size="small"
-                    sx={{ backgroundColor: '#7c3aed' }}
-                    onClick={handleClick}
-                  // disabled={mode !== 'view'}
-                  >
-                    <AddIcon /><Typography style={{ marginLeft: '2px' }}>Add Floors</Typography>
-                  </Button>
-                </Grid>
-              </Grid>
-            </Box>
-            <Grid item xs={12} md={6} className='form_field' style={{ marginTop: '20px' }}>
-              <Button
-                id="basic-button"
-                aria-controls={open ? 'basic-menu' : undefined}
-                aria-haspopup="true"
-                aria-expanded={open ? 'true' : undefined}
-                onClick={handleMenuClick}
-                variant="contained"
-              >
-                Floors
-              </Button>
-              <Menu
-                id="basic-menu"
-                anchorEl={anchorEl}
-                open={open}
-                onClose={handleClose}
-                MenuListProps={{
-                  'aria-labelledby': 'basic-button',
-                }}
-              >
-                <>
                   <List>
-                    <ListItem style={{ height: '450px', width: '200px', overflowY: 'auto' }}>
-                      <div>
-                        <h3>Select Floors</h3>
+                    <ListItem>
+                      <div style={{ height: '400px', width: '200px', overflowY: 'auto', position: 'relative', bottom: 10 }}>
+                        <h3>Wings</h3>
+                        <label>
+                          <input
+                            type="checkbox"
+                            checked={wingSelectAll}
+                            onChange={wingsSelectAll}
+                          />
+                          All
+                        </label>
+
+                        {wings.map((item) => (
+                          <div key={item.id}>
+                            <label>
+                              <input
+                                type="checkbox"
+                                checked={item.isChecked}
+                                onChange={() => wingCheckboxChange(item.id)}
+                              />
+                              {item.name}
+                            </label>
+                          </div>
+                        ))}
+                      </div>
+                    </ListItem>
+                  </List>
+                </Grid>
+                <Grid item xs={12} md={6} className='form_field'>
+                  <List>
+                    <ListItem>
+                      <div style={{ height: '375px', width: '200px', overflowY: 'auto', position: 'relative', bottom: 10 }}>
+                        <h3>Floors</h3>
                         <label>
                           <input
                             type="checkbox"
                             checked={selectAll}
                             onChange={handleSelectAll}
                           />
-                          Select All
+                          All
                         </label>
 
                         {floors.map((item) => (
@@ -1829,17 +1946,12 @@ const StepperForm = () => {
                       </div>
                     </ListItem>
                   </List>
-                </>
-              </Menu>
-
-            </Grid>
+                </Grid>
+              </Grid>
+            </Box>
           </Grid>
         </DialogTitle>
-        {/* <DialogContent>
-          <DialogContentText id="alert-dialog-description">
-            Are you sure you want to select this record?
-          </DialogContentText>
-        </DialogContent> */}
+
         <DialogActions>
           <Button
             sx={{
@@ -1850,9 +1962,9 @@ const StepperForm = () => {
                 color: 'white'
               }
             }}
-          onClick={handleConfirmDelete}
+            onClick={handleSelect}
           >
-            Select
+            Confirm
           </Button>
           <Button
             sx={{
@@ -1874,3 +1986,19 @@ const StepperForm = () => {
 };
 
 export default StepperForm;
+{/* <Button
+  variant="contained"
+  onClick={handleClick}
+  size='small'
+  sx={{
+    backgroundColor: '#635BFF',
+    color: 'white',
+    '&:hover': {
+      backgroundColor: '#5249f',
+    },
+    height: '22.5px',
+    bottom: 2
+  }}
+>
+  Delete
+</Button>  */}
