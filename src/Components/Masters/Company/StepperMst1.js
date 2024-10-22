@@ -87,7 +87,7 @@ const StepperMst1 = forwardRef(
         WorkAddr: " ",
         PinCode: " ",
         CityId: "",
-        PinId : " ",
+       
       });
     };
 

@@ -34,7 +34,7 @@ import { ToastContainer } from 'react-toastify';
 import { useNavigate } from "react-router-dom";
 
 
-const Stepper2 = ({ TableData, mode, Cities, setTableData ,AllfieldStepperData ,CompanyId,setActiveStep,fetchCompanyData}) => {
+const StepperMst2 = ({ TableData, mode, Cities, setTableData ,AllfieldStepperData ,CompanyId,setActiveStep,fetchCompanyData}) => {
   const { register, watch, reset, setValue } = useForm();
   const navigate = useNavigate();
   const [AllTextDisabled, setAllTextDisabled] = useState(false);
@@ -254,11 +254,16 @@ const handleClickCancel = () => {
             if (AllfieldStepperData.hasOwnProperty("area")) {
               delete AllfieldStepperData.area;
             }
+            if (AllfieldStepperData.hasOwnProperty("PinId")) {
+              delete AllfieldStepperData.area;
+            }
             AllfieldStepperData.DBFLAG = "I";
             AllfieldStepperData.Status = "1";
             AllfieldStepperData.PinID = parseInt(AllfieldStepperData.PinID);
             AllfieldStepperData.CityId   = parseInt(AllfieldStepperData.CityId);
             AllfieldStepperData.cobrMstList = TableData;
+
+
             let FormattedObj = JSON.stringify(AllfieldStepperData).replace(/"/g, '\\"');
             FormattedObj='"'+FormattedObj+'"';
             console.log("string ",FormattedObj);  
@@ -319,9 +324,9 @@ const handleClickCancel = () => {
             );
             console.log("response", response);
             toast.success(response.data.message);
-            // setTimeout(()=>{
-            //   navigate(`/masters/companytable`)
-            // },1800);
+            setTimeout(()=>{
+              navigate(`/masters/companytable`)
+            },1800);
           } catch (err) {
             console.log("err", err);
           }
@@ -491,7 +496,7 @@ const handleClickCancel = () => {
             size="small"
             sx={{ backgroundColor: "#7c3aed", margin: "0px 10px" }}
             disabled={!AllButtonDisabled || !AddDisabled }
-            onClick={handleClickCancelButton}
+            onClick={handleClickCancel}
           >
             Cancel
           </Button>
@@ -839,7 +844,7 @@ const handleClickCancel = () => {
                     mr: 1,
                     background: "linear-gradient(290deg, #b9d0e9, #e9f2fa)",
                   }}
-                  onClick={handleClickCancel}
+                  onClick={handleClickCancelButton}
                 >
                   Cancel
                 </Button>
@@ -852,4 +857,4 @@ const handleClickCancel = () => {
   );
 };
 
-export default Stepper2;
+export default StepperMst2;
