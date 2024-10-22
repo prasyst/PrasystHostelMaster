@@ -5,4 +5,4 @@ const Company = ()=>{
          <div>hello welcome</div>
      )
 }
-export default Comapany;
+export default Company;
