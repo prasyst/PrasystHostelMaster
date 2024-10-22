@@ -76,10 +76,6 @@ import Complaint from './Components/Masters/Ticketing/Complaint';
 import ComplaintTable from './Components/Masters/Ticketing/ComplaintTable';
 import ComplaintType from './Components/Masters/Ticketing/ComplaintType';
 import ComplaintTypeTable from './Components/Masters/Ticketing/ComplaintTypeTable';
-import PartyMaster from './Components/Masters/ARAP/PartyMaster';
-
-// import GroupMaster from './Components/Masters/Property/GroupMaster';
-// import GroupTable from './Components/Masters/Property/GroupMasterTable';
 
 const DashboardLayout = ({ children }) => (
   <SidebarDrawar>{children}</SidebarDrawar>
@@ -127,7 +123,6 @@ function App() {
     <Route path="/complaintTable" element={<DashboardLayout><ComplaintTable /></DashboardLayout>} />
     <Route path="/complaintType" element={<DashboardLayout><ComplaintType /></DashboardLayout>} />
     <Route path="/complaintTypeTable" element={<DashboardLayout><ComplaintTypeTable /></DashboardLayout>} />
-
     <Route path="/city" element={<DashboardLayout><City /></DashboardLayout>} />
     <Route path="/country" element={<DashboardLayout><Country /></DashboardLayout>} />
     <Route path="/state" element={<DashboardLayout><State /></DashboardLayout>} />
@@ -160,6 +155,13 @@ function App() {
     <Route path="/utilities/*" element={<DashboardLayout><Utilities /></DashboardLayout>} />
     <Route path="/masters/residenttable/*" element={<DashboardLayout><ResidentTable /></DashboardLayout>} />
     <Route path="/masters/companytable/*" element={<DashboardLayout><CompanyTable /></DashboardLayout>} />
+    <Route path="/HouseKeepingTable" element={<DashboardLayout><HouseKeepingTable /></DashboardLayout>} />
+    <Route path="/HouseKeepingTableData/:id" element={<DashboardLayout><HouseKeepTabData /></DashboardLayout>} />
+    <Route path="/HouseKeepingTableData" element={<DashboardLayout><HouseKeepTabData /></DashboardLayout>} />
+    <Route path="/CompanyMst" element={<DashboardLayout><CompanyMst /></DashboardLayout>} />
+    <Route path="/CompanyMstTable" element={<DashboardLayout><CompanyMstTable /></DashboardLayout>} />
+    
+    
 
     {/* <Route path="/group-master" element={<DashboardLayout><GroupMaster /></DashboardLayout>} />
     <Route path="/groupTable" element={<DashboardLayout><GroupTable /></DashboardLayout>} /> */}
