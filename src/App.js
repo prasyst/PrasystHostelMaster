@@ -22,6 +22,9 @@ import CountryTable from '../src/Components/Masters/Location/CountryTable';
 // import RoomMasterTable from './Components/Masters/Property/RoomMasterTable';
 import Enquiry from './Components/Ragistration/Enquiry';
 import Company from './Components/Masters/Company/Company';
+// import HouseKeeping from './Components/Masters/HouseKeeping'
+// import HouseKeepingTable from './Components/Masters/HouseKeepingTable'
+// import HouseKeepingTabData from './Components/Masters/HouseKeepingTabData'
 // import Complainant from './Components/Complaint/Complaint';
 import StepperForm from './Components/Masters/ARAP/Rasident';
 import Wing from '../src/Components/Masters/Property/Wing';
@@ -133,7 +136,7 @@ function App() {
     <Route path="/propertytable" element={<DashboardLayout><PropertyMasterTable /></DashboardLayout>} />
     <Route path="/wing" element={<DashboardLayout><Wing /></DashboardLayout>} />
     <Route path="/floor" element={<DashboardLayout><Floor /></DashboardLayout>} />
-    <Route path="/partymaster" element={<DashboardLayout><PartyMaster /></DashboardLayout>} />
+    {/* <Route path="/partymaster" element={<DashboardLayout><PartyMaster /></DashboardLayout>} /> */}
     <Route path="/roomType" element={<DashboardLayout><RoomType /></DashboardLayout>} />
     <Route path="/propertyType-master" element={<DashboardLayout><PropertyType /></DashboardLayout>} />
     <Route path="/roomBedType" element={<DashboardLayout><RoomBedType /></DashboardLayout>} />
@@ -155,13 +158,12 @@ function App() {
     <Route path="/utilities/*" element={<DashboardLayout><Utilities /></DashboardLayout>} />
     <Route path="/masters/residenttable/*" element={<DashboardLayout><ResidentTable /></DashboardLayout>} />
     <Route path="/masters/companytable/*" element={<DashboardLayout><CompanyTable /></DashboardLayout>} />
-    <Route path="/HouseKeepingTable" element={<DashboardLayout><HouseKeepingTable /></DashboardLayout>} />
-    <Route path="/HouseKeepingTableData/:id" element={<DashboardLayout><HouseKeepTabData /></DashboardLayout>} />
-    <Route path="/HouseKeepingTableData" element={<DashboardLayout><HouseKeepTabData /></DashboardLayout>} />
-    <Route path="/CompanyMst" element={<DashboardLayout><CompanyMst /></DashboardLayout>} />
-    <Route path="/CompanyMstTable" element={<DashboardLayout><CompanyMstTable /></DashboardLayout>} />
-    
-    
+    {/* <Route path="/HouseKeepingTable" element={<DashboardLayout><HouseKeepingTable /></DashboardLayout>} /> */}
+    {/* <Route path="/HouseKeepingTableData/:id" element={<DashboardLayout><HouseKeepingTabData /></DashboardLayout>} /> */}
+    {/* <Route path="/HouseKeepingTableData" element={<DashboardLayout><HouseKeepingTabData /></DashboardLayout>} /> */}
+    <Route path="/Company" element={<DashboardLayout><Company /></DashboardLayout>} />
+    <Route path="/CompanyTable" element={<DashboardLayout><CompanyTable /></DashboardLayout>} />
+     
 
     {/* <Route path="/group-master" element={<DashboardLayout><GroupMaster /></DashboardLayout>} />
     <Route path="/groupTable" element={<DashboardLayout><GroupTable /></DashboardLayout>} /> */}
