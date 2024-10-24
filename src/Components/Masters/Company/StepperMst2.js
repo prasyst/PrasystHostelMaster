@@ -30,11 +30,12 @@ import DialogTitle from '@mui/material/DialogTitle';
 import DialogContentText from '@mui/material/DialogContentText';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { ToastContainer } from 'react-toastify'; 
+import { ToastContainer } from 'react-toastify';
 import { useNavigate } from "react-router-dom";
+import AuthHeader from "../../../Auth";
 
 
-const StepperMst2 = ({ TableData, mode, Cities, setTableData ,AllfieldStepperData ,CompanyId,setActiveStep,fetchCompanyData}) => {
+const StepperMst2 = ({ TableData, mode, Cities, setTableData, AllfieldStepperData, CompanyId, setActiveStep, fetchCompanyData }) => {
   const { register, watch, reset, setValue } = useForm();
   const navigate = useNavigate();
   const [AllTextDisabled, setAllTextDisabled] = useState(false);
@@ -42,33 +43,33 @@ const StepperMst2 = ({ TableData, mode, Cities, setTableData ,AllfieldStepperDat
   const [IndexofSelect, setIndexofSelect] = useState(0);
   const [InternalMode, setInternalMode] = useState("add");
   const [PinCity, setPincity] = useState([]);
-  const [AddDisabled , setAddDisabled] = useState(false);
-  const [openDialog ,setopenDialog] = useState(false);
- 
+  const [AddDisabled, setAddDisabled] = useState(false);
+  const [openDialog, setopenDialog] = useState(false);
 
-  useEffect(() => { 
+
+  useEffect(() => {
     console.log("TableData", TableData);
   }, [TableData]);
 
   useEffect(() => {
     console.log("watch", watch());
-    if (IndexofSelect == -1) return;
+    if (IndexofSelect === -1) return;
     if (mode === "add") {
       let obj = TableData[IndexofSelect];
       for (let key in obj) {
         setValue(key, TableData[IndexofSelect][key]);
       }
-     
+
     } else {
       console.log("index", IndexofSelect);
       let obj = TableData[IndexofSelect];
       for (let key in obj) {
         setValue(key, TableData[IndexofSelect][key]);
       }
-       let PinCodeObj = {target : { value : TableData[IndexofSelect]['PinCode']}};
-       console.log("PinCodeObj",PinCodeObj)
-       handlePinChange(PinCodeObj);
-       setValue('PinId',TableData[IndexofSelect]['PinId'])
+      let PinCodeObj = { target: { value: TableData[IndexofSelect]['PinCode'] } };
+      console.log("PinCodeObj", PinCodeObj)
+      handlePinChange(PinCodeObj);
+      setValue('PinId', TableData[IndexofSelect]['PinId'])
 
     }
     setAllTextDisabled(true);
@@ -84,7 +85,7 @@ const StepperMst2 = ({ TableData, mode, Cities, setTableData ,AllfieldStepperDat
     { id: "DBFLAG", label: "Flag", minWidth: 50 },
   ];
 
-  const handlePreviousClick = ()=>{
+  const handlePreviousClick = () => {
     console.log("Click");
     // navigate(`/CompanyMst`, { state: { CompanyId ,mode: 'view'}})
     setActiveStep(0);
@@ -108,13 +109,13 @@ const StepperMst2 = ({ TableData, mode, Cities, setTableData ,AllfieldStepperDat
       Remark1: " ",
       Remark2: " ",
       Website: " ",
-      CobrMob : ' ',
-      PinID :  "",
-      PinCode : ' ',
+      CobrMob: ' ',
+      PinID: "",
+      PinCode: ' ',
     });
   };
 
-  const handleClickAdd = () => { 
+  const handleClickAdd = () => {
     setInternalMode("Add");
     setAllTextDisabled(false);
     resetFunc();
@@ -127,13 +128,13 @@ const StepperMst2 = ({ TableData, mode, Cities, setTableData ,AllfieldStepperDat
     setInternalMode("Edit")
     setAllTextDisabled(false);
     setAllButtonDisabled(true);
-    setAddDisabled(true); 
+    setAddDisabled(true);
   };
 
   const handleRowClick = (rowIndex) => {
     console.log(rowIndex);
     setIndexofSelect(rowIndex);
-    if(rowIndex == 0){
+    if (rowIndex == 0) {
       setAddDisabled(false);
       setAllButtonDisabled(true);
       setAllTextDisabled(true);
@@ -143,73 +144,75 @@ const StepperMst2 = ({ TableData, mode, Cities, setTableData ,AllfieldStepperDat
     setAllTextDisabled(true);
   };
 
-  const handleClickConfirm = () => { 
+  const handleClickConfirm = () => {
     let obj = watch();
-    if(obj.CobrName === " "){  toast.info("Plz Filled the Data");
-      return; } ;
+    if (obj.CobrName === " ") {
+      toast.info("Plz Filled the Data");
+      return;
+    };
     obj.CityId = parseInt(obj.CityId);
     obj.PinID = parseInt(obj.PinID);
 
     let branchName = obj.CobrName;
-     let duplicateInd = TableData.findIndex((obj => obj.CobrName === branchName));
+    let duplicateInd = TableData.findIndex((obj => obj.CobrName === branchName));
 
-    if(duplicateInd < 0){
-    if(InternalMode === "Add"){
-    console.log(watch());
-    obj.CobrMstId = 0;
-    obj.DBFLAG = "I";
-    obj.Status = "1";
-    obj.MainBranch ="0";
-    let newTabData = [...TableData];
-    newTabData.push(obj);
-    setTableData(newTabData);
-    toast.success("Form Data Added In Table");
-    }else{
-      console.log("IndexofSelect",IndexofSelect);
-      console.log("TableData",TableData);
-      TableData[IndexofSelect].DBFLAG === "I" ?   obj.DBFLAG = "I" :  obj.DBFLAG = "U";
-      let TabData = [...TableData];
-      for(let key in obj){
-         TabData[IndexofSelect][key] = obj[key];
+    if (duplicateInd < 0) {
+      if (InternalMode === "Add") {
+        console.log(watch());
+        obj.CobrMstId = 0;
+        obj.DBFLAG = "I";
+        obj.Status = "1";
+        obj.MainBranch = "0";
+        let newTabData = [...TableData];
+        newTabData.push(obj);
+        setTableData(newTabData);
+        toast.success("Form Data Added In Table");
+      } else {
+        console.log("IndexofSelect", IndexofSelect);
+        console.log("TableData", TableData);
+        TableData[IndexofSelect].DBFLAG === "I" ? obj.DBFLAG = "I" : obj.DBFLAG = "U";
+        let TabData = [...TableData];
+        for (let key in obj) {
+          TabData[IndexofSelect][key] = obj[key];
+        }
+        console.log("TabData", TabData);
+        setTableData(TabData);
+        toast.success("Form Data Updated  In Table");
       }
-      console.log("TabData",TabData);
-      setTableData(TabData);
-      toast.success("Form Data Updated  In Table");
+      setAllButtonDisabled(false);
+      setAllTextDisabled(true);
+    } else {
+      console.log("duplicate Name");
+      toast.error("Duplicate Name")
     }
-    setAllButtonDisabled(false);
-    setAllTextDisabled(true);
-  }else{
-     console.log("duplicate Name");
-     toast.error("Duplicate Name")
-  }
-}; 
-  
+  };
 
-  const handleDelete  = ()=>{ 
-        setopenDialog(true);
-       console.log("click");
-       toast.success("Data Deleted");
-  } 
 
-  const handleCancel =()=>{
-     setopenDialog(false);
-  } 
-  const handleConfirmDelete = ()=>{
-      console.log("hii"); 
-      console.log(IndexofSelect);
-      let TabData  = [...TableData];
-      let flag = TableData[IndexofSelect].DBFLAG;
-      if(flag === "U" || flag === "R"){
-        TabData[IndexofSelect].DBFLAG = "D";
-      }else if(flag === "I"){
-        TabData = TableData.filter((obj, index) => index !== IndexofSelect);
-      }
-      setTableData(TabData);
-      setopenDialog(false);
-     
-      
+  const handleDelete = () => {
+    setopenDialog(true);
+    console.log("click");
+    toast.success("Data Deleted");
   }
-const handleClickCancel = () => {
+
+  const handleCancel = () => {
+    setopenDialog(false);
+  }
+  const handleConfirmDelete = () => {
+    console.log("hii");
+    console.log(IndexofSelect);
+    let TabData = [...TableData];
+    let flag = TableData[IndexofSelect].DBFLAG;
+    if (flag === "U" || flag === "R") {
+      TabData[IndexofSelect].DBFLAG = "D";
+    } else if (flag === "I") {
+      TabData = TableData.filter((obj, index) => index !== IndexofSelect);
+    }
+    setTableData(TabData);
+    setopenDialog(false);
+
+
+  }
+  const handleClickCancel = () => {
     setAllButtonDisabled(false);
     setAllTextDisabled(true);
     resetFunc();
@@ -230,9 +233,10 @@ const handleClickCancel = () => {
           `${process.env.REACT_APP_API_URL}pincodeMst/getdrppincodewisearea`,
           {
             PinCode: parseInt(value),
-          }
+          },
+          AuthHeader()
         );
-        const data = response.data.data;
+        const data = response.data.Data;
         console.log("data", data);
         if (data && data.length > 0) {
           setPincity(data);
@@ -245,105 +249,106 @@ const handleClickCancel = () => {
       }
     }
   };
- 
 
 
-  const handleSubmit = async()=>{
-       if(mode === "add"){
-           
-            if (AllfieldStepperData.hasOwnProperty("area")) {
-              delete AllfieldStepperData.area;
-            }
-            if (AllfieldStepperData.hasOwnProperty("PinId")) {
-              delete AllfieldStepperData.area;
-            }
-            AllfieldStepperData.DBFLAG = "I";
-            AllfieldStepperData.Status = "1";
-            AllfieldStepperData.PinID = parseInt(AllfieldStepperData.PinID);
-            AllfieldStepperData.CityId   = parseInt(AllfieldStepperData.CityId);
-            AllfieldStepperData.cobrMstList = TableData;
+
+  const handleSubmit = async () => {
+    if (mode === "add") {
+
+      if (AllfieldStepperData.hasOwnProperty("area")) {
+        delete AllfieldStepperData.area;
+      }
+      if (AllfieldStepperData.hasOwnProperty("PinId")) {
+        delete AllfieldStepperData.area;
+      }
+      AllfieldStepperData.DBFLAG = "I";
+      AllfieldStepperData.Status = "1";
+      AllfieldStepperData.PinID = parseInt(AllfieldStepperData.PinID);
+      AllfieldStepperData.CityId = parseInt(AllfieldStepperData.CityId);
+      // AllfieldStepperData.cobrMstList = TableData;
+      AllfieldStepperData.CobrMstList = [...TableData];
+
+      let FormattedObj = JSON.stringify(AllfieldStepperData).replace(/"/g, '\\"');
+      FormattedObj = '"' + FormattedObj + '"';
+      console.log("string ", FormattedObj);
+      // const myHeaders = {
+      //   "Content-Type": "application/json"
+      // };
+      try {
+        let response = await axios.post(
+          `${process.env.REACT_APP_API_URL}CoMst/ManageCompanyBranch`,
+          FormattedObj,
+          AuthHeader()
+        );
+        console.log("response", response);
+        toast.success(response.data.Message,{autoClose : 1000});
+        setTimeout(() => {
+          navigate(`/masters/companytable`)
+        }, 1800);
+      } catch (err) {
+        console.log("err", err);
+      }
+      //   try{
+      //   let response  = await axios.post(
+      //     `${process.env.REACT_APP_API_URL}CoMst/ManageCompanyBranch`,
+      //     FormattedObj
+      //   );
+      //   console.log("response",response);
+      // }
+      // catch(err){
+      //    console.log("err",err);
+      // }
+      console.log("AllfieldStepperData", FormattedObj);
+
+    } else {
 
 
-            let FormattedObj = JSON.stringify(AllfieldStepperData).replace(/"/g, '\\"');
-            FormattedObj='"'+FormattedObj+'"';
-            console.log("string ",FormattedObj);  
-            const myHeaders = {
-              "Content-Type": "application/json"
-            };
-            try {
-              let response = await axios.post(
-                `${process.env.REACT_APP_API_URL}CoMst/ManageCompanyBranch`,
-                FormattedObj,
-                { headers: myHeaders }
-              );
-              console.log("response", response);
-              toast.success(response.data.message);
-              setTimeout(()=>{
-                   navigate(`/masters/companytable`)
-              },1800);
-            } catch (err) {
-              console.log("err", err);
-            }
-          //   try{
-          //   let response  = await axios.post(
-          //     `${process.env.REACT_APP_API_URL}CoMst/ManageCompanyBranch`,
-          //     FormattedObj
-          //   );
-          //   console.log("response",response);
-          // }
-          // catch(err){
-          //    console.log("err",err);
-          // }
-          console.log("AllfieldStepperData",FormattedObj);
+      console.log("update request");
+      if (AllfieldStepperData.hasOwnProperty("area")) {
+        delete AllfieldStepperData.area;
+      }
+      AllfieldStepperData.DBFLAG = "U";
+      AllfieldStepperData.Status = "1";
+      AllfieldStepperData.CoMstId = CompanyId;
+      AllfieldStepperData.PinID = parseInt(AllfieldStepperData.PinID);
+      AllfieldStepperData.CityId = parseInt(AllfieldStepperData.CityId);
+      // AllfieldStepperData.cobrMstList = TableData;
+      AllfieldStepperData.CobrMstList = [...TableData];
+      console.log("Data", AllfieldStepperData);
+      let FormattedObj = JSON.stringify(AllfieldStepperData).replace(/"/g, '\\"');
+      FormattedObj = '"' + FormattedObj + '"';
 
-        }else{ 
+      // const myHeaders = {
+      //   "Content-Type": "application/json"
+      // };
+      try {
+        let response = await axios.post(
+          `${process.env.REACT_APP_API_URL}CoMst/ManageCompanyBranch`,
+          FormattedObj,
+          AuthHeader()
+        );
+        console.log("response", response);
+        toast.success(response.data.Message,{autoClose : 1000});
+        setTimeout(() => {
+          navigate(`/masters/companytable`)
+        }, 1800);
+      } catch (err) {
+        console.log("err", err);
+      }
 
 
-          console.log("update request");
-          if (AllfieldStepperData.hasOwnProperty("area")) {
-            delete AllfieldStepperData.area;
-          }
-          AllfieldStepperData.DBFLAG = "U";
-          AllfieldStepperData.Status = "1";
-          AllfieldStepperData.CoMstId = CompanyId;
-          AllfieldStepperData.PinID = parseInt(AllfieldStepperData.PinID);
-          AllfieldStepperData.CityId   = parseInt(AllfieldStepperData.CityId);
-          AllfieldStepperData.cobrMstList = TableData;
-          console.log("Data",AllfieldStepperData);
-          let FormattedObj = JSON.stringify(AllfieldStepperData).replace(/"/g, '\\"');
-          FormattedObj='"'+FormattedObj+'"';
-         
-          const myHeaders = {
-            "Content-Type": "application/json"
-          };
-          try {
-            let response = await axios.post(
-              `${process.env.REACT_APP_API_URL}CoMst/ManageCompanyBranch`,
-              FormattedObj,
-              { headers: myHeaders }
-            );
-            console.log("response", response);
-            toast.success(response.data.message);
-            setTimeout(()=>{
-              navigate(`/masters/companytable`)
-            },1800);
-          } catch (err) {
-            console.log("err", err);
-          }
-       
+    }
+  }
 
-        }
-  }  
-
-  const handleClickCancelButton = ()=>{
+  const handleClickCancelButton = () => {
     console.log("click");
-    fetchCompanyData(1,"L");
+    fetchCompanyData(1, "L");
     setActiveStep(0);
   }
 
   return (
     <Grid container spacing={2}>
-       <Dialog
+      <Dialog
         open={openDialog}
         onClose={handleCancel}
         aria-labelledby="alert-dialog-title"
@@ -486,7 +491,7 @@ const handleClickCancel = () => {
             variant="contained"
             size="small"
             sx={{ backgroundColor: "#7c3aed" }}
-            disabled={!AllButtonDisabled || !AddDisabled }
+            disabled={!AllButtonDisabled || !AddDisabled}
             onClick={handleClickConfirm}
           >
             Confirm
@@ -495,7 +500,7 @@ const handleClickCancel = () => {
             variant="contained"
             size="small"
             sx={{ backgroundColor: "#7c3aed", margin: "0px 10px" }}
-            disabled={!AllButtonDisabled || !AddDisabled }
+            disabled={!AllButtonDisabled || !AddDisabled}
             onClick={handleClickCancel}
           >
             Cancel
@@ -567,8 +572,8 @@ const handleClickCancel = () => {
                   </option>
 
                   {Cities?.map((option) => (
-                    <option key={option.id} value={option.id}>
-                      {option.name}
+                    <option key={option.Id} value={option.Id}>
+                      {option.Name}
                     </option>
                   ))}
                 </select>
@@ -751,8 +756,8 @@ const handleClickCancel = () => {
 
                   {/* Mapping over pincity data */}
                   {PinCity?.map((option) => (
-                    <option key={option.id} value={option.id}>
-                      {option.name}
+                    <option key={option.Id} value={option.Id}>
+                      {option.Name}
                     </option>
                   ))}
                 </select>
@@ -773,7 +778,7 @@ const handleClickCancel = () => {
 
         {/* Address and Bank Details */}
         <Grid item xs={12}>
-          <Box display="flex" flexDirection="column" gap={2}>
+          <Box display="flex" flexDirection="column" gap={4}>
             <Grid container spacing={3}>
               <Grid item xs={12} md={4}>
                 <TextField
@@ -814,40 +819,31 @@ const handleClickCancel = () => {
                   disabled={AllTextDisabled}
                 />
               </Grid>
-              <Grid item xs={12} className="form_button">
-                <Button
-                  variant="contained"
-                  size="small"
-                  sx={{
-                    mr: 1,
-                    background: "linear-gradient(290deg, #d4d4d4, #d4d4d4)",
-                  }}
-                  onClick={handlePreviousClick}
-                >
-                  Previous
-                </Button>
-                <Button
-                  variant="contained"
-                  size="small"
-                  sx={{
-                    mr: 1,
-                    background: "linear-gradient(290deg, #b9d0e9, #e9f2fa)",
-                  }}
-                  onClick={handleSubmit}
-                >
-                  Submit
-                </Button>
-                <Button
-                  variant="contained"
-                  size="small"
-                  sx={{
-                    mr: 1,
-                    background: "linear-gradient(290deg, #b9d0e9, #e9f2fa)",
-                  }}
-                  onClick={handleClickCancelButton}
-                >
-                  Cancel
-                </Button>
+              <Grid
+                item
+                xs={2}
+                className="form_button"
+                sx={{
+                  display: "flex",
+                  gap : "10px",
+                  alignItems: "center",
+                  marginTop: "10px",
+                  marginLeft: "70vw",
+                  textAlign: "right",
+                  
+                }}
+              >
+                {['Previous', 'Submit', 'Cancel'].map((label, index) => (
+                  <Button
+                    key={index}
+                    variant="contained"
+                    sx={{ backgroundColor: "#7c3aed" }}
+                    onClick={label === 'Previous' ? handlePreviousClick : label === 'Submit' ? handleSubmit : handleClickCancelButton}
+                 
+                  >
+                    {label}
+                  </Button>
+                ))}
               </Grid>
             </Grid>
           </Box>
