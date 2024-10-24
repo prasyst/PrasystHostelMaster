@@ -44,10 +44,12 @@ export default function FloorTable() {
       console.log('API Response:', response.data);
       
       if (response.data.Status === 0) {
-        const formattedData = response.data.Data.map(Floor => ({
-          ...Floor,
-          FloorName: Floor.FloorName || '',
-          Remark: Floor.Remark || ''
+
+        const formattedData = response.data.Data.map(floor => ({
+          ...floor,
+          floorName: floor.floorName || '',
+          remark: floor.remark || ''
+
         }));
         setRows(formattedData);
         console.log('data', response);

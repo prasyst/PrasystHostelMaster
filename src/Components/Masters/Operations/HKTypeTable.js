@@ -13,17 +13,12 @@ import { useNavigate } from 'react-router-dom';
 import AuthHeader from '../../../Auth';
 
 const columns = [
-  {id:'CoMstId',label:'Co.Id',minWidth:50},
-  { id: 'CoName', label: 'Company Name', minWidth: 170 },
-  { id: 'GSTIN', label: 'GSTIN', minWidth: 170 },
-  {id:'CityName',label:'City Name',minWidth:150},
-  {id:'CobrMstId',label:'Cobr_Id',minWidth:50},
-  {id:'CobrName',label:'Branch Name',minWidth:150},
-  {id:'Cobr_GSTIN',label:'Branch GST',minWidth:150},
-  {id:'Cobr_CityName',label:'Branch City',minWidth:120}
+  { id: 'HkTypeName', label: 'HkTypeName', minWidth: 100 },
+  { id: 'Abrv', label: 'Abrv', minWidth: 100 },
+  { id: 'Remark', label: 'Remark', minWidth: 100 }
 ];
 
-export default function CompanyTable() {
+export default function HkTypeTable() {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(15);
   const [searchTerms, setSearchTerms] = useState({});
@@ -31,34 +26,31 @@ export default function CompanyTable() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetchCompanyData();
-    console.log("AuthHeader()",AuthHeader());
+    fetchHkTypeData();
   }, []);
 
-  const fetchCompanyData = async () => {
+  const fetchHkTypeData = async () => {
     try {
-      const response = await axios.post(`${process.env.REACT_APP_API_URL}CoMst_Cobr/GetCoMst_CobrMstDashBoard`, {
-        start: 1,
-        PageSize: 1,
+      const response = await axios.post('http://43.230.196.21/api/MstHkType/getAllMstHkTypeDashBoard', {
+        start: 0,
+        PageSize: 0,
         SearchText: ""
-      },AuthHeader());
-      console.log("res",response);
+      }, AuthHeader());
+      
       if (response.data.Status === 0) {
-        const formattedData = response.data.Data.map(company => ({
-          ...company,
-          companyId:company.CoMstId,
-          companyName: company.CoName || 'N/A', 
-          gstin: company.GSTIN,
-          cityName:company.CityName || 'N/A',
-          cobr_GSTIN:company.Cobr_GSTIN
+        const formattedData = response.data.Data.map(hkType => ({
+          ...hkType,
+          HkTypeName: hkType.HkTypeName || '',
+          Abrv: hkType.Abrv || '',
+          Remark: hkType.Remark
         }));
-        console.log('for',formattedData)
         setRows(formattedData);
+        console.log('data', response);
       } else {
-        console.error('Error fetching company data:', response.data.message);
+        console.error('Error fetching housekeepingtype data:', response.data.message);
       }
     } catch (error) {
-      console.error('Error fetching company data:', error);
+      console.error('Error fetching housekeepingtype data:', error);
     }
   };
 
@@ -72,7 +64,7 @@ export default function CompanyTable() {
   };
 
   const handleClick = () => {
-    navigate('/Company');
+    navigate('/hkType');
   };
 
   const handleHomeClick = () => {
@@ -99,12 +91,12 @@ export default function CompanyTable() {
     });
   }, [searchTerms, rows]);
 
-  const handleRowDoubleClick = (companyId) => {
-     console.log('companyid',companyId)
-    navigate('/Company', { state: { companyId ,mode: 'view'}} );
+  const handleRowDoubleClick = (HkTypeId) => {
+  
+    navigate('/hkType', { state: { HkTypeId ,mode: 'view'}} );
   };
   const handleLocationclick=()=>{
-    navigate('/masters/company')
+    navigate('/masters/operations')
   }
 
   return (
@@ -123,8 +115,8 @@ export default function CompanyTable() {
             <Link onClick={handleHomeClick} className="text-d-none" underline="hover" color="inherit" sx={{cursor:'pointer'}}>
               Home
             </Link>
-            <Typography color="text.primary" onClick={handleLocationclick} sx={{cursor:'pointer'}}>Company</Typography>
-            <Typography color="text.primary">Company Master</Typography>
+            <Typography color="text.primary" onClick={handleLocationclick} sx={{cursor:'pointer'}}>Operations</Typography>
+            <Typography color="text.primary">HouseKeepingType Master</Typography>
           </Breadcrumbs>
 
           <Button
@@ -142,15 +134,14 @@ export default function CompanyTable() {
             Add New Record
           </Button>
         </Box>
-        <Paper sx={{ width: '90%', overflow: 'hidden', margin: '0px 0px 0px 50px', border:'1px solid lightgray' }}>
+        <Paper sx={{ width: '50%', overflow: 'hidden', margin: '0px 0px 0px 50px', border:'1px solid lightgray' }}>
           <TableContainer sx={{ maxHeight: 450 }}>
             <Table stickyHeader aria-label="sticky table">
             <TableHead>
                 <TableRow
                   sx={{ 
                     '& > th': { 
-                      padding: '2px  10px 2px  10px',
-                      textAlign:'center'
+                      padding: '2px  10px 2px  10px' 
                     }
                   }}
                 >
@@ -169,7 +160,8 @@ export default function CompanyTable() {
                         placeholder={`Search ${column.label}`}
                         onChange={(e) => handleSearchChange(column.id, e.target.value)}
                         sx={{ mt: 1 ,margin:'0px' ,'& .MuiOutlinedInput-input': {
-                         padding: '2px 6px',  
+                         padding: '2px 6px',
+                         width: '125px'  
                          },}}
 
                       />
@@ -178,37 +170,31 @@ export default function CompanyTable() {
                 </TableRow>
               </TableHead>
               <TableBody>
-  {filteredRows
-    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-    .map((row,index) => {
-      // Create a unique key
-      const uniqueKey = `${row.companyId}-${row.cityName}`; 
-      return (
-        <TableRow
-          hover
-          role="checkbox"
-          tabIndex={-1}
-          key={index}
-          onDoubleClick={() => handleRowDoubleClick(row.companyId)}
-          style={{ cursor: 'pointer' }}
-          sx={{ 
-            '& > td': { 
-              padding: '2px 14px 2px 19px',
-            }
-          }}
-        >
-          {columns.map((column) => {
-            const value = row[column.id];
-            return (
-              <TableCell key={column.id} align={column.align}>
-                {value}
-              </TableCell>
-            );
-          })}
-        </TableRow>
-      );
-    })}
-</TableBody>
+                {filteredRows
+                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                  .map((row) => {
+                    return (
+                      <TableRow hover role="checkbox" tabIndex={-1} key={row.HkTypeId}
+                      onDoubleClick={() => handleRowDoubleClick(row.HkTypeId)}
+                      style={{ cursor: 'pointer' }}
+                      sx={{ 
+                        '& > td': { 
+                          padding: '2px  14px 2px  19px'
+                        }
+                      }}
+                      >
+                        {columns.map((column) => {
+                          const value = row[column.id];
+                          return (
+                            <TableCell key={column.id} align={column.align}>
+                              {value}
+                            </TableCell>
+                          );
+                        })}
+                      </TableRow>
+                    );
+                  })}
+              </TableBody>
             </Table>
           </TableContainer>
           <TablePagination

@@ -31,16 +31,19 @@ const Login = () => {
 
 
 
-    const handleLogin = async () => { 
+
+    const handleLogin = async () => {
+        const token = 'eyJhbGciOiJIUzI1NiJ9.eyJWYWxpZElzc3VlciI6IlByYXN5c3QiLCJWYWxpZEF1ZGllbmNlIjoiUHJhc3lzdCJ9.gMMGQ74cWLoymeDv0D4c3UQKTEJSCzdkXoxlW4qF5QU';
+
         try {
             const response = await axios.post(`${process.env.REACT_APP_API_URL}Login/UserMst/GetuserLogin`, {
                 Username: userId,
                 Pwd: password
             },
-            AuthHeader()); 
-        
 
-            if (response.data.Status === 0) { // Check for status 0 as success
+            AuthHeader()); 
+                    if (response.data.Status === 0) { // Check for status 0 as success
+
                 const userName = response.data.userName || userId
                 localStorage.setItem('userName', userName);
                 localStorage.setItem('isLoggedIn', 'true');
@@ -116,84 +119,84 @@ const Login = () => {
                                     </Button>
                                 </Grid>
                             </Grid>
-                            {loginMethod === 'userId' ? (     <>
-                                    <Typography variant="subtitle1" style={{ fontWeight: 550, color: '#29343d', fontSize: '15px', marginBottom: '5px' }}>
-                                        User Id
-                                    </Typography>
-                                    <TextField
-                                        type='text'
-                                        variant="outlined"
-                                        placeholder="Enter your Id"
-                                        fullWidth
-                                        className='input_form'
-                                        value={userId}
-                                        sx={{
-                                            '& .MuiOutlinedInput-input': {
-                                                paddingTop: '8px',
-                                                paddingBottom: '8px',
-                                            }
-                                        }}
-                                        onChange={(e) => setUserId(e.target.value)}
-                                        InputProps={{
-                                            classes: {
-                                                input: 'custom-placeholder',
-                                            },
-                                        }}
-                                    />
+                            {loginMethod === 'userId' ? (<>
+                                <Typography variant="subtitle1" style={{ fontWeight: 550, color: '#29343d', fontSize: '15px', marginBottom: '5px' }}>
+                                    User Id
+                                </Typography>
+                                <TextField
+                                    type='text'
+                                    variant="outlined"
+                                    placeholder="Enter your Id"
+                                    fullWidth
+                                    className='input_form'
+                                    value={userId}
+                                    sx={{
+                                        '& .MuiOutlinedInput-input': {
+                                            paddingTop: '8px',
+                                            paddingBottom: '8px',
+                                        }
+                                    }}
+                                    onChange={(e) => setUserId(e.target.value)}
+                                    InputProps={{
+                                        classes: {
+                                            input: 'custom-placeholder',
+                                        },
+                                    }}
+                                />
 
-                                    <Box display="flex" justifyContent="space-between" alignItems="center">
-                                        <Typography variant="subtitle1" style={{ fontWeight: 550, color: '#29343d', fontSize: '15px', marginTop: '12px', paddingBottom: '5px' }}>
-                                            Password
-                                        </Typography>
-                                        <Link onClick={toggleForgotPassword} variant="body2" className='forgot_pass' style={{ cursor: 'pointer' }}>
-                                            Forgot Password?
-                                        </Link>
-                                    </Box>
-                                    <TextField
-                                        type='password'
-                                        variant="outlined"
-                                        placeholder="Enter Your password"
-                                        fullWidth
-                                        className='input_form '
-                                        sx={{
-                                            '& .MuiOutlinedInput-input': {
-                                                paddingTop: '8px',
-                                                paddingBottom: '8px',
-                                            }
-                                        }}
-                                        value={password}
-                                        onChange={(e) => setPassword(e.target.value)}
-                                        InputProps={{
-                                            classes: {
-                                                input: 'custom-placeholder',
-                                            },
-                                        }}
-                                    />
-                                </>):(  <>
-                                    <Typography variant="subtitle1" style={{ fontWeight: 550, color: '#29343d', fontSize: '15px', marginBottom: '5px' }}>
-                                        Mobile Number
+                                <Box display="flex" justifyContent="space-between" alignItems="center">
+                                    <Typography variant="subtitle1" style={{ fontWeight: 550, color: '#29343d', fontSize: '15px', marginTop: '12px', paddingBottom: '5px' }}>
+                                        Password
                                     </Typography>
-                                    <TextField
-                                        type='text'
-                                        variant="outlined"
-                                        placeholder="Enter your Number"
-                                        fullWidth
-                                        className='input_form'
-                                        value={number}
-                                        sx={{
-                                            '& .MuiOutlinedInput-input': {
-                                                paddingTop: '8px',
-                                                paddingBottom: '8px',
-                                            }
-                                        }}
-                                        onChange={(e) => setNumber(e.target.value)}
-                                        InputProps={{
-                                            classes: {
-                                                input: 'custom-placeholder',
-                                            },
-                                        }}
-                                    />
-                                </>)}
+                                    <Link onClick={toggleForgotPassword} variant="body2" className='forgot_pass' style={{ cursor: 'pointer' }}>
+                                        Forgot Password?
+                                    </Link>
+                                </Box>
+                                <TextField
+                                    type='password'
+                                    variant="outlined"
+                                    placeholder="Enter Your password"
+                                    fullWidth
+                                    className='input_form '
+                                    sx={{
+                                        '& .MuiOutlinedInput-input': {
+                                            paddingTop: '8px',
+                                            paddingBottom: '8px',
+                                        }
+                                    }}
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    InputProps={{
+                                        classes: {
+                                            input: 'custom-placeholder',
+                                        },
+                                    }}
+                                />
+                            </>) : (<>
+                                <Typography variant="subtitle1" style={{ fontWeight: 550, color: '#29343d', fontSize: '15px', marginBottom: '5px' }}>
+                                    Mobile Number
+                                </Typography>
+                                <TextField
+                                    type='text'
+                                    variant="outlined"
+                                    placeholder="Enter your Number"
+                                    fullWidth
+                                    className='input_form'
+                                    value={number}
+                                    sx={{
+                                        '& .MuiOutlinedInput-input': {
+                                            paddingTop: '8px',
+                                            paddingBottom: '8px',
+                                        }
+                                    }}
+                                    onChange={(e) => setNumber(e.target.value)}
+                                    InputProps={{
+                                        classes: {
+                                            input: 'custom-placeholder',
+                                        },
+                                    }}
+                                />
+                            </>)}
 
 
                             <Box className="py-2" display="flex" justifyContent="space-between" alignItems="center" >
@@ -204,8 +207,8 @@ const Login = () => {
 
                             </Box>
                             <Button onClick={handleLogin} className='button_signin' variant="contained" fullWidth style={{ marginTop: 16 }}>
-                          Sign In
-                      </Button>
+                                Sign In
+                            </Button>
                             <Typography variant="body2" style={{ marginTop: 16 }}>
                                 Don't have an account yet? <Link href="#">Sign Up Now</Link>
                             </Typography>
@@ -227,7 +230,7 @@ const Login = () => {
                             component="img"
                             src={hostel2}
                             alt="Feature Rich 3D Charts"
-                            style={{ width: '350px', height: '310px',  marginTop: '50px', borderRadius: '25px' }}
+                            style={{ width: '350px', height: '310px', marginTop: '50px', borderRadius: '25px' }}
 
                         />
                         {/* <Typography variant="h6" gutterBottom>

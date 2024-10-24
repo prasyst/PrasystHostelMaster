@@ -33,6 +33,7 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContentText from '@mui/material/DialogContentText'; 
 import { useNavigate } from "react-router-dom";
+import AuthHeader from "../../../Auth";
 const steps = ["Company Details", "Branch Details"];
 
 const CustomStepConnector = styled(StepConnector)(({ theme }) => ({
@@ -87,9 +88,9 @@ const Company = () => {
 
 
 
-  useEffect(()=>{
+  // useEffect(()=>{
       
-  },[Index])
+  // },[Index])
 
   useEffect(() => {
     const fetch = async () => {
@@ -133,9 +134,11 @@ const handleCancel =()=>{
 
   const fetchCities = async () => {
     const response = await axios.get(
-      `${process.env.REACT_APP_API_URL}PincodeMst/getcitydrp`
+      `${process.env.REACT_APP_API_URL}PincodeMst/getcitydrp`,
+      AuthHeader()
     );
-    setCities(response.data.data);
+    console.log("cities",response.data.Data)
+    setCities(response.data.Data);
   };
 
   const fetchCompanyData = async (companyId,flag) => {
@@ -144,16 +147,18 @@ const handleCancel =()=>{
       {
         CoMstId:companyId,
         Flag:flag
-      } 
-     
+      },
+      AuthHeader() 
     ); 
-   
-   
-    
-    setCompanyData(allcompanyData.data.data.CoMstList);
-    setCompanyId(allcompanyData.data.data.CoMstList[0].CoMstId);
-    console.log("Company-data",allcompanyData.data.data.CoMstList);
-  };
+    setCompanyData(allcompanyData.data.Data.CoMstList);
+    setCompanyId(allcompanyData.data.Data.CoMstList[0].CoMstId); 
+    let step_obj = allcompanyData.data.Data.CoMstList[0];
+    console.log("Stepper-Data",step_obj);
+    setAllfieldStepperData(step_obj);
+
+  
+
+};
 
   const fetchBranchData = async (companyId, flag) => {
     try {
@@ -162,10 +167,10 @@ const handleCancel =()=>{
         {
           CoMstId: parseInt(companyId),
           Flag: flag,
-        }
+        },
+        AuthHeader()
       );
-      let companyBranchdata = response.data.data.CoMstList[0].CobrMstList;
-      console.log("table-data",companyBranchdata);
+      let companyBranchdata = response.data.Data.CoMstList[0].CobrMstList;
       setTableData(companyBranchdata);
     } catch (error) {
       console.log("error");
@@ -269,7 +274,8 @@ const handleCancel =()=>{
 
   const handleStepClick = (step) => {
     console.log("step ");
-    if (mode === "view") {
+    if (mode === "view") { 
+      console.log("step=data",AllfieldStepperData);
       setActiveStep(step);
 }
   };
@@ -364,7 +370,7 @@ const handleCancel =()=>{
             ) }
           
             <Typography variant="h5" sx={{margin : "Auto" }}>
-              Company Master1
+              Company Master
             </Typography>
             {activeStep != 1 && (
               <Grid sx={{ display: "flex", justifyContent: "end" }}>
