@@ -26,6 +26,7 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
+import AuthHeader from '../../../Auth';
 
 const CustomTextField = styled(TextField)(({ theme }) => ({
   '& .MuiFilledInput-root': {
@@ -44,10 +45,10 @@ const CustomTextField = styled(TextField)(({ theme }) => ({
 const State = () => {
   
   const [formData, setFormData] = useState({
-    country: '',
-    stateName: '',
-    stateCode: '',
-    shortName: ''
+    Country: '',
+    StateName: '',
+    StateCode: '',
+    ShortName: ''
   });
 
   const [error, setError] = useState({
@@ -76,9 +77,9 @@ const State = () => {
   const shortNameRef = useRef(null);
 
   useEffect(() => {
-    if (location.state && location.state.stateId) {
-      setCurrentStateId(location.state.stateId);
-      fetchStateData(location.state.stateId);
+    if (location.state && location.state.StateId) {
+      setCurrentStateId(location.state.StateId);
+      fetchStateData(location.state.StateId);
       setMode('view');
     } else {
       setMode('add');
@@ -90,21 +91,21 @@ const State = () => {
     debugger
     try {
       const response = await axios.post('http://43.230.196.21/api/stateMst/RetrivestateMst', { 
-        stateId: parseInt(id),
+        StateId: parseInt(id),
         Flag: flag 
-      });
+      }, AuthHeader());
  
-      if (response.data.status === 0 && response.data.responseStatusCode === 1) {
+      if (response.data.Status === 0 && response.data.responseStatusCode === 1) {
         const stateData = response.data.data[0];
         setFormData({
-          country: stateData.countryId.toString(), 
-          stateName: stateData.stateName,
-          stateCode: stateData.stateCode,
-          shortName: stateData.stateAbrv
+          Country: stateData.countryId.toString() || '', 
+          StateName: stateData.StateName,
+          StateCode: stateData.StateCode,
+          ShortName: stateData.StateAbrv
         });
         setIsFormDisabled(true);
-        setCurrentStateId(stateData.stateId); 
-      } else if (response.data.status === 1 && response.data.responseStatusCode === 2) {
+        setCurrentStateId(stateData.StateId); 
+      } else if (response.data.Status === 1 && response.data.responseStatusCode === 2) {
         toast.info(response.data.message);
       } else {
         toast.error('Failed to fetch state data');
@@ -129,9 +130,10 @@ const State = () => {
   useEffect(() => {
     const getCountries = async () => {
       try {
-        const response = await axios.get(`${process.env.REACT_APP_API_URL}StateMst/getcountydrp`);
-        setCountries(response.data.data);
-        const idMapping = response.data.data.reduce((acc, country) => {
+        const response = await axios.get(`${process.env.REACT_APP_API_URL}StateMst/getcountydrp`
+          , AuthHeader());
+        setCountries(response.data.Data);
+        const idMapping = response.data.Data.reduce((acc, country) => {
           acc[country.name] = country.id;
           return acc;
         }, {});
@@ -182,20 +184,20 @@ const handleSave = async () => {
 
   let hasError = false;
 
-  if (!formData.country) {
+  if (!formData.Country) {
     toast.error('Country name is required');
-    setError(prev => ({ ...prev, country: true }));
+    setError(prev => ({ ...prev, Country: true }));
     hasError = true;
   } else {
-    setError(prev => ({ ...prev, country: false }));
+    setError(prev => ({ ...prev, Country: false }));
   }
 
-  if (!formData.stateName) {
+  if (!formData.StateName) {
     toast.error('State name is required');
-    setError(prev => ({ ...prev, stateName: true }));
+    setError(prev => ({ ...prev, StateName: true }));
     hasError = true;
   } else {
-    setError(prev => ({ ...prev, stateName: false }));
+    setError(prev => ({ ...prev, StateName: false }));
   }
 
   // if (!formData.stateCode) {
@@ -216,27 +218,27 @@ const handleSave = async () => {
   
   try {
     const payload = {
-      countryId: parseInt(formData.country),
-      stateName: formData.stateName,
-      stateCode: formData.stateCode,
-      stateAbrv: formData.shortName,
+      countryId: parseInt(formData.Country),
+      StateName: formData.StateName,
+      StateCode: formData.StateCode,
+      StateAbrv: formData.ShortName,
       status: "1"
     };
 
     let response;
     if (mode === 'edit') {
       payload.stateId = currentStateId;
-      response = await axios.patch('http://43.230.196.21/api/stateMst/UpdatestateMst', payload);
+      response = await axios.patch('http://43.230.196.21/api/stateMst/UpdatestateMst', payload, AuthHeader());
     } else {
-      response = await axios.post('http://43.230.196.21/api/stateMst/InsertstateMst', payload);
+      response = await axios.post('http://43.230.196.21/api/stateMst/InsertstateMst', payload, AuthHeader());
     }
 
-    if (response.data.status === 0 && response.data.responseStatusCode === 1) {
+    if (response.data.Status === 0 && response.data.responseStatusCode === 1) {
       toast.success(response.data.message);
       if (mode === 'add') {
-        setLastInsertedStateId(response.data.data)
-        console.log(response.data.data)
-        await fetchStateData(response.data.data);
+        setLastInsertedStateId(response.data.Data)
+        console.log(response.data.Data)
+        await fetchStateData(response.data.Data);
         // setFormData({
         //   country: '',
         //   state: '',
@@ -247,7 +249,7 @@ const handleSave = async () => {
         // });
         setMode('view');
         setIsFormDisabled(true);
-          setCurrentStateId(response.data.data);
+        setCurrentStateId(response.data.Data);
       } else {
         setMode('view');
       }
@@ -270,10 +272,10 @@ const handleSave = async () => {
     setMode('add');
     setIsFormDisabled(false);
     setFormData({
-      country: '',
-      stateName: '',
-      stateCode: '',
-      shortName: ''
+      Country: '',
+      StateName: '',
+      StateCode: '',
+      ShortName: ''
     });
     setCurrentStateId(null);
 
@@ -294,10 +296,10 @@ const handleSave = async () => {
 
   const resetForm = () => {
     setFormData({
-      country: '',
-      stateName: '',
-      cityCode: '',
-      shortName: ''
+      Country: '',
+      StateName: '',
+      CityCode: '',
+      ShortName: ''
     });
     setCurrentStateId(null);
     setMode('view');
@@ -439,7 +441,7 @@ const handleSave = async () => {
             </FormControl> */}
             <CountryAutocomplete
               countries={countries}
-              value={formData.country}
+              value={formData.Country}
               onChange={handleInputChange}
               disabled={isFormDisabled}
               error={error.country}
@@ -450,13 +452,13 @@ const handleSave = async () => {
           </Grid>
               <Grid item xs={12} md={6} lg={6}>
                 <TextField
-                  id="stateName"
-                  name="stateName"
+                  id="StateName"
+                  name="StateName"
                   label="State"
                   variant="filled"
                   fullWidth
                   className="custom-textfield"
-                  value={formData.stateName}
+                  value={formData.StateName}
                   onChange={handleInputChange}
                   disabled={isFormDisabled}
                   error={error.stateName}
@@ -469,13 +471,13 @@ const handleSave = async () => {
             <Grid container spacing={2}>
               <Grid item xs={12} md={6} lg={6}>
                 <TextField
-                  id="stateCode"
-                  name="stateCode"
+                  id="StateCode"
+                  name="StateCode"
                   label="State Code"
                   variant="filled"
                   fullWidth
                   className="custom-textfield"
-                  value={formData.stateCode}
+                  value={formData.StateCode}
                   onChange={handleInputChange}
                   disabled={isFormDisabled}
                   error={error.stateCode}
@@ -486,13 +488,13 @@ const handleSave = async () => {
               </Grid>
               <Grid item xs={12} md={6} lg={6}>
                 <TextField
-                  id="shortName"
-                  name="shortName"
+                  id="ShortName"
+                  name="ShortName"
                   label="Short Name"
                   variant="filled"
                   fullWidth
                   className="custom-textfield"
-                  value={formData.shortName}
+                  value={formData.ShortName}
                   onChange={handleInputChange}
                   disabled={isFormDisabled}
                   inputRef={shortNameRef}

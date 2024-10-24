@@ -216,11 +216,13 @@ const StepperForm = () => {
   };
 
   useEffect(() => {
+
     console.log("111", location?.state?.propertyId);
     if (location.state && location.state?.propertyId) {
       setPropertyId(location.state.propertyId);
       fetchPropertyData(location.state?.propertyId);
       setMode("view");
+
     } else {
       setMode("add");
       setIsFormDisabled(false);
@@ -779,14 +781,14 @@ const StepperForm = () => {
   };
 
   const handleNextdata = async () => {
-    if (propertyId) {
-      await fetchPropertyData(propertyId, "N");
+    if (currentPropId) {
+      await fetchPropertyData(currentPropId, "N");
     }
   };
 
   const handleBackdata = async () => {
-    if (propertyId && propertyId > 1) {
-      await fetchPropertyData(propertyId, "P");
+    if (currentPropId && currentPropId > 1) {
+      await fetchPropertyData(currentPropId, "P");
     }
   };
 
@@ -814,19 +816,26 @@ const StepperForm = () => {
     const selectedWings = wings.filter((item) => item.isChecked);
 
     const dataToDisplay = [];
+    const payloadItems = [];
 
     selectedFloors.forEach((floor) => {
       selectedWings.forEach((wing) => {
         dataToDisplay.push({
-          floorId: floor.floorId,
+          floorId: floor.id,
           floorName: floor.name,
-          wingId: wing.wingId,
+          wingId: wing.id,
           wingName: wing.name,
         });
+
+        payloadItems.push({
+          floorId: floor.id,
+          wingId: wing.id
+        });
+
       });
     });
 
-    setRows(dataToDisplay);
+    setRows((prevRows) => [...prevRows, ...dataToDisplay]);
 
     // Reset the checkboxes
     const resetFloors = floors.map((floor) => ({
@@ -847,6 +856,12 @@ const StepperForm = () => {
     setSelectAll(false);
 
     setOpenConfirmDialog(false);
+
+    const payload1 = {
+      payloadItems, 
+    };
+
+    handleSubmit(payload1);
   };
 
   const amenitySelect = () => {
@@ -856,13 +871,14 @@ const StepperForm = () => {
 
     selectedAmenities.forEach((amenity) => {
       dataToDisplay.push({
-        amenityId: amenity.amenityId,
+        amenityId: amenity.id,
         amenityName: amenity.name,
       });
     });
 
-    setEntries(dataToDisplay);
-
+    setEntries((prevRows) => [...prevRows, ...dataToDisplay])
+    console.log('datatoDisplay', dataToDisplay);
+    
     const resetAmenities = amenities.map((amenity) => ({
       ...amenity,
       isChecked: false,
@@ -923,15 +939,17 @@ const StepperForm = () => {
       PropFloorConfig: [payload1],
     };
 
+
     console.log("formData1", formData1);
 
-    const payload2 = {
-      PropId: propertyId || 0,
-      amenityId: parseInt(formData2.amenityName),
-    };
+
+    // const payload2 = {
+    //   PropId: currentPropId || 0,
+    //   amenityId: parseInt(formData2.amenityName),
+    // };
+
 
     console.log("Payload2:", payload2);
-
     let jsonData = JSON.stringify(result);
 
     jsonData = jsonData.replace(/\\/g, "\\\\").replace(/\"/g, '\\"');
@@ -950,6 +968,8 @@ const StepperForm = () => {
         },
         AuthHeader()
       );
+
+
       toast.success(response.data.message);
       setActiveStep(0);
       if (isEditing) {
@@ -969,6 +989,7 @@ const StepperForm = () => {
       }
     } catch (error) {
       toast.error("Error submitting form");
+
     }
   };
 
@@ -1038,9 +1059,11 @@ const StepperForm = () => {
       } catch (error) {
         toast.error("Error occurred while cancelling. Please try again.");
       }
+
     } else if (mode === "edit") {
       if (propertyId) {
         await fetchPropertyData(propertyId);
+
       }
       setMode("view");
       setIsFormDisabled(true);
@@ -1057,10 +1080,12 @@ const StepperForm = () => {
 
   const onDeleteConfirm = async () => {
     try {
-      await fetchPropertyData(propertyId, "D");
+      await fetchPropertyData(currentPropId, "D");
       // toast.success('Data deleted successfully');
+
       await fetchPropertyData(propertyId, "N");
       setMode("view");
+
       setIsFormDisabled(true);
     } catch (error) {
       toast.error("Error deleting property. Please try again.");
@@ -1078,10 +1103,12 @@ const StepperForm = () => {
 
   const handleConfirmDelete = async () => {
     try {
-      await fetchPropertyData(propertyId, "D");
+      await fetchPropertyData(currentPropId, "D");
       // toast.success('Data deleted successfully');
+
       await fetchPropertyData(propertyId, "N");
       setMode("view");
+
       setIsFormDisabled(true);
     } catch (error) {
       toast.error("Error deleting property. Please try again.");
@@ -2138,6 +2165,7 @@ const StepperForm = () => {
               display="flex"
               justifyContent="space-between"
               style={{
+
                 border: "5px solid transparent",
                 backgroundImage: "linear-gradient(to right, #3498db, #9b59b6)",
                 backgroundClip: "padding-box",

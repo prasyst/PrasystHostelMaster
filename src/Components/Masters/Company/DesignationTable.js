@@ -10,10 +10,11 @@ import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
 import { Breadcrumbs, Link, Typography, Box, Button, TextField } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import AuthHeader from '../../../Auth';
 
 const columns = [
-  { id: 'desiName', label: 'Designation', minWidth: 100 },
-  { id: 'remark', label: 'Remark', minWidth: 100 }
+  { id: 'DesiName', label: 'Designation', minWidth: 100 },
+  { id: 'Remark', label: 'Remark', minWidth: 100 }
 ];
 
 export default function DesignationTable() {
@@ -33,13 +34,13 @@ export default function DesignationTable() {
         start: 1,
         PageSize: 1,
         SearchText: ""
-      });
+      }, AuthHeader());
       
-      if (response.data.status === 0) {
-        const formattedData = response.data.data.map(designation => ({
+      if (response.data.Status === 0) {
+        const formattedData = response.data.Data.map(designation => ({
           ...designation,
-          desiName: designation.desiName || '',
-          remark: designation.remark
+          DesiName: designation.DesiName || '',
+          Remark: designation.Remark
         }));
         setRows(formattedData);
         console.log('data', response);

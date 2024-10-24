@@ -24,6 +24,7 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
+import AuthHeader from '../../../Auth';
 
 // comment  //
 const CustomTextField = styled(TextField)(({ theme }) => ({
@@ -42,8 +43,8 @@ const CustomTextField = styled(TextField)(({ theme }) => ({
 
 const DesignationMaster = () => {
   const [formData, setFormData] = useState({
-    desiName: '',
-    remark: ''
+    DesiName: '',
+    Remark: ''
   });
 
   const [error, setError] = useState({
@@ -68,9 +69,9 @@ const DesignationMaster = () => {
   const remarkRef = useRef(null);
 
   useEffect(() => {
-    if (location.state && location.state.desiId) {
-      setCurrentDesignationId(location.state.desiId);
-      fetchDesignationData(location.state.desiId);
+    if (location.state && location.state.DesiId) {
+      setCurrentDesignationId(location.state.DesiId);
+      fetchDesignationData(location.state.DesiId);
       setMode('view');
     } else {
       setMode('add');
@@ -81,20 +82,20 @@ const DesignationMaster = () => {
   const fetchDesignationData = async (id, flag) => {
     try {
       const response = await axios.post(`${process.env.REACT_APP_API_URL}MstDesi/RetriveMstDesi`, {
-        desiId: parseInt(id),
+        DesiId: parseInt(id),
         Flag: flag
       });
 
-      if (response.data.status === 0 && response.data.responseStatusCode === 1) {
-        const designationData = response.data.data[0];
+      if (response.data.Status === 0 && response.data.responseStatusCode === 1) {
+        const designationData = response.data.Data[0];
         setFormData({
-          desiName: designationData.desiName,
-          remark: designationData.remark
+          DesiName: designationData.DesiName,
+          Remark: designationData.Remark
         });
         setIsFormDisabled(true);
-        setCurrentDesignationId(designationData.desiId);
-      } else if (response.data.status === 1 && response.data.responseStatusCode === 2) {
-        toast.info(response.data.message);
+        setCurrentDesignationId(designationData.DesiId);
+      } else if (response.data.Status === 1 && response.data.responseStatusCode === 2) {
+        toast.info(response.data.Message);
       } else {
         toast.error('Failed to fetch designation data');
       }
@@ -108,8 +109,8 @@ const DesignationMaster = () => {
     const fetchDesignations = async () => {
       try {
         const response = await axios.post(`${process.env.REACT_APP_API_URL}MstDesi/getMstDesidrp`);
-        if (response.data.status === 0 && response.data.responseStatusCode === 1) {
-          setDesignations(response.data.data);
+        if (response.data.Status === 0 && response.data.responseStatusCode === 1) {
+          setDesignations(response.data.Data);
         } else {
           toast.error('Failed to fetch DesignationName');
         }
@@ -165,7 +166,7 @@ const DesignationMaster = () => {
 
     let hasError = false;
 
-    if (!formData.desiName) {
+    if (!formData.DesiName) {
       toast.error('Description Name is required');
       setError(prev => ({ ...prev, desiName: true }));
       hasError = true;
@@ -180,8 +181,8 @@ const DesignationMaster = () => {
 
     try {
       const payload = {
-        desiName: formData.desiName,
-        remark: formData.remark,
+        desiName: formData.DesiName,
+        remark: formData.Remark,
         status: "1"
       };
 

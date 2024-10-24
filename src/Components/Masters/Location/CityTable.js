@@ -10,14 +10,15 @@ import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
 import { Breadcrumbs, Link, Typography, Box, Button, TextField } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import AuthHeader from '../../../Auth';
 
 const columns = [
-  { id: 'cityName', label: 'City Name', minWidth: 170 },
-  { id: 'cityAbrv', label: 'Short Name', minWidth: 100 },
-  { id: 'country', label: 'Country', minWidth: 170 },
-  { id: 'state', label: 'State', minWidth: 170 },
-  { id: 'zone', label: 'Zone/Region', minWidth: 170 },
-  { id: 'cityCode', label: 'City Code', minWidth: 100 },
+  { id: 'CityName', label: 'City Name', minWidth: 170 },
+  { id: 'CityAbrv', label: 'Short Name', minWidth: 100 },
+  { id: 'Country', label: 'Country', minWidth: 170 },
+  { id: 'State', label: 'State', minWidth: 170 },
+  { id: 'Zone', label: 'Zone/Region', minWidth: 170 },
+  { id: 'CityCode', label: 'City Code', minWidth: 100 },
 ];
 
 export default function CityTable() {
@@ -37,14 +38,14 @@ export default function CityTable() {
         start: 1,
         PageSize: 1,
         SearchText: ""
-      });
+      }, AuthHeader());
       
-      if (response.data.status === 0) {
-        const formattedData = response.data.data.map(city => ({
+      if (response.data.Status === 0) {
+        const formattedData = response.data.Data.map(city => ({
           ...city,
-          zone: city.zoneName || '', 
-          state: city.stateName || '',
-          country:city.countryName
+          Zone: city.ZoneName || '', 
+          State: city.StateName || '',
+          Country:city.CountryName
         }));
         setRows(formattedData);
         console.log("resp", response);
@@ -93,9 +94,9 @@ export default function CityTable() {
     });
   }, [searchTerms, rows]);
 
-  const handleRowDoubleClick = (cityId) => {
+  const handleRowDoubleClick = (CityId) => {
   
-    navigate('/city', { state: { cityId ,mode: 'view'}} );
+    navigate('/city', { state: { CityId ,mode: 'view'}} );
   };
   const handleLocationclick=()=>{
     navigate('/masters/location')
@@ -175,8 +176,8 @@ export default function CityTable() {
                   .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                   .map((row) => {
                     return (
-                      <TableRow hover role="checkbox" tabIndex={-1} key={row.cityId}
-                      onDoubleClick={() => handleRowDoubleClick(row.cityId)}
+                      <TableRow hover role="checkbox" tabIndex={-1} key={row.CityId}
+                      onDoubleClick={() => handleRowDoubleClick(row.CityId)}
                       style={{ cursor: 'pointer' }}
                       sx={{ 
                         '& > td': { 

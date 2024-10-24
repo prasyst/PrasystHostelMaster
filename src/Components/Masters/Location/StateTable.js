@@ -10,12 +10,13 @@ import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
 import { Breadcrumbs, Link, Typography, Box, Button, TextField } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import AuthHeader from '../../../Auth';
 
 const columns = [
-  { id: 'country', label: 'Country', minWidth: 170 },
-  { id: 'state', label: 'State', minWidth: 170 },
-  { id: 'stateAbrv', label: 'Short Name', minWidth: 100 },
-  { id: 'stateCode', label: 'State Code', minWidth: 100 },
+  { id: 'Country', label: 'Country', minWidth: 170 },
+  { id: 'State', label: 'State', minWidth: 170 },
+  { id: 'StateAbrv', label: 'Short Name', minWidth: 100 },
+  { id: 'StateCode', label: 'State Code', minWidth: 100 }
 ];
 
 export default function StateTable() {
@@ -35,13 +36,13 @@ export default function StateTable() {
         start: 1,
         PageSize: 1,
         SearchText: ""
-      });
+      } , AuthHeader());
       
-      if (response.data.status === 0) {
-        const formattedData = response.data.data.map(state => ({
+      if (response.data.Status === 0) {
+        const formattedData = response.data.Data.map(state => ({
           ...state,
-          state: state.stateName || '',
-          country:state.countryName
+          State: state.StateName || '',
+          Country:state.CountryName
         }));
         setRows(formattedData);
       } else {
@@ -89,9 +90,9 @@ export default function StateTable() {
     });
   }, [searchTerms, rows]);
 
-  const handleRowDoubleClick = (stateId) => {
+  const handleRowDoubleClick = (StateId) => {
   
-    navigate('/state', { state: { stateId ,mode: 'view'}} );
+    navigate('/state', { state: { StateId , mode: 'view'}} );
   };
 
 
@@ -172,8 +173,8 @@ export default function StateTable() {
                   .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                   .map((row) => {
                     return (
-                      <TableRow hover role="checkbox" tabIndex={-1} key={row.stateId}
-                      onDoubleClick={() => handleRowDoubleClick(row.stateId)}
+                      <TableRow hover role="checkbox" tabIndex={-1} key={row.StateId}
+                      onDoubleClick={() => handleRowDoubleClick(row.StateId)}
                       style={{ cursor: 'pointer' }}
                       sx={{ 
                         '& > td': { 

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Container, Box, Grid, TextField, Button, Typography, Checkbox, Link } from '@mui/material';
 import hostel2 from '../assets/Images/hostel2.jpg';
-import logo from '../assets/Images/logo111.PNG';
+import logo from '../assets/Images/Clanbridge-logo.png.png';
 import PhoneAndroidIcon from '@mui/icons-material/PhoneAndroid';
 import AssignmentIndIcon from '@mui/icons-material/AssignmentInd';
 import { useNavigate } from 'react-router-dom';
@@ -31,13 +31,18 @@ const Login = () => {
 
 
 
+
     const handleLogin = async () => {
         const token = 'eyJhbGciOiJIUzI1NiJ9.eyJWYWxpZElzc3VlciI6IlByYXN5c3QiLCJWYWxpZEF1ZGllbmNlIjoiUHJhc3lzdCJ9.gMMGQ74cWLoymeDv0D4c3UQKTEJSCzdkXoxlW4qF5QU';
+
         try {
             const response = await axios.post(`${process.env.REACT_APP_API_URL}Login/UserMst/GetuserLogin`, {
                 Username: userId,
                 Pwd: password
             },
+
+            AuthHeader()); 
+                    if (response.data.Status === 0) { // Check for status 0 as success
 
                 const userName = response.data.userName || userId
                 localStorage.setItem('userName', userName);
