@@ -79,8 +79,6 @@ import Complaint from './Components/Masters/Ticketing/Complaint';
 import ComplaintTable from './Components/Masters/Ticketing/ComplaintTable';
 import ComplaintType from './Components/Masters/Ticketing/ComplaintType';
 import ComplaintTypeTable from './Components/Masters/Ticketing/ComplaintTypeTable';
-import PartyMaster from './Components/Masters/ARAP/PartyMaster'; //will remove
-import PartyMasterTable from './Components/Masters/ARAP/PartyMasterTable';
 
 
 const DashboardLayout = ({ children }) => (
@@ -167,8 +165,6 @@ function App() {
     {/* <Route path="/HouseKeepingTableData" element={<DashboardLayout><HouseKeepingTabData /></DashboardLayout>} /> */}
     <Route path="/Company" element={<DashboardLayout><Company /></DashboardLayout>} />
     <Route path="/CompanyTable" element={<DashboardLayout><CompanyTable /></DashboardLayout>} />
-  
-     
 
     {/* <Route path="/group-master" element={<DashboardLayout><GroupMaster /></DashboardLayout>} />
     <Route path="/groupTable" element={<DashboardLayout><GroupTable /></DashboardLayout>} /> */}
