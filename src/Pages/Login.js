@@ -38,7 +38,10 @@ const Login = () => {
                 Username: userId,
                 Pwd: password
             },
-
+            AuthHeader()
+        )   
+              if(response.data.Status === 0){
+         
                 const userName = response.data.userName || userId
                 localStorage.setItem('userName', userName);
                 localStorage.setItem('isLoggedIn', 'true');

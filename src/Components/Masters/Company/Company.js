@@ -256,10 +256,10 @@ const handleCancel =()=>{
      {
        CoMstId: String(CompanyId),
        Flag:"D"
-       }
- 
-   );
-   toast.success(response.data.message);
+     },
+     AuthHeader()
+ );
+   toast.success(response.data.Message);
    setopenDialog(false);
    handleAdd();
    setTimeout(()=>{

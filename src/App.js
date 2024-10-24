@@ -79,7 +79,8 @@ import Complaint from './Components/Masters/Ticketing/Complaint';
 import ComplaintTable from './Components/Masters/Ticketing/ComplaintTable';
 import ComplaintType from './Components/Masters/Ticketing/ComplaintType';
 import ComplaintTypeTable from './Components/Masters/Ticketing/ComplaintTypeTable';
-
+import PartyMaster from './Components/Masters/ARAP/PartyMaster';
+import PartyMasterTable from './Components/Masters/ARAP/PartyMasterTable';
 
 const DashboardLayout = ({ children }) => (
   <SidebarDrawar>{children}</SidebarDrawar>
