@@ -11,6 +11,7 @@ import './operation.css';
 import { TbSum } from "react-icons/tb";
 import { BsRadioactive } from "react-icons/bs";
 import { TbRadioactiveOff } from "react-icons/tb";
+import HouseKeepingType  from "./Masters/Operations/HKType"
 
 const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
@@ -24,7 +25,7 @@ const Operations = () => {
   const names = [
     "House Keeping Type",
     "Machine Master",
-    "House Keeping Type",
+    "House Keeping ",
     "Maintenance Type",
     "Vehicle Master",
   ];
@@ -50,7 +51,7 @@ const Operations = () => {
             <Grid item xs={3}>
               <Item > 
               <Box sx={{ textAlign: "center", marginTop: "10px" }} className="link">
-                  <Link to="/HouseKeepingTable">House Keeping Type</Link>
+                  <Link to="/hkTypeTable">House Keeping Type</Link>
                 </Box> 
                  <div className="All-div"> 
                    <div  className="div-style" >
@@ -101,7 +102,7 @@ const Operations = () => {
                   }}
                 />
                 <Box sx={{ textAlign: "center", marginTop: 1 }}>
-                  <Link to="#">House Keeping Type</Link>
+                  <Link to="#">House Keeping </Link>
                 </Box>
               </Item>
             </Grid>

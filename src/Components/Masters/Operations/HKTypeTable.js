@@ -10,13 +10,15 @@ import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
 import { Breadcrumbs, Link, Typography, Box, Button, TextField } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import AuthHeader from '../../../Auth';
 
 const columns = [
-  { id: 'floorName', label: 'Floor Name', minWidth: 100 },
-  { id: 'remark', label: 'Remark', minWidth: 100 }
+  { id: 'HkTypeName', label: 'HkTypeName', minWidth: 100 },
+  { id: 'Abrv', label: 'Abrv', minWidth: 100 },
+  { id: 'Remark', label: 'Remark', minWidth: 100 }
 ];
 
-export default function FloorTable() {
+export default function HkTypeTable() {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(15);
   const [searchTerms, setSearchTerms] = useState({});
@@ -24,30 +26,31 @@ export default function FloorTable() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetchFloorData();
+    fetchHkTypeData();
   }, []);
 
-  const fetchFloorData = async () => {
+  const fetchHkTypeData = async () => {
     try {
-      const response = await axios.post('http://43.230.196.21/api/FloorMst/getAllFloorMstDashBoard', {
-        start: 1,
-        PageSize: 1,
+      const response = await axios.post('http://43.230.196.21/api/MstHkType/getAllMstHkTypeDashBoard', {
+        start: 0,
+        PageSize: 0,
         SearchText: ""
-      });
+      }, AuthHeader());
       
       if (response.data.Status === 0) {
-        const formattedData = response.data.Data.map(floor => ({
-          ...floor,
-          floorName: floor.floorName || '',
-          remark: floor.remark || ''
+        const formattedData = response.data.Data.map(hkType => ({
+          ...hkType,
+          HkTypeName: hkType.HkTypeName || '',
+          Abrv: hkType.Abrv || '',
+          Remark: hkType.Remark
         }));
         setRows(formattedData);
         console.log('data', response);
       } else {
-        console.error('Error fetching floor data:', response.data.message);
+        console.error('Error fetching housekeepingtype data:', response.data.message);
       }
     } catch (error) {
-      console.error('Error fetching floor data:', error);
+      console.error('Error fetching housekeepingtype data:', error);
     }
   };
 
@@ -61,7 +64,7 @@ export default function FloorTable() {
   };
 
   const handleClick = () => {
-    navigate('/floor');
+    navigate('/hkType');
   };
 
   const handleHomeClick = () => {
@@ -88,12 +91,12 @@ export default function FloorTable() {
     });
   }, [searchTerms, rows]);
 
-  const handleRowDoubleClick = (floorId) => {
+  const handleRowDoubleClick = (HkTypeId) => {
   
-    navigate('/floor', { state: { floorId ,mode: 'view'}} );
+    navigate('/hkType', { state: { HkTypeId ,mode: 'view'}} );
   };
   const handleLocationclick=()=>{
-    navigate('/masters/property')
+    navigate('/masters/operations')
   }
 
   return (
@@ -112,8 +115,8 @@ export default function FloorTable() {
             <Link onClick={handleHomeClick} className="text-d-none" underline="hover" color="inherit" sx={{cursor:'pointer'}}>
               Home
             </Link>
-            <Typography color="text.primary" onClick={handleLocationclick} sx={{cursor:'pointer'}}>Property</Typography>
-            <Typography color="text.primary">Floor Master</Typography>
+            <Typography color="text.primary" onClick={handleLocationclick} sx={{cursor:'pointer'}}>Operations</Typography>
+            <Typography color="text.primary">HouseKeepingType Master</Typography>
           </Breadcrumbs>
 
           <Button
@@ -171,8 +174,8 @@ export default function FloorTable() {
                   .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                   .map((row) => {
                     return (
-                      <TableRow hover role="checkbox" tabIndex={-1} key={row.floorId}
-                      onDoubleClick={() => handleRowDoubleClick(row.floorId)}
+                      <TableRow hover role="checkbox" tabIndex={-1} key={row.HkTypeId}
+                      onDoubleClick={() => handleRowDoubleClick(row.HkTypeId)}
                       style={{ cursor: 'pointer' }}
                       sx={{ 
                         '& > td': { 
