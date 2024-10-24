@@ -10,13 +10,14 @@ import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
 import { Breadcrumbs, Link, Typography, Box, Button, TextField } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import AuthHeader from '../../../Auth';
 
 const columns = [
-  { id: 'pinCode', label: 'Pincode', minWidth: 170 },
-  { id: 'area', label: 'Area', minWidth: 100 },
-  { id: 'areaAbrv', label: 'Short Name', minWidth: 100 },
-  { id: 'city', label: 'City Name', minWidth: 170 },
-  { id: 'stateName', label: 'State', minWidth: 170 },
+  { id: 'PinCode', label: 'Pincode', minWidth: 170 },
+  { id: 'Area', label: 'Area', minWidth: 100 },
+  { id: 'AreaAbrv', label: 'Short Name', minWidth: 100 },
+  { id: 'City', label: 'City Name', minWidth: 170 },
+  { id: 'StateName', label: 'State', minWidth: 170 },
 ];
 
 export default function PincodeTable() {
@@ -36,16 +37,17 @@ export default function PincodeTable() {
       const response = await axios.post('http://43.230.196.21/api/pincodeMst/getAllpincodeMstDashBoard', {
         start: 0,
         PageSize: 0,
-        SearchText: searchText
-      });
+        SearchText: searchText,
+        ColText: ''
+      }, AuthHeader());
       
-      if (response.data.status === 0) {
-        const formattedData = response.data.data.map(pinCode => ({
+      if (response.data.Status === 0) {
+        const formattedData = response.data.Data.map(pinCode => ({
           ...pinCode,
-          area: pinCode.areaName || '', 
-          areaAbrv: pinCode.areaAbrv || '',
-          city: pinCode.cityName,
-          stateName: pinCode.stateName
+          Area: pinCode.AreaName || '', 
+          AreaAbrv: pinCode.AreaAbrv || '',
+          City: pinCode.CityName,
+          StateName: pinCode.StateName
         }));
         setRows(formattedData);
         console.log("data", response);
@@ -142,9 +144,9 @@ export default function PincodeTable() {
     });
   }, [searchTerms, rows]);
 
-  const handleRowDoubleClick = (pinId) => {
+  const handleRowDoubleClick = (PinId) => {
   
-    navigate('/pincode', { state: { pinId ,mode: 'view'}} );
+    navigate('/pincode', { state: { PinId ,mode: 'view'}} );
   };
 
   const handleLocationclick=()=>{
@@ -230,8 +232,8 @@ export default function PincodeTable() {
                   .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                   .map((row) => {
                     return (
-                      <TableRow hover role="checkbox" tabIndex={-1} key={row.pinId}
-                      onDoubleClick={() => handleRowDoubleClick(row.pinId)}
+                      <TableRow hover role="checkbox" tabIndex={-1} key={row.PinId}
+                      onDoubleClick={() => handleRowDoubleClick(row.PinId)}
                       style={{ cursor: 'pointer' }}
                       sx={{ 
                         '& > td': { 

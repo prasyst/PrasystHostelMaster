@@ -22,6 +22,7 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
+import AuthHeader from '../../../Auth';
 
 const CustomTextField = styled(TextField)(({ theme }) => ({
   '& .MuiFilledInput-root': {
@@ -39,9 +40,9 @@ const CustomTextField = styled(TextField)(({ theme }) => ({
 
 const Country = () => {
   const [formData, setFormData] = useState({
-    countryName: '',
-    countryCode: '',
-    shortName: ''
+    CountryName: '',
+    CountryCode: '',
+    ShortName: ''
   });
 
   const [error, setError] = useState({
@@ -66,9 +67,9 @@ const Country = () => {
   const shortNameRef = useRef(null);
 
   useEffect(() => {
-    if (location.state && location.state.countryId) {
-      setCurrentCountryId(location.state.countryId);
-      fetchCountryData(location.state.countryId);
+    if (location.state && location.state.CountryId) {
+      setCurrentCountryId(location.state.CountryId);
+      fetchCountryData(location.state.CountryId);
       setMode('view');
     } else {
       setMode('add');
@@ -79,21 +80,21 @@ const Country = () => {
   const fetchCountryData = async (id, flag) => {
     try {
       const response = await axios.post('http://43.230.196.21/api/CountryMst/RetriveCountryMst', { 
-        countryId: parseInt(id),
+        CountryId: parseInt(id),
         Flag: flag 
-      });
+      },AuthHeader());
  
-      if (response.data.status === 0 && response.data.responseStatusCode === 1) {
-        const countryData = response.data.data[0];
+      if (response.data.Status === 0 && response.data.responseStatusCode === 1) {
+        const countryData = response.data.Data[0];
         setFormData({
-          countryName: countryData.countryName, 
-          countryCode: countryData.countryCode,
-          shortName: countryData.countryAbrv
+          CountryName: countryData.CountryName, 
+          CountryCode: countryData.CountryCode,
+          ShortName: countryData.CountryAbrv
         });
         setIsFormDisabled(true);
-        setCurrentCountryId(countryData.countryId); 
-      } else if (response.data.status === 1 && response.data.responseStatusCode === 2) {
-        toast.info(response.data.message);
+        setCurrentCountryId(countryData.CountryId); 
+      } else if (response.data.Status === 1 && response.data.responseStatusCode === 2) {
+        toast.info(response.data.Message);
       } else {
         toast.error('Failed to fetch country data');
       }
@@ -151,12 +152,12 @@ const handleSave = async () => {
   
   let hasError = false;
 
-  if (!formData.countryName) {
+  if (!formData.CountryName) {
     toast.error('Country name is required');
-    setError(prev => ({ ...prev, countryName: true }));
+    setError(prev => ({ ...prev, CountryName: true }));
     hasError = true;
   } else {
-    setError(prev => ({ ...prev, countryName: false }));
+    setError(prev => ({ ...prev, CountryName: false }));
   }
 
   // if (!formData.countryCode) {
@@ -178,26 +179,26 @@ const handleSave = async () => {
 
   try {
     const payload = {
-      countryName: formData.countryName,
-      CountryCode: formData.countryCode,
-      countryAbrv: formData.shortName,
+      CountryName: formData.CountryName,
+      CountryCode: formData.CountryCode,
+      CountryAbrv: formData.ShortName,
       status: "1"
     };
 
     let response;
     if (mode === 'edit') {
-      payload.countryId = currentCountryId;
-      response = await axios.patch('http://43.230.196.21/api/countryMst/UpdateCountryMaster', payload);
+      payload.CountryId = currentCountryId;
+      response = await axios.patch('http://43.230.196.21/api/countryMst/UpdateCountryMaster', payload , AuthHeader());
     } else {
-      response = await axios.post('http://43.230.196.21/api/countryMst/InsertCountryMaster', payload);
+      response = await axios.post('http://43.230.196.21/api/countryMst/InsertCountryMaster', payload, AuthHeader());
     }
 
-    if (response.data.status === 0 && response.data.responseStatusCode === 1) {
-      toast.success(response.data.message);
+    if (response.data.Status === 0 && response.data.responseStatusCode === 1) {
+      toast.success(response.data.Message);
       if (mode === 'add') {
-        setLastInsertedCountryId(response.data.data)
-        console.log(response.data.data)
-        await fetchCountryData(response.data.data);
+        setLastInsertedCountryId(response.data.Data)
+        console.log(response.data.Data)
+        await fetchCountryData(response.data.Data);
         // setFormData({
         //   country: '',
         //   state: '',
@@ -208,13 +209,13 @@ const handleSave = async () => {
         // });
         setMode('view');
         setIsFormDisabled(true);
-          setCurrentCountryId(response.data.data);
+          setCurrentCountryId(response.data.Data);
       } else {
         setMode('view');
       }
       setIsFormDisabled(true);
     } else {
-      toast.error(response.data.message || 'Operation failed');
+      toast.error(response.data.Message || 'Operation failed');
     }
   } catch (error) {
     console.error('Error saving/updating country:', error);
@@ -232,9 +233,9 @@ const handleSave = async () => {
     setMode('add');
     setIsFormDisabled(false);
     setFormData({
-      countryName: '',
-      countryCode: '',
-      shortName: ''
+      CountryName: '',
+      CountryCode: '',
+      ShortName: ''
     });
     setCurrentCountryId(null);
 
@@ -257,9 +258,9 @@ const handleSave = async () => {
 
   const resetForm = () => {
     setFormData({
-      countryName: '',
-      countryCode: '',
-      shortName: ''
+      CountryName: '',
+      CountryCode: '',
+      ShortName: ''
     });
     setCurrentCountryId(null);
     setMode('view');
@@ -381,8 +382,8 @@ const handleSave = async () => {
             <Grid container spacing={2}>
              <Grid item xs={12} md={6} lg={6}>
               <TextField
-               id="countryName"
-               name="countryName"
+               id="CountryName"
+               name="CountryName"
                label={
                 <span>
                   Country <span style={{ color: 'red' }}>*</span>
@@ -391,7 +392,7 @@ const handleSave = async () => {
                variant="filled"
                fullWidth
                className="custom-textfield"
-               value={formData.countryName}
+               value={formData.CountryName}
                onChange={handleInputChange}
                disabled={isFormDisabled}
                error={error.countryName}
@@ -402,13 +403,13 @@ const handleSave = async () => {
              </Grid>
               <Grid item xs={12} md={6} lg={6}>
                 <TextField
-                  id="countryCode"
-                  name="countryCode"
+                  id="CountryCode"
+                  name="CountryCode"
                   label="Country Code"
                   variant="filled"
                   fullWidth
                   className="custom-textfield"
-                  value={formData.countryCode}
+                  value={formData.CountryCode}
                   onChange={handleInputChange}
                   disabled={isFormDisabled}
                   error={error.countryCode}
@@ -419,13 +420,13 @@ const handleSave = async () => {
               </Grid>
               <Grid item xs={12} md={6} lg={6}>
                 <TextField
-                  id="shortName"
-                  name="shortName"
+                  id="ShortName"
+                  name="ShortName"
                   label="Short Name"
                   variant="filled"
                   fullWidth
                   className="custom-textfield"
-                  value={formData.shortName}
+                  value={formData.ShortName}
                   onChange={handleInputChange}
                   disabled={isFormDisabled}
                   inputRef={shortNameRef}

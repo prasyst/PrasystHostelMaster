@@ -47,7 +47,6 @@ export default function PropertyTable() {
       if (response.data.status === 0) {
         const formattedData = response.data.data.map(property => ({
           ...property,
-          propertyId: property.propId,
           propName: property.propName || '',
           sqFt: property.sqFt || '',
           pinCode: property.pinCode || '',
@@ -110,8 +109,8 @@ export default function PropertyTable() {
     });
   }, [searchTerms, rows]);
 
-  const handleRowDoubleClick = (propertyId) => {
-    navigate('/property-master', { state: { propertyId ,mode: 'view'}} );
+  const handleRowDoubleClick = (propId) => {
+    navigate('/property-master', { state: { propId ,mode: 'view'}} );
   };
   const handleLocationclick=()=>{
     navigate('/masters/property')
@@ -191,8 +190,8 @@ export default function PropertyTable() {
                   .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                   .map((row) => {
                     return (
-                      <TableRow hover role="checkbox" tabIndex={-1} key={row.propertyId}
-                      onDoubleClick={() => handleRowDoubleClick(row.propertyId)}
+                      <TableRow hover role="checkbox" tabIndex={-1} key={row.propId}
+                      onDoubleClick={() => handleRowDoubleClick(row.propId)}
                       style={{ cursor: 'pointer' }}
                       sx={{ 
                         '& > td': { 

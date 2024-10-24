@@ -10,14 +10,15 @@ import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
 import { Breadcrumbs, Link, Typography, Box, Button, TextField } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import AuthHeader from '../../../Auth';
 
 const columns = [
-  { id: 'empTypeName', label: 'Type', minWidth: 170 },
-  { id: 'empName', label: 'Employee', minWidth: 100 },
-  { id: 'mobile', label: 'Mobile', minWidth: 100 },
-  { id: 'email', label: 'Email', minWidth: 100 },
-  { id: 'panNo', label: 'Pan No', minWidth: 100 },
-  { id: 'pinId', label: 'Pincode', minWidth: 100 }
+  { id: 'EmpTypeName', label: 'Type', minWidth: 170 },
+  { id: 'EmpName', label: 'Employee', minWidth: 100 },
+  { id: 'Mobile', label: 'Mobile', minWidth: 100 },
+  { id: 'Email', label: 'Email', minWidth: 100 },
+  { id: 'PanNo', label: 'Pan No', minWidth: 100 },
+  { id: 'PinId', label: 'Pincode', minWidth: 100 }
 ];
 
 export default function EmployeeTable() {
@@ -37,22 +38,22 @@ export default function EmployeeTable() {
         start: 1,
         PageSize: 1,
         SearchText: ""
-      });
+      }, AuthHeader());
       
-      if (response.data.status === 0) {
-        const formattedData = response.data.data.map(emp => ({
+      if (response.data.Status === 0) {
+        const formattedData = response.data.Data.map(emp => ({
           ...emp,
-          empTypeName: emp.empTypeName || '',
-          empName: emp.empName || '',
-          mobile: emp.mobile || '',
-          email: emp.email || '',
-          panNo: emp.panNo || '',
-          pinId: emp.pinId || ''
+          EmpTypeName: emp.EmpTypeName || '',
+          EmpName: emp.EmpName || '',
+          Mobile: emp.Mobile || '',
+          Email: emp.Email || '',
+          PanNo: emp.PanNo || '',
+          PinId: emp.PinId || ''
         }));
         setRows(formattedData);
         console.log('data', response);
       } else {
-        console.error('Error fetching employee data:', response.data.message);
+        console.error('Error fetching employee data:', response.data.Message);
       }
     } catch (error) {
       console.error('Error fetching employee data:', error);
@@ -96,9 +97,9 @@ export default function EmployeeTable() {
     });
   }, [searchTerms, rows]);
 
-  const handleRowDoubleClick = (empId) => {
+  const handleRowDoubleClick = (EmpId) => {
   
-    navigate('/employee', { state: { empId ,mode: 'view'}} );
+    navigate('/employee', { state: { EmpId ,mode: 'view'}} );
   };
   const handleLocationclick=()=>{
     navigate('/masters/company')
@@ -179,8 +180,8 @@ export default function EmployeeTable() {
                   .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                   .map((row) => {
                     return (
-                      <TableRow hover role="checkbox" tabIndex={-1} key={row.empId}
-                      onDoubleClick={() => handleRowDoubleClick(row.empId)}
+                      <TableRow hover role="checkbox" tabIndex={-1} key={row.EmpId}
+                      onDoubleClick={() => handleRowDoubleClick(row.EmpId)}
                       style={{ cursor: 'pointer' }}
                       sx={{ 
                         '& > td': { 

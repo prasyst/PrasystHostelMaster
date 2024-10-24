@@ -184,10 +184,10 @@ const StepperForm = () => {
   };
 
   useEffect(() => {
-    console.log('111', location?.state?.propertyId)
-    if (location.state && location.state?.propertyId) {
-      setPropertyId(location.state.propertyId);
-      fetchPropertyData(location.state?.propertyId);
+    console.log('111', location?.state?.propId)
+    if (location.state && location.state?.propId) {
+      setCurrentPropId(location.state.propId);
+      fetchPropertyData(location.state?.propId);
       setMode('view');
     } else {
       setMode('add');
@@ -206,7 +206,6 @@ const StepperForm = () => {
         const propertyData = response.data.data[0];
         console.log('propertyData', propertyData)
         setFormData({
-          propId: propertyData.propId,
           companyName: propertyData.companyName,
           branchName: propertyData.cobrMstId.toString(),
           propName: propertyData.propName,
@@ -232,7 +231,7 @@ const StepperForm = () => {
           CreatedBy: propertyData.createdBy ? propertyData.createdBy.toString() : '1'
         });
         setIsFormDisabled(true);
-        setPropertyId(propertyData?.propId);
+        setCurrentPropId(propertyData?.propId);
       } else if (response.data.status === 1 && response.data.responseStatusCode === 2) {
         toast.info(response.data.message);
       } else {
@@ -676,14 +675,14 @@ const StepperForm = () => {
   };
 
   const handleNextdata = async () => {
-    if (propertyId) {
-      await fetchPropertyData(propertyId, "N");
+    if (currentPropId) {
+      await fetchPropertyData(currentPropId, "N");
     }
   }
 
   const handleBackdata = async () => {
-    if (propertyId && propertyId > 1) {
-      await fetchPropertyData(propertyId, "P");
+    if (currentPropId && currentPropId > 1) {
+      await fetchPropertyData(currentPropId, "P");
     }
   }
 
@@ -711,19 +710,26 @@ const StepperForm = () => {
     const selectedWings = wings.filter((item) => item.isChecked);
 
     const dataToDisplay = [];
+    const payloadItems = [];
 
     selectedFloors.forEach((floor) => {
       selectedWings.forEach((wing) => {
         dataToDisplay.push({
-          floorId: floor.floorId,
+          floorId: floor.id,
           floorName: floor.name,
-          wingId: wing.wingId,
+          wingId: wing.id,
           wingName: wing.name,
         });
+
+        payloadItems.push({
+          floorId: floor.id,
+          wingId: wing.id
+        });
+
       });
     });
 
-    setRows(dataToDisplay);
+    setRows((prevRows) => [...prevRows, ...dataToDisplay]);
 
     // Reset the checkboxes
     const resetFloors = floors.map((floor) => ({
@@ -744,6 +750,12 @@ const StepperForm = () => {
     setSelectAll(false);
 
     setOpenConfirmDialog(false);
+
+    const payload1 = {
+      payloadItems, 
+    };
+
+    handleSubmit(payload1);
   };
 
   const amenitySelect = () => {
@@ -753,13 +765,14 @@ const StepperForm = () => {
 
     selectedAmenities.forEach((amenity) => {
       dataToDisplay.push({
-        amenityId: amenity.amenityId,
+        amenityId: amenity.id,
         amenityName: amenity.name,
       });
     });
 
-    setEntries(dataToDisplay);
-
+    setEntries((prevRows) => [...prevRows, ...dataToDisplay])
+    console.log('datatoDisplay', dataToDisplay);
+    
     const resetAmenities = amenities.map((amenity) => ({
       ...amenity,
       isChecked: false,
@@ -770,64 +783,59 @@ const StepperForm = () => {
     setAmenitySelectAll(false);
   };
 
-  const handleSubmit = async () => {
-    const payload = {
-      PropId: propertyId || 0,
-      companyName: parseInt(formData.companyName),
-      cobrMstId: parseInt(formData.branchName),
-      propName: formData.propName,
-      sqFt: formData.sqFt,
-      pinId: parseInt(formData.pinId),
-      pinId: parseInt(formData.pinCode),
-      // pincode: formData.pincode,
-      areaName: formData.areaName,
-      cityId: parseInt(formData.cityName) || 1,
-      // stateName: formData.stateName,
-      // countryName: formData.countryName,
-      propEmail: formData.propEmail,
-      propTel: formData.propTel,
-      propTypeId: parseInt(formData.propTypName),
-      propMob: formData.propMob,
-      totalRooms: formData.totalRooms,
-      totalBeds: formData.totalBeds,
-      propImg: formData.propImg,
-      hodEmpId: parseInt(formData.hodEmpName),
-      wardenEmpId: parseInt(formData.wardenEmpName),
-      propAdd: formData.propAdd,
-      propGPSLoc: formData.propGPSLoc,
-      Status: formData.Status || '1',
-      Remark: formData.remark || '',
-      CreatedBy: "1",
-      UpdatedBy: "1" // Include this for update operations
-    };
+  const handleSubmit = async (payload1) => {
+    // const payload = {
+    //   PropId: currentPropId || 0,
+    //   companyName: parseInt(formData.companyName),
+    //   cobrMstId: parseInt(formData.branchName),
+    //   propName: formData.propName,
+    //   sqFt: formData.sqFt,
+    //   pinId: parseInt(formData.pinId),
+    //   pinId: parseInt(formData.pinCode),
+    //   // pincode: formData.pincode,
+    //   areaName: formData.areaName,
+    //   cityId: parseInt(formData.cityName) || 1,
+    //   // stateName: formData.stateName,
+    //   // countryName: formData.countryName,
+    //   propEmail: formData.propEmail,
+    //   propTel: formData.propTel,
+    //   propTypeId: parseInt(formData.propTypName),
+    //   propMob: formData.propMob,
+    //   totalRooms: formData.totalRooms,
+    //   totalBeds: formData.totalBeds,
+    //   propImg: formData.propImg,
+    //   hodEmpId: parseInt(formData.hodEmpName),
+    //   wardenEmpId: parseInt(formData.wardenEmpName),
+    //   propAdd: formData.propAdd,
+    //   propGPSLoc: formData.propGPSLoc,
+    //   Status: formData.Status || '1',
+    //   Remark: formData.remark || '',
+    //   CreatedBy: "1",
+    //   UpdatedBy: "1" // Include this for update operations
+    // };
 
-    console.log('formData', formData);
+    // console.log('formData', formData);
 
-    const payload1 = {
-      PropId: propertyId || 0,
-      wingId: parseInt(formData1.wingName),
-      floorId: parseInt(formData1.floorName),
-      totalRooms: parseInt(formData1.totalRooms),
-      startNo: parseInt(formData1.startNo)
-    };
-
-    // const jsonString = '{ "PropFloorConfig":[ { "propId": 4, "wingId": 2, "floorId": 5, "totalRooms": 50, "startNo":2 }, { "propId": 12, "wingId": 13, "floorId": 13, "totalRooms": 20, "startNo": 4001 } ]}';
-
-    // // Parse the JSON string
-    // const parsedJson = JSON.parse(jsonString);
+    // const payload = {
+    //   PropId: currentPropId || 0,
+    //   wingId: parseInt(formData1.wingId),
+    //   floorId: parseInt(formData1.floorId),
+    //   totalRooms: parseInt(formData1.totalRooms),
+    //   startNo: parseInt(formData1.startNo)
+    // };
 
     const result = {
       PropFloorConfig: [payload1]
     };
 
-    console.log('formData1', formData1);
+    console.log('payload1', payload1);
 
-    const payload2 = {
-      PropId: propertyId || 0,
-      amenityId: parseInt(formData2.amenityName),
-    };
+    // const payload2 = {
+    //   PropId: currentPropId || 0,
+    //   amenityId: parseInt(formData2.amenityName),
+    // };
 
-    console.log('Payload2:', payload2);
+    // console.log('Payload2:', payload2);
 
     let jsonData = JSON.stringify(result);
 
@@ -846,26 +854,19 @@ const StepperForm = () => {
           },
         }
       );
-      toast.success(response.data.message);
-      setActiveStep(0)
-      if (isEditing) {
+      if (response.data.status === 0) {
+        toast.success(response.data.message);
         setIsEditing(false);
-        setMode('view');
         setIsFormDisabled(true);
-
-      } else {
-        if (response.data.data && response.data.data.propId) {
-          const newPropertyId = response.data.data.propId;
-          console.log('new', newPropertyId);
-          setPropertyId(newPropertyId);
-          await fetchPropertyData(newPropertyId, 'R');
-          console.log('newPropertyId', newPropertyId);
+        if (!currentPropId) {
+          setCurrentPropId(response.data.data.propId); // Assuming the API returns the new ID
         }
-        setMode('view');
-        setIsFormDisabled(true);
+      } else {
+        toast.error(response.data.message || "An error occurred");
       }
     } catch (error) {
-      toast.error('Error submitting form');
+      console.error('API call failed:', error);
+      toast.error("Something went wrong. Please try again.");
     }
   };
 
@@ -940,8 +941,8 @@ const StepperForm = () => {
         toast.error('Error occurred while cancelling. Please try again.');
       }
     } else if (mode === 'edit') {
-      if (propertyId) {
-        await fetchPropertyData(propertyId);
+      if (currentPropId) {
+        await fetchPropertyData(currentPropId);
       }
       setMode('view');
       setIsFormDisabled(true);
@@ -959,9 +960,9 @@ const StepperForm = () => {
 
   const onDeleteConfirm = async () => {
     try {
-      await fetchPropertyData(propertyId, "D");
+      await fetchPropertyData(currentPropId, "D");
       // toast.success('Data deleted successfully');
-      await fetchPropertyData(propertyId, "N");
+      await fetchPropertyData(currentPropId, "N");
       setMode('view');
       setIsFormDisabled(true);
     } catch (error) {
@@ -980,9 +981,9 @@ const StepperForm = () => {
 
   const handleConfirmDelete = async () => {
     try {
-      await fetchPropertyData(propertyId, "D");
+      await fetchPropertyData(currentPropId, "D");
       // toast.success('Data deleted successfully');
-      await fetchPropertyData(propertyId, "N");
+      await fetchPropertyData(currentPropId, "N");
       setMode('view');
       setIsFormDisabled(true);
     } catch (error) {
@@ -1530,7 +1531,7 @@ const StepperForm = () => {
                                         {['totalRooms', 'startNo'].includes(column.id) ? (
                                           <TextField
                                             size="small"
-                                            value={value}
+                                            value={formData.value}
                                             onChange={e => handleEditChange(row.propertyId, column.id, e.target.newValue)}
                                             sx={{
                                               '& .MuiOutlinedInput-input': {
@@ -1880,8 +1881,8 @@ const StepperForm = () => {
 
             <Box display="flex" justifyContent="space-between"
               style={{
-                border: '5px solid transparent',
-                backgroundImage: 'linear-gradient(to right, #3498db, #9b59b6)',
+                border: '5px solid #4da1e0',
+                backgroundColor: '#4da1e0',
                 backgroundClip: 'padding-box',
                 borderRadius: '15px'
               }}

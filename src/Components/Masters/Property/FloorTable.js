@@ -10,10 +10,11 @@ import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
 import { Breadcrumbs, Link, Typography, Box, Button, TextField } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import AuthHeader from '../../../Auth';
 
 const columns = [
-  { id: 'floorName', label: 'Floor Name', minWidth: 100 },
-  { id: 'remark', label: 'Remark', minWidth: 100 }
+  { id: 'FloorName', label: 'Floor Name', minWidth: 100 },
+  { id: 'Remark', label: 'Remark', minWidth: 100 }
 ];
 
 export default function FloorTable() {
@@ -28,18 +29,25 @@ export default function FloorTable() {
   }, []);
 
   const fetchFloorData = async () => {
+
     try {
-      const response = await axios.post('http://43.230.196.21/api/FloorMst/getAllFloorMstDashBoard', {
+      const response = await axios.post(
+        'http://43.230.196.21/api/FloorMst/getAllFloorMstDashBoard', 
+      {
         start: 1,
         PageSize: 1,
         SearchText: ""
-      });
+      },
+      AuthHeader()
+    );
+
+      console.log('API Response:', response.data);
       
-      if (response.data.status === 0) {
-        const formattedData = response.data.data.map(floor => ({
-          ...floor,
-          floorName: floor.floorName || '',
-          remark: floor.remark || ''
+      if (response.data.Status === 0) {
+        const formattedData = response.data.Data.map(Floor => ({
+          ...Floor,
+          FloorName: Floor.FloorName || '',
+          Remark: Floor.Remark || ''
         }));
         setRows(formattedData);
         console.log('data', response);
@@ -88,9 +96,9 @@ export default function FloorTable() {
     });
   }, [searchTerms, rows]);
 
-  const handleRowDoubleClick = (floorId) => {
+  const handleRowDoubleClick = (FloorId) => {
   
-    navigate('/floor', { state: { floorId ,mode: 'view'}} );
+    navigate('/floor', { state: { FloorId ,mode: 'view'}} );
   };
   const handleLocationclick=()=>{
     navigate('/masters/property')
@@ -171,8 +179,8 @@ export default function FloorTable() {
                   .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                   .map((row) => {
                     return (
-                      <TableRow hover role="checkbox" tabIndex={-1} key={row.floorId}
-                      onDoubleClick={() => handleRowDoubleClick(row.floorId)}
+                      <TableRow hover role="checkbox" tabIndex={-1} key={row.FloorId}
+                      onDoubleClick={() => handleRowDoubleClick(row.FloorId)}
                       style={{ cursor: 'pointer' }}
                       sx={{ 
                         '& > td': { 

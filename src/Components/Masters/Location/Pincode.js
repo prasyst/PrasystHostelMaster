@@ -26,6 +26,8 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import { CityAutocomplete } from '../../../Components/AutoComplete/AutoComplete'
+import AuthHeader from '../../../Auth';
+
 
 const CustomTextField = styled(TextField)(({ theme }) => ({
   '& .MuiFilledInput-root': {
@@ -44,11 +46,11 @@ const CustomTextField = styled(TextField)(({ theme }) => ({
 const Pincode = () => {
   
   const [formData, setFormData] = useState({
-    pinCode: '',
-    areaName: '',
-    city: '',
-    areaAbrv: '',
-    stateName: ''
+    PinCode: '',
+    AreaName: '',
+    CityName: '',
+    AreaAbrv: '',
+    StateName: ''
   });
 
   const [error, setError] = useState({
@@ -76,9 +78,9 @@ const Pincode = () => {
   const stateRef = useRef(null);
 
   useEffect(() => {
-    if (location.state && location.state.pinId) {
-      setCurrentPinId(location.state.pinId);
-      fetchPincodeData(location.state.pinId);
+    if (location.state && location.state.PinId) {
+      setCurrentPinId(location.state.PinId);
+      fetchPincodeData(location.state.PinId);
       setMode('view');
     } else {
       setMode('add');
@@ -90,23 +92,23 @@ const Pincode = () => {
     
     try {
       const response = await axios.post(`http://43.230.196.21/api/pincodeMst/RetrivepincodeMst`, {
-        pinId: parseInt(id),
+        PinId: parseInt(id),
         Flag: flag
-      });
+      }, AuthHeader());
 
-      if (response.data.status === 0 && response.data.responseStatusCode === 1) {
-        const pincodeData = response.data.data[0];
+      if (response.data.Status === 0 && response.data.responseStatusCode === 1) {
+        const pincodeData = response.data.Data[0];
         setFormData({
-          pinCode: pincodeData.pinCode,
-          areaName: pincodeData.areaName,
-          city: pincodeData.cityID.toString(),
-          areaAbrv: pincodeData.areaAbrv,
-          stateName: pincodeData.stateName
+          PinCode: pincodeData.PinCode,
+          AreaName: pincodeData.AreaName,
+          CityName: pincodeData.CityID.toString(),
+          AreaAbrv: pincodeData.AreaAbrv,
+          StateName: pincodeData.StateName
         });
         setIsFormDisabled(true);
-        setCurrentPinId(pincodeData.pinId);
-      } else if (response.data.status === 1 && response.data.responseStatusCode === 2) {
-        toast.info(response.data.message);
+        setCurrentPinId(pincodeData.PinId);
+      } else if (response.data.Status === 1 && response.data.responseStatusCode === 2) {
+        toast.info(response.data.Message);
       } else {
         toast.error('Failed to fetch pincode data');
       }
@@ -131,9 +133,9 @@ const Pincode = () => {
   useEffect(() => {
     const fetchCities = async () => {
       try {
-        const response = await axios.get(`${process.env.REACT_APP_API_URL}PincodeMst/getcitydrp`);
-        if (response.data.status === 0 && response.data.responseStatusCode === 1) {
-          setCities(response.data.data);
+        const response = await axios.get(`${process.env.REACT_APP_API_URL}PincodeMst/getcitydrp`, AuthHeader());
+        if (response.data.Status === 0 && response.data.responseStatusCode === 1) {
+          setCities(response.data.Data);
         } else {
           toast.error('Failed to fetch cities');
         }
@@ -155,14 +157,14 @@ const Pincode = () => {
     }));
 
 
-    if (name === 'pincode') {
+    if (name === 'Pincode') {
       setFormData(prevState => ({
         ...prevState,
         state: ''
       }));
     }
 
-    if (name === 'pincode' && value !== '') {
+    if (name === 'Pincode' && value !== '') {
       setTimeout(() => {
         stateRef.current.focus();
       }, 100000);
@@ -187,28 +189,28 @@ const Pincode = () => {
 
     let hasError = false;
 
-  if (!formData.pinCode) {
+  if (!formData.PinCode) {
     toast.error('Pincode is required');
-    setError(prev => ({ ...prev, pinCode: true }));
+    setError(prev => ({ ...prev, PinCode: true }));
     hasError = true;
   } else {
-    setError(prev => ({ ...prev, pinCode: false }));
+    setError(prev => ({ ...prev, PinCode: false }));
   }
 
-  if (!formData.areaName) {
+  if (!formData.AreaName) {
     toast.error('Area name is required');
-    setError(prev => ({ ...prev, areaName: true }));
+    setError(prev => ({ ...prev, AreaName: true }));
     hasError = true;
   } else {
-    setError(prev => ({ ...prev, areaName: false }));
+    setError(prev => ({ ...prev, AreaName: false }));
   }
 
-  if (!formData.city) {
+  if (!formData.City) {
     toast.error('City is required');
-    setError(prev => ({ ...prev, city: true }));
+    setError(prev => ({ ...prev, City: true }));
     hasError = true;
   } else {
-    setError(prev => ({ ...prev, city: false }));
+    setError(prev => ({ ...prev, City: false }));
   }
 
   
@@ -220,28 +222,28 @@ const Pincode = () => {
 
     try {
       const payload = {
-        pinCode: formData.pinCode,
-        areaName: formData.areaName,
-        cityID: parseInt(formData.city),
-        areaAbrv: formData.areaAbrv,
-        stateName: formData.stateName,
-        status: "1"
+        PinCode: formData.PinCode,
+        AreaName: formData.AreaName,
+        CityID: parseInt(formData.CityName),
+        AreaAbrv: formData.AreaAbrv,
+        StateName: formData.StateName,
+        // status: "1"
       };
 
       let response;
       if (mode === 'edit') {
-        payload.pinId = currentPinId;
-        response = await axios.patch('http://43.230.196.21/api/pincodeMst/UpdatepincodeMst', payload);
+        payload.PinId = currentPinId;
+        response = await axios.patch('http://43.230.196.21/api/pincodeMst/UpdatepincodeMst', payload, AuthHeader());
       } else {
-        response = await axios.post('http://43.230.196.21/api/pincodeMst/InsertpincodeMst', payload);
+        response = await axios.post('http://43.230.196.21/api/pincodeMst/InsertpincodeMst', payload, AuthHeader());
       }
 
-      if (response.data.status === 0 && response.data.responseStatusCode === 1) {
-        toast.success(response.data.message);
+      if (response.data.Status === 0 && response.data.responseStatusCode === 1) {
+        toast.success(response.data.Message);
         if (mode === 'add') {
-          setLastInsertedPinId(response.data.data)
-          console.log(response.data.data)
-          await fetchPincodeData(response.data.data);
+          setLastInsertedPinId(response.data.Data)
+          console.log(response.data.Data)
+          await fetchPincodeData(response.data.Data);
           // setFormData({
           //   country: '',
           //   state: '',
@@ -252,13 +254,13 @@ const Pincode = () => {
           // });
           setMode('view');
           setIsFormDisabled(true);
-          setCurrentPinId(response.data.data);
+          setCurrentPinId(response.data.Data);
         } else {
           setMode('view');
         }
         setIsFormDisabled(true);
       } else {
-        toast.error(response.data.message || 'Operation failed');
+        toast.error(response.data.Message || 'Operation failed');
       }
     } catch (error) {
       console.error('Error saving/updating pincode:', error);
@@ -275,11 +277,11 @@ const Pincode = () => {
     setMode('add');
     setIsFormDisabled(false);
     setFormData({
-      pinCode: '',
-      areaName: '',
-      city: '',
-      areaAbrv: '',
-      stateName: ''
+      PinCode: '',
+      AreaName: '',
+      CityName: '',
+      AreaAbrv: '',
+      StateName: ''
     });
     setCurrentPinId(null);
 
@@ -300,11 +302,11 @@ const Pincode = () => {
 
   const resetForm = () => {
     setFormData({
-      pinCode: '',
-      areaName: '',
-      city: '',
-      areaAbrv: '',
-      stateName: ''
+      PinCode: '',
+      AreaName: '',
+      CityName: '',
+      AreaAbrv: '',
+      StateName: ''
     });
     setCurrentPinId(null);
     setMode('view');
@@ -414,8 +416,8 @@ const Pincode = () => {
 
           <Grid item xs={12} md={6} lg={6} className='form_field'>
             <TextField
-              id="pinCode"
-              name="pinCode"
+              id="PinCode"
+              name="PinCode"
               label={
                 <span>
                   Pincode <span style={{ color: 'red' }}>*</span>
@@ -424,7 +426,7 @@ const Pincode = () => {
               variant="filled"
               fullWidth
               className="custom-textfield"
-              value={formData.pinCode}
+              value={formData.PinCode}
               onChange={handleInputChange}
               disabled={isFormDisabled}
               error={error.pinCode}
@@ -435,13 +437,13 @@ const Pincode = () => {
           </Grid>
           <Grid item xs={12} md={6} lg={6} className='form_field'>
             <TextField
-              id="areaName"
-              name="areaName"
+              id="AreaName"
+              name="AreaName"
               label="Area"
               variant="filled"
               fullWidth
               className="custom-textfield"
-              value={formData.areaName}
+              value={formData.AreaName}
               onChange={handleInputChange}
               disabled={isFormDisabled}
               error={error.areaName}
@@ -471,7 +473,7 @@ const Pincode = () => {
             </FormControl> */}
             <CityAutocomplete
               cities={cities}
-              value={cities.find(city => city.id == formData.city) || null}
+              value={cities.find(CityName => CityName.id == formData.CityName) || null}
               onChange={handleInputChange}
               disabled={isFormDisabled}
               error={error.city}
@@ -482,13 +484,13 @@ const Pincode = () => {
           </Grid>
           <Grid item xs={12} md={6} lg={6} className='form_field'>
             <TextField
-              id="areaAbrv"
-              name="areaAbrv"
+              id="AreaAbrv"
+              name="AreaAbrv"
               label="Area Abrv"
               variant="filled"
               fullWidth
               className="custom-textfield"
-              value={formData.areaAbrv}
+              value={formData.AreaAbrv}
               onChange={handleInputChange}
               disabled={isFormDisabled}
               inputRef={areaAbrvRef}
@@ -497,13 +499,13 @@ const Pincode = () => {
           </Grid>
           <Grid item xs={12} md={6} lg={6} className='form_field'>
             <TextField
-              id="stateName"
-              name="stateName"
+              id="StateName"
+              name="StateName"
               label="State"
               variant="filled"
               fullWidth
               className="custom-textfield"
-              value={formData.stateName}
+              value={formData.StateName}
               onChange={handleInputChange}
               disabled={isFormDisabled}
               inputRef={stateRef}

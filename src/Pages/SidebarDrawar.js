@@ -19,7 +19,7 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import { MdDashboard } from "react-icons/md";
 import MailIcon from '@mui/icons-material/Mail';
-import logo from '../assets/Images/logo111.PNG';
+import logo from '../assets/Images/Clanbridge-logo.png.png';
 import { VscThreeBars } from "react-icons/vsc";
 import { MdOutlineReport } from "react-icons/md";
 import Avatar from '@mui/material/Avatar';

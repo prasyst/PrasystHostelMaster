@@ -26,6 +26,7 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import { EmpTypeAutocomplete } from '../../../Components/AutoComplete/AutoComplete'
+import AuthHeader from '../../../Auth';
 
 const CustomTextField = styled(TextField)(({ theme }) => ({
   '& .MuiFilledInput-root': {
@@ -43,15 +44,15 @@ const CustomTextField = styled(TextField)(({ theme }) => ({
 
 const EmployeeMaster = () => {
   const [formData, setFormData] = useState({
-    empTypeName: '',
-    empName: '',
-    mobile: '',
-    email: '',
-    panNo: '',
-    pinCode: '',
-    permanentAddr: '',
-    currentAddr: '',
-    photo: ''
+    Name: '',
+    EmpName: '',
+    Mobile: '',
+    Email: '',
+    PanNo: '',
+    PinCode: '',
+    PermanentAddr: '',
+    CurrentAddr: '',
+    Photo: ''
   });
 
   const [error, setError] = useState({
@@ -116,9 +117,9 @@ const EmployeeMaster = () => {
   };
 
   useEffect(() => {
-    if (location.state && location.state.empId) {
-      setCurrentEmployeeId(location.state.empId);
-      fetchEmpData(location.state.empId);
+    if (location.state && location.state.EmpId) {
+      setCurrentEmployeeId(location.state.EmpId);
+      fetchEmpData(location.state.EmpId);
       setMode('view');
     } else {
       setMode('add');
@@ -129,28 +130,28 @@ const EmployeeMaster = () => {
   const fetchEmpData = async (id, flag) => {
     try {
       const response = await axios.post(`${process.env.REACT_APP_API_URL}MstEmp/RetriveMstEmp`, {
-        empId: parseInt(id),
+        EmpId: parseInt(id),
         Flag: flag
-      });
+      }, AuthHeader());
 
-      if (response.data.status === 0 && response.data.responseStatusCode === 1) {
-        const empData = response.data.data[0];
+      if (response.data.Status === 0 && response.data.responseStatusCode === 1) {
+        const empData = response.data.Data[0];
         setFormData({
-          empTypeName: empData.empTypeId.toString(),
+          Name: empData.Id.toString(),
           // empTypeName: empData.empTypeName,
-          empName: empData.empName,
-          mobile: empData.mobile,
-          email: empData.email,
-          panNo: empData.panNo,
-          pinCode: empData.pinId.toString(),
-          permanentAddr: empData.permanentAddr,
-          currentAddr: empData.currentAddr,
-          photo: empData.photo
+          EmpName: empData.EmpName,
+          Mobile: empData.Mobile,
+          Email: empData.Email,
+          PanNo: empData.PanNo,
+          PinCode: empData.PinId.toString(),
+          PermanentAddr: empData.PermanentAddr,
+          CurrentAddr: empData.CurrentAddr,
+          Photo: empData.Photo
         });
         setIsFormDisabled(true);
-        setCurrentEmployeeId(empData.empId);
-      } else if (response.data.status === 1 && response.data.responseStatusCode === 2) {
-        toast.info(response.data.message);
+        setCurrentEmployeeId(empData.EmpId);
+      } else if (response.data.Status === 1 && response.data.responseStatusCode === 2) {
+        toast.info(response.data.Message);
       } else {
         toast.error('Failed to fetch employee data');
       }
@@ -163,9 +164,9 @@ const EmployeeMaster = () => {
   useEffect(() => {
     const fetchEmpTypes = async () => {
       try {
-        const response = await axios.post(`${process.env.REACT_APP_API_URL}MstEmpType/getMstEmpTypedrp`);
-        if (response.data.status === 0 && response.data.responseStatusCode === 1) {
-          setTypes(response.data.data);
+        const response = await axios.post(`${process.env.REACT_APP_API_URL}MstEmpType/getMstEmpTypedrp`, AuthHeader());
+        if (response.data.Status === 0 && response.data.responseStatusCode === 1) {
+          setTypes(response.data.Data);
         } else {
           toast.error('Failed to fetch empTypes');
         }
@@ -235,7 +236,7 @@ const EmployeeMaster = () => {
 
     let hasError = false;
 
-    if (!formData.empTypeName) {
+    if (!formData.EmpTypeName) {
       toast.error('EmployeeType Name is required');
       setError(prev => ({ ...prev, empTypeName: true }));
       hasError = true;
@@ -243,7 +244,7 @@ const EmployeeMaster = () => {
       setError(prev => ({ ...prev, empTypeName: false }));
     }
 
-    if (!formData.empName) {
+    if (!formData.EmpName) {
       toast.error('Employee Name is required');
       setError(prev => ({ ...prev, empName: true }));
       hasError = true;
@@ -258,33 +259,33 @@ const EmployeeMaster = () => {
 
     try {
       const payload = {
-        empTypeId: parseInt(formData.empTypeName),
+        Id: parseInt(formData.Name),
         // empTypeName: formData.empTypeName,
-        empName: formData.empName,
-        mobile: formData.mobile,
-        email: formData.email,
-        panNo: formData.panNo,
-        pinId: parseInt(formData.pinCode),
-        permanentAddr: formData.permanentAddr,
-        currentAddr: formData.currentAddr,
-        photo: formData.photo,
-        status: "1"
+        EmpName: formData.EmpName,
+        Mobile: formData.Mobile,
+        Email: formData.Email,
+        PanNo: formData.PanNo,
+        PinId: parseInt(formData.PinCode),
+        PermanentAddr: formData.PermanentAddr,
+        CurrentAddr: formData.CurrentAddr,
+        Photo: formData.Photo,
+        Status: "1"
       };
 
       let response;
       if (mode === 'edit') {
-        payload.empId = currentEmployeeId;
-        response = await axios.patch(`${process.env.REACT_APP_API_URL}MstEmp/UpdateMstEmp`, payload);
+        payload.EmpId = currentEmployeeId;
+        response = await axios.patch(`${process.env.REACT_APP_API_URL}MstEmp/UpdateMstEmp`, payload, AuthHeader());
       } else {
-        response = await axios.post(`${process.env.REACT_APP_API_URL}MstEmp/InsertMstEmp`, payload);
+        response = await axios.post(`${process.env.REACT_APP_API_URL}MstEmp/InsertMstEmp`, payload, AuthHeader());
       }
 
-      if (response.data.status === 0 && response.data.responseStatusCode === 1) {
-        toast.success(response.data.message);
+      if (response.data.Status === 0 && response.data.responseStatusCode === 1) {
+        toast.success(response.data.Message);
         if (mode === 'add') {
-          setLastInsertedEmployeeId(response.data.data)
-          console.log(response.data.data)
-          await fetchEmpData(response.data.data);
+          setLastInsertedEmployeeId(response.data.Data)
+          console.log(response.data.Data)
+          await fetchEmpData(response.data.Data);
           // setFormData({
           //   country: '',
           //   state: '',
@@ -295,13 +296,13 @@ const EmployeeMaster = () => {
           // });
           setMode('view');
           setIsFormDisabled(true);
-          setCurrentEmployeeId(response.data.data);
+          setCurrentEmployeeId(response.data.Data);
         } else {
           setMode('view');
         }
         setIsFormDisabled(true);
       } else {
-        toast.error(response.data.message || 'Operation failed');
+        toast.error(response.data.Message || 'Operation failed');
       }
     } catch (error) {
       console.error('Error saving/updating employee:', error);
@@ -319,15 +320,15 @@ const EmployeeMaster = () => {
     setMode('add');
     setIsFormDisabled(false);
     setFormData({
-      empTypeName: '',
-      empName: '',
-      mobile: '',
-      email: '',
-      panNo: '',
-      pinCode: '',
-      permanentAddr: '',
-      currentAddr: '',
-      photo: ''
+      Name: '',
+      EmpName: '',
+      Mobile: '',
+      Email: '',
+      PanNo: '',
+      PinCode: '',
+      PermanentAddr: '',
+      CurrentAddr: '',
+      Photo: ''
     });
     setCurrentEmployeeId(null);
 
@@ -348,15 +349,15 @@ const EmployeeMaster = () => {
 
   const resetForm = () => {
     setFormData({
-      empTypeName: '',
-      empName: '',
-      mobile: '',
-      email: '',
-      panNo: '',
-      pinCode: '',
-      permanentAddr: '',
-      currentAddr: '',
-      photo: ''
+      Name: '',
+      EmpName: '',
+      Mobile: '',
+      Email: '',
+      PanNo: '',
+      PinCode: '',
+      PermanentAddr: '',
+      CurrentAddr: '',
+      Photo: ''
     });
     setCurrentEmployeeId(null);
     setMode('view');
@@ -488,7 +489,7 @@ const EmployeeMaster = () => {
                       </FormControl> */}
                       <EmpTypeAutocomplete
                         types={types}
-                        value={types.find(empTypeName => empTypeName.id == formData.empTypeName) || null}
+                        value={types.find(Name => Name.Id == formData.Name) || null}
                         onChange={handleInputChange}
                         disabled={isFormDisabled}
                         error={error.empTypeName}
@@ -499,8 +500,8 @@ const EmployeeMaster = () => {
                     </Grid>
                     <Grid item xs={12} md={6} lg={6}>
                       <TextField
-                        id="empName"
-                        name="empName"
+                        id="EmpName"
+                        name="EmpName"
                         label={
                           <span>
                             EmpName <span style={{ color: 'red' }}>*</span>
@@ -509,7 +510,7 @@ const EmployeeMaster = () => {
                         variant="filled"
                         fullWidth
                         className="custom-textfield"
-                        value={formData.empName}
+                        value={formData.EmpName}
                         onChange={handleInputChange}
                         disabled={isFormDisabled}
                         inputRef={empNameRef}
@@ -523,13 +524,13 @@ const EmployeeMaster = () => {
               <Grid container spacing={2}>
                 <Grid item xs={12} md={6} lg={6}>
                   <TextField
-                    id="mobile"
-                    name="mobile"
+                    id="Mobile"
+                    name="Mobile"
                     label="Mobile"
                     variant="filled"
                     fullWidth
                     className="custom-textfield"
-                    value={formData.mobile}
+                    value={formData.Mobile}
                     onChange={handleInputChange}
                     disabled={isFormDisabled}
                     inputRef={mobileRef}
@@ -538,13 +539,13 @@ const EmployeeMaster = () => {
                 </Grid>
                 <Grid item xs={12} md={6} lg={6}>
                   <TextField
-                    id="email"
-                    name="email"
+                    id="Email"
+                    name="Email"
                     label="Email"
                     variant="filled"
                     fullWidth
                     className="custom-textfield"
-                    value={formData.email}
+                    value={formData.Email}
                     onChange={handleInputChange}
                     disabled={isFormDisabled}
                     inputRef={emailRef}
@@ -553,13 +554,13 @@ const EmployeeMaster = () => {
                 </Grid>
                 <Grid item xs={12} md={6} lg={6}>
                   <TextField
-                    id="panNo"
-                    name="panNo"
+                    id="PanNo"
+                    name="PanNo"
                     label="Pan No"
                     variant="filled"
                     fullWidth
                     className="custom-textfield"
-                    value={formData.panNo}
+                    value={formData.PanNo}
                     onChange={handleInputChange}
                     disabled={isFormDisabled}
                     inputRef={panNoRef}
@@ -568,13 +569,13 @@ const EmployeeMaster = () => {
                 </Grid>
                 <Grid item xs={12} md={6} lg={6}>
                   <TextField
-                    id="pinCode"
-                    name="pinCode"
+                    id="PinCode"
+                    name="PinCode"
                     label="Pincode"
                     variant="filled"
                     fullWidth
                     className="custom-textfield"
-                    value={formData.pinCode}
+                    value={formData.PinCode}
                     onChange={handleInputChange}
                     disabled={isFormDisabled}
                     inputRef={pinCodeRef}
@@ -599,9 +600,9 @@ const EmployeeMaster = () => {
               overflow="hidden"
               position="relative"
             >
-              {formData.photo ? (
+              {formData.Photo ? (
                 <img
-                  src={formData.photo}
+                  src={formData.Photo}
                   alt="Uploaded Preview"
                   style={{
                     width: '100%',
@@ -645,8 +646,8 @@ const EmployeeMaster = () => {
                   <TextField
                     fullWidth
                     label="Permanent Address"
-                    name="permanentAddr"
-                    value={formData.permanentAddr || ''}
+                    name="PermanentAddr"
+                    value={formData.PermanentAddr || ''}
                     onChange={handleInputChange}
                     multiline
                     rows={2}
@@ -677,8 +678,8 @@ const EmployeeMaster = () => {
                   <TextField
                     fullWidth
                     label="Current Address"
-                    name="currentAddr"
-                    value={formData.currentAddr || ''}
+                    name="CurrentAddr"
+                    value={formData.CurrentAddr || ''}
                     onChange={handleInputChange}
                     multiline
                     rows={2}
