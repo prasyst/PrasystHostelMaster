@@ -12,15 +12,15 @@ import { Breadcrumbs, Link, Typography, Box, Button, TextField } from '@mui/mate
 import { useNavigate } from 'react-router-dom';
 import AuthHeader from '../../../Auth';
 
+
 const columns = [
-  {id:'CoMstId',label:'Co.Id',minWidth:50},
-  { id: 'CoName', label: 'Company Name', minWidth: 170 },
-  { id: 'GSTIN', label: 'GSTIN', minWidth: 170 },
-  {id:'CityName',label:'City Name',minWidth:150},
-  {id:'CobrMstId',label:'Cobr_Id',minWidth:50},
-  {id:'CobrName',label:'Branch Name',minWidth:150},
-  {id:'Cobr_GSTIN',label:'Branch GST',minWidth:150},
-  {id:'Cobr_CityName',label:'Branch City',minWidth:120}
+  {id:'PartyId',label:'Code',minWidth:10}, 
+  {id:'PartyName',label:'Name',minWidth:10}, 
+  {id:'GsttinNo',label:'GSTIN',minWidth:10}, 
+  {id:'PartyAbrv',label:'ABRV',minWidth:10}, 
+  {id:'MobileNo',label:'Mobile',minWidth:10}, 
+  {id:'ContactPerson',label:'Contact Person',minWidth:10}, 
+ 
 ];
 
 export default function CompanyTable() {
@@ -28,39 +28,29 @@ export default function CompanyTable() {
   const [rowsPerPage, setRowsPerPage] = useState(15);
   const [searchTerms, setSearchTerms] = useState({});
   const [rows, setRows] = useState([]);
+  const [PartyArrData , setPartyArrData] = useState([]);
   const navigate = useNavigate();
 
-  useEffect(() => {
+  useEffect(() => { 
+    console.log("Auth",AuthHeader());
     fetchCompanyData();
-    console.log("AuthHeader()",AuthHeader());
+  
   }, []);
 
   const fetchCompanyData = async () => {
     try {
-      const response = await axios.post(`${process.env.REACT_APP_API_URL}CoMst_Cobr/GetCoMst_CobrMstDashBoard`, {
-        start: 1,
-        PageSize: 1,
-        SearchText: ""
-      },AuthHeader());
-      console.log("res",response);
-      if (response.data.Status === 0) {
-        const formattedData = response.data.Data.map(company => ({
-          ...company,
-          companyId:company.CoMstId,
-          companyName: company.CoName || 'N/A', 
-          gstin: company.GSTIN,
-          cityName:company.CityName || 'N/A',
-          cobr_GSTIN:company.Cobr_GSTIN
-        }));
-        console.log('for',formattedData)
-        setRows(formattedData);
-      } else {
-        console.error('Error fetching company data:', response.data.message);
-      }
-    } catch (error) {
-      console.error('Error fetching company data:', error);
-    }
-  };
+      const response = await axios.post(`${process.env.REACT_APP_API_URL}PartyMst/GetPartyMstDashBoard`,{
+        start:1,
+         PageSize:1,
+         SearchText:""
+        },AuthHeader());
+      console.log("response-data ",response); 
+      setRows(response.data.Data) 
+  }
+  catch(err){
+     console.log("err",err);
+  }
+}
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -72,7 +62,7 @@ export default function CompanyTable() {
   };
 
   const handleClick = () => {
-    navigate('/Company');
+    navigate('/partymaster');
   };
 
   const handleHomeClick = () => {
@@ -99,12 +89,11 @@ export default function CompanyTable() {
     });
   }, [searchTerms, rows]);
 
-  const handleRowDoubleClick = (companyId) => {
-     console.log('companyid',companyId)
-    navigate('/Company', { state: { companyId ,mode: 'view'}} );
+  const handleRowDoubleClick = (partyId) => {
+    navigate('/partymaster', { state: { partyId ,mode: 'view'}} );
   };
   const handleLocationclick=()=>{
-    navigate('/masters/company')
+    // navigate(``)
   }
 
   return (
@@ -123,8 +112,8 @@ export default function CompanyTable() {
             <Link onClick={handleHomeClick} className="text-d-none" underline="hover" color="inherit" sx={{cursor:'pointer'}}>
               Home
             </Link>
-            <Typography color="text.primary" onClick={handleLocationclick} sx={{cursor:'pointer'}}>Company</Typography>
-            <Typography color="text.primary">Company Master</Typography>
+            <Typography color="text.primary" onClick={handleLocationclick} sx={{cursor:'pointer'}}>AR/AP</Typography>
+            <Typography color="text.primary">Party Master</Typography>
           </Breadcrumbs>
 
           <Button
@@ -143,7 +132,7 @@ export default function CompanyTable() {
           </Button>
         </Box>
         <Paper sx={{ width: '90%', overflow: 'hidden', margin: '0px 0px 0px 50px', border:'1px solid lightgray' }}>
-          <TableContainer sx={{ maxHeight: 450 }}>
+          <TableContainer sx={{ maxHeight: 450 , overflowY: 'auto', overflowX: 'scrollable' }}>
             <Table stickyHeader aria-label="sticky table">
             <TableHead>
                 <TableRow
@@ -189,7 +178,7 @@ export default function CompanyTable() {
           role="checkbox"
           tabIndex={-1}
           key={index}
-          onDoubleClick={() => handleRowDoubleClick(row.companyId)}
+          onDoubleClick={() => handleRowDoubleClick(row.PartyId)}
           style={{ cursor: 'pointer' }}
           sx={{ 
             '& > td': { 

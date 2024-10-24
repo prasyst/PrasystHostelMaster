@@ -20,6 +20,7 @@ import { forwardRef } from "react";
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { ToastContainer } from 'react-toastify'; 
+import AuthHeader from "../../../Auth";
 let pincity = [];
 const StepperMst1 = forwardRef(
   (
@@ -87,7 +88,7 @@ const StepperMst1 = forwardRef(
         WorkAddr: " ",
         PinCode: " ",
         CityId: "",
-        PinId : " ",
+       
       });
     };
 
@@ -101,9 +102,10 @@ const StepperMst1 = forwardRef(
             "http://43.230.196.21/api/pincodeMst/getdrppincodewisearea",
             {
               PinCode: parseInt(value),
-            }
+            },
+            AuthHeader()
           );
-          const data = response.data.data;
+          const data = response.data.Data;
           console.log("data", data);
           if (data && data.length > 0) {
             setPincity(data);
@@ -232,8 +234,8 @@ const StepperMst1 = forwardRef(
 
                     {/* Map over cities and render options */}
                     {Cities?.map((option) => (
-                      <option key={option.id} value={option.id}>
-                        {option.name}
+                      <option key={option.Id} value={option.Id}>
+                        {option.Name}
                       </option>
                     ))}
                   </select>
@@ -543,8 +545,8 @@ const StepperMst1 = forwardRef(
 
                     {/* Mapping over pincity data */}
                     {pincity?.map((option) => (
-                      <option key={option.id} value={option.id}>
-                        {option.name}
+                      <option key={option.Id} value={option.Id}>
+                        {option.Name}
                       </option>
                     ))}
                   </select>
