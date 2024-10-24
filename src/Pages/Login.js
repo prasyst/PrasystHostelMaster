@@ -41,8 +41,10 @@ const Login = () => {
                 Pwd: password
             },
 
-            AuthHeader()); 
-                    if (response.data.Status === 0) { // Check for status 0 as success
+            AuthHeader()
+        )   
+              if(response.data.Status === 0){
+         
 
                 const userName = response.data.userName || userId
                 localStorage.setItem('userName', userName);

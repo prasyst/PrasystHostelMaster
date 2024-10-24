@@ -23,7 +23,7 @@ const columns = [
  
 ];
 
-export default function CompanyTable() {
+export default function PartyMasterTable() {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(15);
   const [searchTerms, setSearchTerms] = useState({});
@@ -214,3 +214,5 @@ export default function CompanyTable() {
     </>
   );
 }
+
+
