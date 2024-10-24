@@ -21,7 +21,7 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
-
+import AuthHeader from '../../../Auth';
 
 const CustomTextField = styled(TextField)(({ theme }) => ({
   '& .MuiFilledInput-root': {
@@ -39,20 +39,20 @@ const CustomTextField = styled(TextField)(({ theme }) => ({
 
 const Floor = () => {
   const [formData, setFormData] = useState({
-    floorName: '',
-    remark: ''
+    FloorName: '',
+    Remark: ''
   });
 
   const [error, setError] = useState({
-    floorName: false,
-    remark: false
+    FloorName: false,
+    Remark: false
   });
 
   const navigate = useNavigate();
 
   const [isEditMode, setIsEditMode] = useState(false);
   const [isFormDisabled, setIsFormDisabled] = useState(true);
-  const [floorId, setFloorId] = useState(null);
+  // const [floorId, setFloorId] = useState(null);
   const location = useLocation();
   const [currentFloorId, setCurrentFloorId] = useState(null);
   const [isViewMode, setIsViewMode] = useState(false);
@@ -64,9 +64,9 @@ const Floor = () => {
   const remarkRef = useRef(null);
 
   useEffect(() => {
-    if (location.state && location.state.floorId) {
-      setCurrentFloorId(location.state.floorId);
-      fetchFloorData(location.state.floorId);
+    if (location.state && location.state.FloorId) {
+      setCurrentFloorId(location.state.FloorId);
+      fetchFloorData(location.state.FloorId);
       setMode('view');
     } else {
       setMode('add');
@@ -77,20 +77,22 @@ const Floor = () => {
   const fetchFloorData = async (id, flag) => {
     try {
       const response = await axios.post(`${process.env.REACT_APP_API_URL}FloorMst/RetriveFloorMst`, { 
-        floorId: parseInt(id),
+        FloorId: parseInt(id),
         Flag: flag 
-      });
+      },
+      AuthHeader()
+    );
  
-      if (response.data.status === 0 && response.data.responseStatusCode === 1) {
-        const floorData = response.data.data[0];
+      if (response.data.Status === 0 && response.data.responseStatusCode === 1) {
+        const floorData = response.data.Data[0];
         setFormData({
-          floorName: floorData.floorName, 
-          remark: floorData.remark
+          FloorName: floorData.FloorName, 
+          Remark: floorData.Remark
         });
         setIsFormDisabled(true);
-        setCurrentFloorId(floorData.floorId); 
+        setCurrentFloorId(floorData.FloorId); 
         console.log("res", response);
-      } else if (response.data.status === 1 && response.data.responseStatusCode === 2) {
+      } else if (response.data.Status === 1 && response.data.responseStatusCode === 2) {
         toast.info(response.data.message);
       } else {
         toast.error('Failed to fetch floor data');
@@ -120,14 +122,14 @@ const handleInputChange = (event) => {
     [name]: value
   }));
 
-  if (name === 'floor') {
+  if (name === 'Floor') {
     setFormData(prevState => ({
       ...prevState,
       state: ''
     }));
   }
 
-  if (name === 'floor' && value !== '') {
+  if (name === 'Floor' && value !== '') {
     setTimeout(() => {
       remarkRef.current.focus();
     }, 100000);
@@ -144,12 +146,12 @@ const handleSave = async () => {
 
   let hasError = false;
 
-  if (!formData.floorName) {
+  if (!formData.FloorName) {
     toast.error('Floor name is required');
-    setError(prev => ({ ...prev, floorName: true }));
+    setError(prev => ({ ...prev, FloorName: true }));
     hasError = true;
   } else {
-    setError(prev => ({ ...prev, floorName: false }));
+    setError(prev => ({ ...prev, FloorName: false }));
   }
 
   if (hasError) {
@@ -159,25 +161,25 @@ const handleSave = async () => {
 
   try {
     const payload = {
-      floorName: formData.floorName,
-      remark: formData.remark,
-      status: "1"
+      FloorName: formData.FloorName,
+      Remark: formData.Remark,
+      Status: "1"
     };
 
     let response;
     if (mode === 'edit') {
       payload.floorId = currentFloorId;
-      response = await axios.patch(`${process.env.REACT_APP_API_URL}FloorMst/UpdateFloorMst`, payload);
+      response = await axios.patch(`${process.env.REACT_APP_API_URL}FloorMst/UpdateFloorMst`, payload, AuthHeader());
     } else {
-      response = await axios.post(`${process.env.REACT_APP_API_URL}FloorMst/InsertFloorMst`, payload);
+      response = await axios.post(`${process.env.REACT_APP_API_URL}FloorMst/InsertFloorMst`, payload, AuthHeader());
     }
 
-    if (response.data.status === 0 && response.data.responseStatusCode === 1) {
+    if (response.data.Status === 0 && response.data.responseStatusCode === 1) {
       toast.success(response.data.message);
       if (mode === 'add') {
-        setLastInsertedFloorId(response.data.data)
+        setLastInsertedFloorId(response.data.Data)
         console.log(response.data.data)
-        await fetchFloorData(response.data.data);
+        await fetchFloorData(response.data.Data);
         // setFormData({
         //   country: '',
         //   state: '',
@@ -188,7 +190,7 @@ const handleSave = async () => {
         // });
         setMode('view');
         setIsFormDisabled(true);
-          setCurrentFloorId(response.data.data);
+        setCurrentFloorId(response.data.Data);
       } else {
         setMode('view');
       }
@@ -212,8 +214,8 @@ const handleSave = async () => {
     setMode('add');
     setIsFormDisabled(false);
     setFormData({
-      floorName: '',
-      remark: ''
+      FloorName: '',
+      Remark: ''
     });
     setCurrentFloorId(null);
 
@@ -234,8 +236,8 @@ const handleSave = async () => {
 
   const resetForm = () => {
     setFormData({
-      floorName: '',
-      remark: ''
+      FloorName: '',
+      Remark: ''
     });
     setCurrentFloorId(null);
     setMode('view');
@@ -346,8 +348,8 @@ const handleSave = async () => {
             <Grid container spacing={2}>
              <Grid item xs={12} md={6} lg={6}>
               <TextField
-               id="floorName"
-               name="floorName"
+               id="FloorName"
+               name="FloorName"
                label={
                 <span>
                   Floor <span style={{ color: 'red' }}>*</span>
@@ -356,24 +358,24 @@ const handleSave = async () => {
                variant="filled"
                fullWidth
                className="custom-textfield"
-               value={formData.floorName}
+               value={formData.FloorName}
                onChange={handleInputChange}
                disabled={isFormDisabled}
-               error={error.floorName}
-               helperText={error.floorName && ""}
+               error={error.FloorName}
+               helperText={error.FloorName && ""}
                inputRef={floorNameRef}
                onKeyDown={handleKeyPress}
               />
              </Grid>
               <Grid item xs={12} md={6} lg={6}>
                 <TextField
-                  id="remark"
-                  name="remark"
+                  id="Remark"
+                  name="Remark"
                   label="Remark"
                   variant="filled"
                   fullWidth
                   className="custom-textfield"
-                  value={formData.remark}
+                  value={formData.Remark}
                   onChange={handleInputChange}
                   disabled={isFormDisabled}
                   inputRef={remarkRef}

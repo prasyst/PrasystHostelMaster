@@ -10,11 +10,12 @@ import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
 import { Breadcrumbs, Link, Typography, Box, Button, TextField } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import AuthHeader from '../../../Auth';
 
 const columns = [
-  { id: 'zone', label: 'Zone', minWidth: 170 },
-  { id: 'zoneCode', label: 'Zone Code', minWidth: 100 },
-  { id: 'zoneAbrv', label: 'Short Name', minWidth: 100 },
+  { id: 'Zone', label: 'Zone', minWidth: 170 },
+  { id: 'ZoneCode', label: 'Zone Code', minWidth: 100 },
+  { id: 'ZoneAbrv', label: 'Short Name', minWidth: 100 },
 ];
 
 export default function ZoneTable() {
@@ -34,14 +35,14 @@ export default function ZoneTable() {
         start: 1,
         PageSize: 1,
         SearchText: ""
-      });
+      }, AuthHeader());
       
-      if (response.data.status === 0) {
-        const formattedData = response.data.data.map(zone => ({
+      if (response.data.Status === 0) {
+        const formattedData = response.data.Data.map(zone => ({
           ...zone,
-          zone: zone.zoneName || '',
-          zoneCode: zone.zoneCode || '',
-          shortName: zone.shortName
+          Zone: zone.ZoneName || '',
+          ZoneCode: zone.ZoneCode || '',
+          ShortName: zone.ShortName
         }));
         setRows(formattedData);
       } else {
@@ -89,9 +90,9 @@ export default function ZoneTable() {
     });
   }, [searchTerms, rows]);
 
-  const handleRowDoubleClick = (zoneId) => {
+  const handleRowDoubleClick = (ZoneId) => {
   
-    navigate('/zone', { state: { zoneId ,mode: 'view'}} );
+    navigate('/zone', { state: { ZoneId ,mode: 'view'}} );
   };
 
   const handleLocationclick=()=>{
@@ -171,8 +172,8 @@ export default function ZoneTable() {
                   .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                   .map((row) => {
                     return (
-                      <TableRow hover role="checkbox" tabIndex={-1} key={row.zoneId}
-                      onDoubleClick={() => handleRowDoubleClick(row.zoneId)}
+                      <TableRow hover role="checkbox" tabIndex={-1} key={row.ZoneId}
+                      onDoubleClick={() => handleRowDoubleClick(row.ZoneId)}
                       style={{ cursor: 'pointer' }}
                       sx={{ 
                         '& > td': { 

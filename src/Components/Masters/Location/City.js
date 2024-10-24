@@ -26,17 +26,17 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import { CountryAutocomplete, StateAutocomplete, ZoneAutocomplete } from '../../../Components/AutoComplete/AutoComplete'
-
+import AuthHeader from '../../../Auth';
 
 
 const City = () => {
   const [formData, setFormData] = useState({
-    country: '',
-    state: '',
-    zone: '',
-    city: '',
-    shortName: '',
-    cityCode: ''
+    Country: '',
+    State: '',
+    Zone: '',
+    City: '',
+    ShortName: '',
+    CityCode: ''
   });
 
   const [error, setError] = useState({
@@ -73,9 +73,9 @@ const City = () => {
   
 
   useEffect(() => {
-    if (location.state && location.state.cityId) {
-      setCurrentCityId(location.state.cityId);
-      fetchCityData(location.state.cityId);
+    if (location.state && location.state.CityId) {
+      setCurrentCityId(location.state.CityId);
+      fetchCityData(location.state.CityId);
       setMode('view');
     } else {
       setMode('add');
@@ -85,44 +85,44 @@ const City = () => {
 
   useEffect(() => {
     const getStatesUpdate = async () => {
-      if (formData.country) {
+      if (formData.Country) {
         try {
           const response = await axios.post(
-            `${process.env.REACT_APP_API_URL}stateMst/getCountrywiseStatedrp`,
-            { CountryId: parseInt(formData.country) }
+            `${process.env.REACT_APP_API_URL}stateMst/getCountrywiseStatedrp`, AuthHeader ,
+            { CountryId: parseInt(formData.Country) }
           );
-          setStates(response.data.data);
+          setStates(response.data.Data);
         } catch (err) {
           console.log(err);
         }
       }
     };
     getStatesUpdate();
-  }, [formData.country]);
+  }, [formData.Country]);
 
   const fetchCityData = async (id, flag) => {
 
     try {
       const response = await axios.post(`${process.env.REACT_APP_API_URL}CityMst/RetrivecityMst`, {
-        cityId: parseInt(id),
+        CityId: parseInt(id),
         Flag: flag
-      });
+      }, AuthHeader);
 
-      if (response.data.status === 0 && response.data.responseStatusCode === 1) {
-        const cityData = response.data.data[0];
-        console.log('city',response.data.data)
+      if (response.data.Status === 0 && response.data.responseStatusCode === 1) {
+        const cityData = response.data.Data[0];
+        console.log('city',response.data.Data)
         setFormData({
-          country: cityData.countryId ? cityData.countryId.toString() : "",
+          Country: cityData.countryId ? cityData.countryId.toString() : "",
           // country: cityData.countryId.toString(),
-          state: cityData.stateId,
-          zone: cityData.zoneId,
-          city: cityData.cityName,
-          shortName: cityData.cityAbrv,
-          cityCode: cityData.cityCode
+          State: cityData.StateId,
+          Zone: cityData.ZoneId,
+          City: cityData.CityName,
+          ShortName: cityData.CityAbrv,
+          CityCode: cityData.CityCode
         });
         setIsFormDisabled(true);
-        setCurrentCityId(cityData.cityId);
-      } else if (response.data.status === 1 && response.data.responseStatusCode === 2) {
+        setCurrentCityId(cityData.CityId);
+      } else if (response.data.Status === 1 && response.data.responseStatusCode === 2) {
         toast.info(response.data.message);
       } else {
         toast.error('Failed to fetch city data');
@@ -147,9 +147,9 @@ const City = () => {
   useEffect(() => {
     const getCountries = async () => {
       try {
-        const response = await axios.get(`${process.env.REACT_APP_API_URL}StateMst/getcountydrp`);
-        setCountries(response.data.data);
-        const idMapping = response.data.data.reduce((acc, country) => {
+        const response = await axios.get(`${process.env.REACT_APP_API_URL}StateMst/getcountydrp`, AuthHeader);
+        setCountries(response.data.Data);
+        const idMapping = response.data.Data.reduce((acc, country) => {
           acc[country.name] = country.id;
           return acc;
         }, {});
@@ -164,15 +164,15 @@ const City = () => {
 
   useEffect(() => {
     const getStates = async () => {
-      if (formData.country) {
+      if (formData.Country) {
         try {
-          const countryId = countryIds[formData.country];
+          const countryId = countryIds[formData.Country];
           if (countryId) {
             const response = await axios.post(
-              `${process.env.REACT_APP_API_URL}stateMst/getCountrywiseStatedrp`,
+              `${process.env.REACT_APP_API_URL}stateMst/getCountrywiseStatedrp`, AuthHeader,
               { CountryId: countryId }
             );
-            setStates(response.data.data);
+            setStates(response.data.Data);
           }
         } catch (err) {
           console.log(err);
@@ -180,11 +180,11 @@ const City = () => {
       }
     };
     getStates();
-  }, [formData.country, countryIds]);
+  }, [formData.Country, countryIds]);
 
   useEffect(() => {
     const getZone = async () => {
-      await axios.get(`${process.env.REACT_APP_API_URL}CityMst/getzonedrp`).then((res) => {
+      await axios.get(`${process.env.REACT_APP_API_URL}CityMst/getzonedrp`, AuthHeader).then((res) => {
         setZone(res.data.data)
       }).catch((err) => {
         console.log(err)
@@ -236,28 +236,28 @@ const City = () => {
 
     let hasError = false;
 
-  if (!formData.country) {
+  if (!formData.Country) {
     toast.error('Country name is required');
-    setError(prev => ({ ...prev, country: true }));
+    setError(prev => ({ ...prev, Country: true }));
     hasError = true;
   } else {
-    setError(prev => ({ ...prev, country: false }));
+    setError(prev => ({ ...prev, Country: false }));
   }
 
-  if (!formData.state) {
+  if (!formData.State) {
     toast.error('State name is required');
-    setError(prev => ({ ...prev, state: true }));
+    setError(prev => ({ ...prev, State: true }));
     hasError = true;
   } else {
-    setError(prev => ({ ...prev, state: false }));
+    setError(prev => ({ ...prev, State: false }));
   }
 
-  if (!formData.zone) {
+  if (!formData.Zone) {
     toast.error('Zone name is required');
-    setError(prev => ({ ...prev, zone: true }));
+    setError(prev => ({ ...prev, Zone: true }));
     hasError = true;
   } else {
-    setError(prev => ({ ...prev, zone: false }));
+    setError(prev => ({ ...prev, Zone: false }));
   }
 
   // if (!formData.city) {
@@ -287,28 +287,28 @@ const City = () => {
 
     try {
       const payload = {
-        cityName: formData.city,
-        cityAbrv: formData.shortName,
-        StateId: parseInt(formData.state),
-        zoneId: parseInt(formData.zone),
-        CityCode: formData.cityCode,
+        CityName: formData.City,
+        CityAbrv: formData.ShortName,
+        StateId: parseInt(formData.State),
+        ZoneId: parseInt(formData.Zone),
+        CityCode: formData.CityCode,
         status: "1"
       };
 
       let response;
       if (mode === 'edit') {
-        payload.cityId = currentCityId;
-        response = await axios.patch(`${process.env.REACT_APP_API_URL}cityMst/UpdatecityMst`, payload);
+        payload.CityId = currentCityId;
+        response = await axios.patch(`${process.env.REACT_APP_API_URL}cityMst/UpdatecityMst`, payload, AuthHeader);
       } else {
-        response = await axios.post(`${process.env.REACT_APP_API_URL}cityMst/InsertcityMst`, payload);
+        response = await axios.post(`${process.env.REACT_APP_API_URL}cityMst/InsertcityMst`, payload, AuthHeader);
       }
 
-      if (response.data.status === 0 && response.data.responseStatusCode === 1) {
+      if (response.data.Status === 0 && response.data.responseStatusCode === 1) {
         toast.success(response.data.message);
         if (mode === 'add') {
-          setLastInsertedCityId(response.data.data)
-          console.log(response.data.data)
-          await fetchCityData(response.data.data);
+          setLastInsertedCityId(response.data.Data)
+          console.log(response.data.Data)
+          await fetchCityData(response.data.Data);
           // setFormData({
           //   country: '',
           //   state: '',
@@ -319,7 +319,7 @@ const City = () => {
           // });
           setMode('view');
           setIsFormDisabled(true);
-          setCurrentCityId(response.data.data);
+          setCurrentCityId(response.data.Data);
         } else {
           setMode('view');
         }
@@ -343,12 +343,12 @@ const City = () => {
     setMode('add');
     setIsFormDisabled(false);
     setFormData({
-      country: '',
-      state: '',
-      zone: '',
-      city: '',
-      shortName: '',
-      cityCode: ''
+      Country: '',
+      State: '',
+      Zone: '',
+      City: '',
+      ShortName: '',
+      CityCode: ''
     });
     setCurrentCityId(null);
 
@@ -378,12 +378,12 @@ const City = () => {
 
   const resetForm = () => {
     setFormData({
-      country: '',
-      state: '',
-      zone: '',
-      city: '',
-      shortName: '',
-      cityCode: ''
+      Country: '',
+      State: '',
+      Zone: '',
+      City: '',
+      ShortName: '',
+      CityCode: ''
     });
     setCurrentCityId(null);
     setMode('view');
@@ -509,7 +509,7 @@ const City = () => {
             </FormControl> */}
             <CountryAutocomplete
               countries={countries}
-              value={formData.country}
+              value={formData.Country}
               onChange={handleInputChange}
               disabled={isFormDisabled}
               error={error.country}
@@ -522,7 +522,7 @@ const City = () => {
    
             <StateAutocomplete
               states={states}
-              value={states.find(state => state.id === formData.state) || null}
+              value={states.find(state => state.id === formData.State) || null}
               onChange={handleInputChange}
               disabled={isFormDisabled}
               error={error.state}
@@ -533,13 +533,13 @@ const City = () => {
           </Grid>
           <Grid item xs={12} md={6} lg={6} className='form_field'>
             <TextField
-              id="city"
-              name="city"
+              id="City"
+              name="City"
               label="City"
               variant="filled"
               fullWidth
               className="custom-textfield"
-              value={formData.city}
+              value={formData.City}
               onChange={handleInputChange}
               disabled={isFormDisabled}
               error={error.city}
@@ -567,7 +567,7 @@ const City = () => {
             </FormControl> */}
             <ZoneAutocomplete
               zones={zone}
-              value={zone.find(z => z.id === formData.zone) || null}
+              value={zone.find(z => z.id === formData.Zone) || null}
               onChange={handleInputChange}
               disabled={isFormDisabled}
               error={error.zone}
@@ -580,13 +580,13 @@ const City = () => {
             <Grid container spacing={2}>
               <Grid item xs={12} md={6} lg={6}>
                 <TextField
-                  id="shortName"
-                  name="shortName"
+                  id="ShortName"
+                  name="ShortName"
                   label="Short Name"
                   variant="filled"
                   fullWidth
                   className="custom-textfield"
-                  value={formData.shortName}
+                  value={formData.ShortName}
                   onChange={handleInputChange}
                   disabled={isFormDisabled}
                   inputRef={shortNameRef}
@@ -595,13 +595,13 @@ const City = () => {
               </Grid>
               <Grid item xs={12} md={6} lg={6}>
                 <TextField
-                  id="cityCode"
-                  name="cityCode"
+                  id="CityCode"
+                  name="CityCode"
                   label="City Code"
                   variant="filled"
                   fullWidth
                   className="custom-textfield"
-                  value={formData.cityCode}
+                  value={formData.CityCode}
                   onChange={handleInputChange}
                   disabled={isFormDisabled}
                   error={error.cityCode}

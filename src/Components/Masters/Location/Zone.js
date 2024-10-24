@@ -21,6 +21,7 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
+import AuthHeader from '../../../Auth';
 
 const CustomTextField = styled(TextField)(({ theme }) => ({
   '& .MuiFilledInput-root': {
@@ -38,9 +39,9 @@ const CustomTextField = styled(TextField)(({ theme }) => ({
 
 const Zone = () => {
   const [formData, setFormData] = useState({
-    zoneName: '',
-    zoneCode: '',
-    shortName: ''
+    ZoneName: '',
+    ZoneCode: '',
+    ShortName: ''
   });
 
   const [error, setError] = useState({
@@ -64,9 +65,9 @@ const Zone = () => {
   const shortNameRef = useRef(null);
 
   useEffect(() => {
-    if (location.state && location.state.zoneId) {
-      setCurrentZoneId(location.state.zoneId);
-      fetchZoneData(location.state.zoneId);
+    if (location.state && location.state.ZoneId) {
+      setCurrentZoneId(location.state.ZoneId);
+      fetchZoneData(location.state.ZoneId);
       setMode('view');
     } else {
       setMode('add');
@@ -77,21 +78,21 @@ const Zone = () => {
   const fetchZoneData = async (id, flag) => {
     try {
       const response = await axios.post('http://43.230.196.21/api/zoneRegionMst/RetrivezoneRegionMst', { 
-        zoneId: parseInt(id),
+        ZoneId: parseInt(id),
         Flag: flag 
-      });
+      }, AuthHeader());
  
-      if (response.data.status === 0 && response.data.responseStatusCode === 1) {
-        const zoneData = response.data.data[0];
+      if (response.data.Status === 0 && response.data.responseStatusCode === 1) {
+        const zoneData = response.data.Data[0];
         setFormData({
-          zoneName: zoneData.zoneName, 
-          zoneCode: zoneData.zoneCode,
-          shortName: zoneData.zoneAbrv
+          ZoneName: zoneData.ZoneName, 
+          ZoneCode: zoneData.ZoneCode,
+          ShortName: zoneData.ZoneAbrv
         });
         setIsFormDisabled(true);
-        setCurrentZoneId(zoneData.zoneId); 
-      } else if (response.data.status === 1 && response.data.responseStatusCode === 2) {
-        toast.info(response.data.message);
+        setCurrentZoneId(zoneData.ZoneId); 
+      } else if (response.data.Status === 1 && response.data.responseStatusCode === 2) {
+        toast.info(response.data.Message);
       } else {
         toast.error('Failed to fetch zone data');
       }
@@ -149,12 +150,12 @@ const handleSave = async () => {
 
   let hasError = false;
 
-  if (!formData.zoneName) {
+  if (!formData.ZoneName) {
     toast.error('Zone name is required');
-    setError(prev => ({ ...prev, zoneName: true }));
+    setError(prev => ({ ...prev, ZoneName: true }));
     hasError = true;
   } else {
-    setError(prev => ({ ...prev, zoneName: false }));
+    setError(prev => ({ ...prev, ZoneName: false }));
   }
 
   // if (!formData.zoneCode) {
@@ -176,26 +177,26 @@ const handleSave = async () => {
 
   try {
     const payload = {
-      zoneName: formData.zoneName,
-      ZoneCode: formData.zoneCode,
-      zoneAbrv: formData.shortName,
+      ZoneName: formData.ZoneName,
+      ZoneCode: formData.ZoneCode,
+      ZoneAbrv: formData.ShortName,
       status: "1"
     };
 
     let response;
     if (mode === 'edit') {
-      payload.zoneId = currentZoneId;
-      response = await axios.patch('http://43.230.196.21/api/zoneRegionMst/UpdatezoneRegionMst', payload);
+      payload.ZoneId = currentZoneId;
+      response = await axios.patch('http://43.230.196.21/api/zoneRegionMst/UpdatezoneRegionMst', payload, AuthHeader());
     } else {
-      response = await axios.post('http://43.230.196.21/api/zoneRegionMst/InsertzoneRegionMst', payload);
+      response = await axios.post('http://43.230.196.21/api/zoneRegionMst/InsertzoneRegionMst', payload, AuthHeader());
     }
 
-    if (response.data.status === 0 && response.data.responseStatusCode === 1) {
-      toast.success(response.data.message);
+    if (response.data.Status === 0 && response.data.responseStatusCode === 1) {
+      toast.success(response.data.Message);
       if (mode === 'add') {
-        setLastInsertedZoneId(response.data.data)
-        console.log(response.data.data)
-        await fetchZoneData(response.data.data);
+        setLastInsertedZoneId(response.data.Data)
+        console.log(response.data.Data)
+        await fetchZoneData(response.data.Data);
         // setFormData({
         //   country: '',
         //   state: '',
@@ -206,13 +207,13 @@ const handleSave = async () => {
         // });
         setMode('view');
         setIsFormDisabled(true);
-        setCurrentZoneId(response.data.data);
+        setCurrentZoneId(response.data.Data);
       } else {
         setMode('view');
       }
       setIsFormDisabled(true);
     } else {
-      toast.error(response.data.message || 'Operation failed');
+      toast.error(response.data.Message || 'Operation failed');
     }
   } catch (error) {
     console.error('Error saving/updating zone:', error);
@@ -230,9 +231,9 @@ const handleSave = async () => {
     setMode('add');
     setIsFormDisabled(false);
     setFormData({
-      zoneName: '',
-      zoneCode: '',
-      shortName: ''
+      ZoneName: '',
+      ZoneCode: '',
+      ShortName: ''
     });
     setCurrentZoneId(null);
 
@@ -253,9 +254,9 @@ const handleSave = async () => {
 
   const resetForm = () => {
     setFormData({
-      zoneName: '',
-      zoneCode: '',
-      shortName: ''
+      ZoneName: '',
+      ZoneCode: '',
+      ShortName: ''
     });
     setCurrentZoneId(null);
     setMode('view');
@@ -363,8 +364,8 @@ const handleSave = async () => {
             <Grid container spacing={2}>
              <Grid item xs={12} md={6} lg={6}>
               <TextField
-               id="zoneName"
-               name="zoneName"
+               id="ZoneName"
+               name="ZoneName"
                label={
                 <span>
                   Zone <span style={{ color: 'red' }}>*</span>
@@ -373,7 +374,7 @@ const handleSave = async () => {
                variant="filled"
                fullWidth
                className="custom-textfield"
-               value={formData.zoneName}
+               value={formData.ZoneName}
                onChange={handleInputChange}
                disabled={isFormDisabled}
                error={error.zoneName}
@@ -384,13 +385,13 @@ const handleSave = async () => {
              </Grid>
               <Grid item xs={12} md={6} lg={6}>
                 <TextField
-                  id="zoneCode"
-                  name="zoneCode"
+                  id="ZoneCode"
+                  name="ZoneCode"
                   label="Zone Code"
                   variant="filled"
                   fullWidth
                   className="custom-textfield"
-                  value={formData.zoneCode}
+                  value={formData.ZoneCode}
                   onChange={handleInputChange}
                   disabled={isFormDisabled}
                   error={error.zoneCode}
@@ -401,13 +402,13 @@ const handleSave = async () => {
               </Grid>
               <Grid item xs={12} md={6} lg={6}>
                 <TextField
-                  id="shortName"
-                  name="shortName"
+                  id="ShortName"
+                  name="ShortName"
                   label="Short Name"
                   variant="filled"
                   fullWidth
                   className="custom-textfield"
-                  value={formData.shortName}
+                  value={formData.ShortName}
                   onChange={handleInputChange}
                   disabled={isFormDisabled}
                   inputRef={shortNameRef}
