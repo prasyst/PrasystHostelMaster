@@ -10,20 +10,21 @@ import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
 import { Breadcrumbs, Link, Typography, Box, Button, TextField } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import AuthHeader from '../../../Auth';
 
 const columns = [
-  { id: 'propName', label: 'Property', minWidth: 170 },
-  { id: 'sqFt', label: 'SqFt', minWidth: 100 },
-  { id: 'pinCode', label: 'Pincode', minWidth: 100 },
-  { id: 'cityName', label: 'City', minWidth: 100 },
-  { id: 'propEmail', label: 'Email ID', minWidth: 100 },
-  { id: 'propTel', label: 'Telephone', minWidth: 100 },
-  { id: 'propTypName', label: 'Type', minWidth: 100 },
-  { id: 'propMob', label: 'Mobile', minWidth: 100 },
-  { id: 'totalRooms', label: 'Rooms', minWidth: 100 },
-  { id: 'totalBeds', label: 'Beds', minWidth: 100 },
-  { id: 'hodEmpName', label: 'Hod', minWidth: 100 },
-  { id: 'wardenEmpName', label: 'Warden', minWidth: 100 }
+  { id: 'PropName', label: 'Property', minWidth: 170 },
+  { id: 'SqFt', label: 'SqFt', minWidth: 100 },
+  { id: 'Pincode', label: 'Pincode', minWidth: 100 },
+  { id: 'CityName', label: 'City', minWidth: 100 },
+  { id: 'PropEmail', label: 'Email ID', minWidth: 100 },
+  { id: 'PropTel', label: 'Telephone', minWidth: 100 },
+  { id: 'PropTypName', label: 'Type', minWidth: 100 },
+  { id: 'PropMob', label: 'Mobile', minWidth: 100 },
+  { id: 'TotalRooms', label: 'Rooms', minWidth: 100 },
+  { id: 'TotalBeds', label: 'Beds', minWidth: 100 },
+  { id: 'HodEmpName', label: 'Hod', minWidth: 100 },
+  { id: 'WardenEmpName', label: 'Warden', minWidth: 100 }
 ];
 
 export default function PropertyTable() {
@@ -43,25 +44,27 @@ export default function PropertyTable() {
         start: 1,
         PageSize: 1,
         SearchText: ""
-      });
-      if (response.data.status === 0) {
-        const formattedData = response.data.data.map(property => ({
+      },
+      AuthHeader()
+    );
+      if (response.data.Status === 0) {
+        const formattedData = response.data.Data.map(property => ({
           ...property,
-          propertyId: property.propId,
-          propName: property.propName || '',
-          sqFt: property.sqFt || '',
-          pinCode: property.pinCode || '',
-          areaName: property.areaName || '',
-          cityName: property.cityName || '',
-          propEmail: property.propEmail || '',
-          propTel: property.propTel || '',
-          propTypName: property.propTypName || '',
-          propMob: property.propMob || '',
-          totalRooms: property.totalRooms || '',
-          totalBeds: property.totalBeds || '',
-          hodEmpName: property.hodEmpName,
-          wardenEmpName: property.wardenEmpName,
-          propAdd: property.propAdd
+          PropId: property.PropId,
+          PropName: property.PropName || '',
+          SqFt: property.SqFt || '',
+          Pincode: property.Pincode|| '',
+          AreaName: property.AreaName || '',
+          CityName: property.CityName || '',
+          PropEmail: property.PropEmail || '',
+          PropTel: property.PropTel || '',
+          PropTypName: property.PropTypName || '',
+          PropMob: property.PropMob || '',
+          TotalRooms: property.TotalRooms || '',
+          TotalBeds: property.TotalBeds || '',
+          HodEmpName: property.HodEmpName,
+          WardenEmpName: property.WardenEmpName,
+          PropAdd: property.PropAdd
         }));
         console.log('for',formattedData)
         setRows(formattedData);
@@ -110,8 +113,8 @@ export default function PropertyTable() {
     });
   }, [searchTerms, rows]);
 
-  const handleRowDoubleClick = (propertyId) => {
-    navigate('/property-master', { state: { propertyId ,mode: 'view'}} );
+  const handleRowDoubleClick = (PropId) => {
+    navigate('/property-master', { state: { PropId ,mode: 'view'}} );
   };
   const handleLocationclick=()=>{
     navigate('/masters/property')
@@ -191,8 +194,8 @@ export default function PropertyTable() {
                   .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                   .map((row) => {
                     return (
-                      <TableRow hover role="checkbox" tabIndex={-1} key={row.propertyId}
-                      onDoubleClick={() => handleRowDoubleClick(row.propertyId)}
+                      <TableRow hover role="checkbox" tabIndex={-1} key={row.PropId}
+                      onDoubleClick={() => handleRowDoubleClick(row.PropId)}
                       style={{ cursor: 'pointer' }}
                       sx={{ 
                         '& > td': { 

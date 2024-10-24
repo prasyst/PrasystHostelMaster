@@ -1,64 +1,96 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from "react";
 import {
-  Box, Grid, Button, TextField, Typography, Stepper, Step, StepLabel,
-  FormControl, InputLabel, Select, MenuItem, Autocomplete, Checkbox, Menu
-} from '@mui/material';
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Link } from '@mui/material';
-import TablePagination from '@mui/material/TablePagination';
+  Box,
+  Grid,
+  Button,
+  TextField,
+  Typography,
+  Stepper,
+  Step,
+  StepLabel,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  Autocomplete,
+  Checkbox,
+  Menu,
+} from "@mui/material";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Link,
+} from "@mui/material";
+import TablePagination from "@mui/material/TablePagination";
 import {
   KeyboardArrowLeft as KeyboardArrowLeftIcon,
   NavigateNext as NavigateNextIcon,
   Add as AddIcon,
   Edit as EditIcon,
   Delete as DeleteIcon,
-  CancelPresentation as CancelPresentationIcon
-} from '@mui/icons-material';
-import Paper from '@mui/material/Paper';
-import '../../../index.css'
-import { FormLabel, RadioGroup, FormControlLabel, Radio, StepConnector, List, ListItem } from '@mui/material';
-import { styled } from '@mui/material/styles';
-import { Navigate, useNavigate, useLocation } from 'react-router-dom';
-import axios from 'axios';
-import { toast, ToastContainer } from 'react-toastify';
-import { ConfirmDialog } from '../../ReusablePopup/CustomModel';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
-import DialogTitle from '@mui/material/DialogTitle';
-import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+  CancelPresentation as CancelPresentationIcon,
+} from "@mui/icons-material";
+import Paper from "@mui/material/Paper";
+import "../../../index.css";
+import {
+  FormLabel,
+  RadioGroup,
+  FormControlLabel,
+  Radio,
+  StepConnector,
+  List,
+  ListItem,
+} from "@mui/material";
+import { styled } from "@mui/material/styles";
+import { Navigate, useNavigate, useLocation } from "react-router-dom";
+import axios from "axios";
+import { toast, ToastContainer } from "react-toastify";
+import { ConfirmDialog } from "../../ReusablePopup/CustomModel";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
+import DialogTitle from "@mui/material/DialogTitle";
+import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
+import { z } from "zod";
+import AuthHeader from "../../../Auth";
 
-import { z } from 'zod';
-
-const steps = ['Property Details', 'Floor Configuration', 'Amenity Configuration'];
+const steps = [
+  "Property Details",
+  "Floor Configuration",
+  "Amenity Configuration",
+];
 const CustomStepConnector = styled(StepConnector)(({ theme }) => ({
-  '& .MuiStepConnector-line': {
-    borderColor: '#e0e0e0',
+  "& .MuiStepConnector-line": {
+    borderColor: "#e0e0e0",
     borderTopWidth: 3,
     borderRadius: 1,
-    marginBottom: '20px',
-
+    marginBottom: "20px",
   },
 }));
-const CustomStepIcon = styled('div')(({ theme, ownerState }) => ({
+const CustomStepIcon = styled("div")(({ theme, ownerState }) => ({
   width: 40,
   height: 40,
-  border: '3px solid',
-  borderColor: ownerState.active ? '#7c3aed' : '#e0e0e0',
-  borderRadius: '50%',
-  backgroundColor: 'transparent',
-  display: 'flex',
-  justifyContent: 'center',
-  alignItems: 'center',
-  color: ownerState.active ? '#7c3aed' : '#999',
-  fontSize: '1.2rem',
-  fontWeight: 'bold',
+  border: "3px solid",
+  borderColor: ownerState.active ? "#7c3aed" : "#e0e0e0",
+  borderRadius: "50%",
+  backgroundColor: "transparent",
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
+  color: ownerState.active ? "#7c3aed" : "#999",
+  fontSize: "1.2rem",
+  fontWeight: "bold",
 }));
 
 const CustomStepLabel = styled(StepLabel)({
-  flexDirection: 'column',
-  '& .MuiStepLabel-labelContainer': {
-    marginTop: '5px',
+  flexDirection: "column",
+  "& .MuiStepLabel-labelContainer": {
+    marginTop: "5px",
   },
 });
 
@@ -69,29 +101,29 @@ const formSchema = z.object({
 });
 
 const columns = [
-  { id: 'wingName', label: 'WingName', minWidth: 100 },
-  { id: 'floorName', label: 'FloorName', minWidth: 100 },
-  { id: 'totalRooms', label: 'Total Rooms', minWidth: 100 },
-  { id: 'startNo', label: 'Start No.', minWidth: 100 },
+  { id: "wingName", label: "WingName", minWidth: 100 },
+  { id: "floorName", label: "FloorName", minWidth: 100 },
+  { id: "totalRooms", label: "Total Rooms", minWidth: 100 },
+  { id: "startNo", label: "Start No.", minWidth: 100 },
 ];
 
 const fields = [
-  { id: 'amenityName', label: 'Amenity', minWidth: 170 },
-  { id: 'amenity_Desc', label: 'Description', minWidth: 170 },
-  { id: 'floorName', label: 'Floor', minWidth: 170 },
-  { id: 'areaSqFt', label: 'AreaSqFt', minWidth: 100 }
+  { id: "amenityName", label: "Amenity", minWidth: 170 },
+  { id: "amenity_Desc", label: "Description", minWidth: 170 },
+  { id: "floorName", label: "Floor", minWidth: 170 },
+  { id: "areaSqFt", label: "AreaSqFt", minWidth: 100 },
 ];
 
 const StepperForm = () => {
   const [activeStep, setActiveStep] = useState(0);
   const [errors, setErrors] = useState({});
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
-  const [mode, setMode] = useState('view');
+  const [mode, setMode] = useState("view");
   const [currentPropId, setCurrentPropId] = useState(null);
   const [propertyId, setPropertyId] = useState();
   const [hods, setHods] = useState([]);
   const [sites, setSites] = useState([]);
-  const [propImg, setPropImg] = useState('');
+  const [propImg, setPropImg] = useState("");
   const [file, setFile] = useState(null);
   const [companies, setCompanies] = useState([]);
   const [wardens, setWardens] = useState([]);
@@ -184,117 +216,134 @@ const StepperForm = () => {
   };
 
   useEffect(() => {
-    console.log('111', location?.state?.propertyId)
+    console.log("111", location?.state?.propertyId);
     if (location.state && location.state?.propertyId) {
       setPropertyId(location.state.propertyId);
       fetchPropertyData(location.state?.propertyId);
-      setMode('view');
+      setMode("view");
     } else {
-      setMode('add');
+      setMode("add");
       setIsFormDisabled(false);
     }
   }, [location]);
 
   const fetchPropertyData = async (id, flag) => {
     try {
-      const response = await axios.post(`${process.env.REACT_APP_API_URL}PropertyMst/RetrivePropertyMst`, {
-        propId: parseInt(id),
-        Flag: flag
-      });
+      const response = await axios.post(
+        `${process.env.REACT_APP_API_URL}PropertyMst/RetrivePropertyMst`,
+        {
+          propId: parseInt(id),
+          Flag: flag,
+        },
+        AuthHeader()
+      );
 
-      if (response.data.status === 0 && response.data.responseStatusCode === 1) {
-        const propertyData = response.data.data[0];
-        console.log('propertyData', propertyData)
+      if (
+        response.data.Status === 0 &&
+        response.data.responseStatusCode === 1
+      ) {
+        const propertyData = response.data.Data[0];
+        console.log("propertyData", propertyData);
         setFormData({
-          propId: propertyData.propId,
-          companyName: propertyData.companyName,
-          branchName: propertyData.cobrMstId.toString(),
-          propName: propertyData.propName,
-          sqFt: propertyData.sqFt,
-          pinCode: propertyData.pinId.toString(),
-          areaName: propertyData.areaName,
-          stateName: propertyData.stateName,
-          countryName: propertyData.countryName,
-          cityName: propertyData.cityId.toString(),
-          propEmail: propertyData.propEmail,
-          propTel: propertyData.propTel,
-          propTypName: propertyData.propTypeId.toString(),
-          propMob: propertyData.propMob,
-          totalRooms: propertyData.totalRooms,
-          totalBeds: propertyData.totalBeds,
-          propImg: propertyData.propImg,
-          hodEmpName: propertyData.hodEmpId.toString(),
-          wardenEmpName: propertyData.wardenEmpId.toString(),
-          propAdd: propertyData.propAdd,
-          propGPSLoc: propertyData.propGPSLoc,
-          Status: propertyData.status || '1',
-          remark: propertyData.remark || '',
-          CreatedBy: propertyData.createdBy ? propertyData.createdBy.toString() : '1'
+          PropId: propertyData.PropId,
+          CompanyName: propertyData.CompanyName,
+          BranchName: propertyData.CobrMstId.toString(),
+          PropName: propertyData.PropName,
+          SqFt: propertyData.SqFt,
+          PinCode: propertyData.PinId.toString(),
+          AreaName: propertyData.AreaName,
+          StateName: propertyData.StateName,
+          CountryName: propertyData.CountryName,
+          CityName: propertyData.CityId.toString(),
+          PropEmail: propertyData.PropEmail,
+          PropTel: propertyData.PropTel,
+          propTypName: propertyData.PropTypeId.toString(),
+          PropMob: propertyData.PropMob,
+          TotalRooms: propertyData.TotalRooms,
+          TotalBeds: propertyData.TotalBeds,
+          PropImg: propertyData.PropImg,
+          HodEmpName: propertyData.HodEmpId.toString(),
+          WardenEmpName: propertyData.WardenEmpId.toString(),
+          PropAdd: propertyData.PropAdd,
+          PropGPSLoc: propertyData.PropGPSLoc,
+          Status: propertyData.status || "1",
+          remark: propertyData.remark || "",
+          CreatedBy: propertyData.createdBy
+            ? propertyData.createdBy.toString()
+            : "1",
         });
         setIsFormDisabled(true);
         setPropertyId(propertyData?.propId);
-      } else if (response.data.status === 1 && response.data.responseStatusCode === 2) {
-        toast.info(response.data.message);
+      } else if (
+        response.data.Status === 1 &&
+        response.data.responseStatusCode === 2
+      ) {
+        toast.info(response.data.Message);
       } else {
-        toast.error('Failed to fetch property data');
+        toast.error("Failed to fetch property data");
       }
     } catch (error) {
-      console.error('Error fetching property data:', error);
-      toast.error('Error fetching property data. Please try again.');
+      console.error("Error fetching property data:", error);
+      toast.error("Error fetching property data. Please try again.");
     }
   };
 
   const [formData, setFormData] = useState({
-    companyName: '',
-    branchName: '',
-    propName: '',
-    sqFt: '',
-    pinCode: '',
-    areaName: '',
-    cityName: '',
-    stateName: '',
-    countryName: '',
-    propEmail: '',
-    propTel: '',
-    propTypName: '',
-    propMob: '',
-    totalRooms: '',
-    totalBeds: '',
-    propImg: '',
-    hodEmpName: '',
-    wardenEmpName: '',
-    propAdd: '',
-    name: '',
-    propGPSLoc: '',
-    Status: '1',
-    remark: '',
-    CreatedBy: '1'
+    CompanyName: "",
+    BranchName: "",
+    PropName: "",
+    SelectqFt: "",
+    Pincode: "",
+    AreaName: "",
+    CityName: "",
+    StateName: "",
+    CountryName: "",
+    PropEmail: "",
+    PropTel: "",
+    PropTypName: "",
+    PropMob: "",
+    TotalRooms: "",
+    TotalBeds: "",
+    PropImg: "",
+    HodEmpName: "",
+    WardenEmpName: "",
+    PropAdd: "",
+    Name: "",
+    PropGPSLoc: "",
+    Status: "1",
+    Remark: "",
+    CreatedBy: "1",
   });
 
   const [formData1, setFormData1] = useState({
-
-    wingName: '',
-    floorName: '',
-    totalRooms: '',
-    startNo: ''
+    WingName: "",
+    FloorName: "",
+    TotalRooms: "",
+    StartNo: "",
   });
 
   const [formData2, setFormData2] = useState({
-    amenityName: ''
+    AmenityName: "",
   });
 
   useEffect(() => {
     const fetchPropType = async () => {
       try {
-        const response = await axios.post(`${process.env.REACT_APP_API_URL}PropTypeMst/getMstPropTypedrp`);
-        if (response.data.status === 0 && response.data.responseStatusCode === 1) {
-          setPropType(response.data.data);
+        const response = await axios.post(
+          `${process.env.REACT_APP_API_URL}PropTypeMst/getMstPropTypedrp`,
+          AuthHeader()
+        );
+        if (
+          response.data.Status === 0 &&
+          response.data.responseStatusCode === 1
+        ) {
+          setPropType(response.data.Data);
         } else {
-          toast.error('Failed to fetch PropType');
+          toast.error("Failed to fetch PropType");
         }
       } catch (error) {
-        console.error('Error fetching PropType:', error);
-        toast.error('Error fetching PropType. Please try again.');
+        console.error("Error fetching PropType:", error);
+        toast.error("Error fetching PropType. Please try again.");
       }
     };
 
@@ -304,15 +353,21 @@ const StepperForm = () => {
   useEffect(() => {
     const fetchCompanies = async () => {
       try {
-        const response = await axios.post(`${process.env.REACT_APP_API_URL}CoMst/getCoMstdrp`);
-        if (response.data.status === 0 && response.data.responseStatusCode === 1) {
-          setCompanies(response.data.data);
+        const response = await axios.post(
+          `${process.env.REACT_APP_API_URL}CoMst/getCoMstdrp`,
+          AuthHeader()
+        );
+        if (
+          response.data.Status === 0 &&
+          response.data.responseStatusCode === 1
+        ) {
+          setCompanies(response.data.Data);
         } else {
-          toast.error('Failed to fetch CompanyName');
+          toast.error("Failed to fetch CompanyName");
         }
       } catch (error) {
-        console.error('Error fetching CompanyName:', error);
-        toast.error('Error fetching CompanyName. Please try again.');
+        console.error("Error fetching CompanyName:", error);
+        toast.error("Error fetching CompanyName. Please try again.");
       }
     };
 
@@ -322,95 +377,120 @@ const StepperForm = () => {
   useEffect(() => {
     const fetchBranch = async (id) => {
       try {
-        const response = await axios.post(`${process.env.REACT_APP_API_URL}CoMst/getCoMstWiseCobrdrp`, {
-          CoMstId: (id)
-        });
-        if (response.data.status === 0 && response.data.responseStatusCode === 1) {
-          setBranch(response.data.data);
+        const response = await axios.post(
+          `${process.env.REACT_APP_API_URL}CoMst/getCoMstWiseCobrdrp`,
+          {
+            CoMstId: id,
+          },
+          AuthHeader()
+        );
+        if (
+          response.data.Status === 0 &&
+          response.data.responseStatusCode === 1
+        ) {
+          setBranch(response.data.Data);
         } else {
-          toast.error('Failed to fetch Branch');
+          toast.error("Failed to fetch Branch");
         }
       } catch (error) {
-        console.error('Error fetching Branch:', error);
-        toast.error('Error fetching Branch. Please try again.');
+        console.error("Error fetching Branch:", error);
+        toast.error("Error fetching Branch. Please try again.");
       }
     };
 
-    if (formData.companyName) {
-      fetchBranch(formData.companyName);
+    if (formData.CompanyName) {
+      fetchBranch(formData.CompanyName);
     }
-
-  }, [formData.companyName]);
+  }, [formData.CompanyName]);
 
   useEffect(() => {
-    const fetchArea = async (pinCode) => {
+    const fetchArea = async (Pincode) => {
       try {
-        const response = await axios.post(`${process.env.REACT_APP_API_URL}pincodeMst/getdrppincodewisearea`, {
-          pinCode: parseInt(pinCode)
-        });
-        if (response.data.status === 0 && response.data.responseStatusCode === 1) {
-          setArea(response.data.data);
+        const response = await axios.post(
+          `${process.env.REACT_APP_API_URL}pincodeMst/getdrppincodewisearea`,
+          {
+            pinCode: parseInt(Pincode),
+          },
+          AuthHeader()
+        );
+        if (
+          response.data.Status === 0 &&
+          response.data.responseStatusCode === 1
+        ) {
+          setArea(response.data.Data);
         } else {
-          toast.error('Failed to fetch Area');
+          toast.error("Failed to fetch Area");
         }
       } catch (error) {
-        console.error('Error fetching Area:', error);
-        toast.error('Error fetching Area. Please try again.');
+        console.error("Error fetching Area:", error);
+        toast.error("Error fetching Area. Please try again.");
       }
     };
 
-    if (formData.pinCode) {
-      fetchArea(formData.pinCode);
+    if (formData.Pincode) {
+      fetchArea(formData.Pincode);
     }
-
-  }, [formData.pinCode]);
+  }, [formData.Pincode]);
 
   useEffect(() => {
-    const fetchPlaces = async (pinCode, areaName) => {
+    const fetchPlaces = async (Pincode, AreaName) => {
       try {
-        const response = await axios.post(`${process.env.REACT_APP_API_URL}pincodeMst/getdrppincodeAreawise_datafill`, {
-          pinCode: parseInt(pinCode),
-          areaName: areaName
-        });
-        if (response.data.status === 0 && response.data.responseStatusCode === 1) {
-          setSites(response.data.data);
-          const { cityName, stateName, countryName } = response.data.data[0];
+        const response = await axios.post(
+          `${process.env.REACT_APP_API_URL}pincodeMst/getdrppincodeAreawise_datafill`,
+          {
+            Pincode: parseInt(Pincode),
+            AreaName: AreaName,
+          },
+          AuthHeader()
+        );
+        if (
+          response.data.Status === 0 &&
+          response.data.responseStatusCode === 1
+        ) {
+          setSites(response.data.Data);
+          const { cityName, stateName, countryName } = response.data.Data[0];
           setFormData((prevData) => ({
             ...prevData,
-            cityName,
-            stateName,
-            countryName,
+            CityName,
+            StateName,
+            CountryName,
           }));
         }
         // else {
         //   toast.error('Failed to fetch PincodeArea');
         // }
       } catch (error) {
-        console.error('Error fetching PincodeArea:', error);
-        toast.error('Error fetching PincodeArea. Please try again.');
+        console.error("Error fetching PincodeArea:", error);
+        toast.error("Error fetching PincodeArea. Please try again.");
       }
     };
 
-    if (formData.pinCode && formData.areaName) {
+    if (formData.PinCode && formData.AreaName) {
       fetchPlaces(formData.pinCode, formData.areaName);
     }
-
   }, [formData.pinCode, formData.areaName]);
 
   useEffect(() => {
     const fetchHods = async (flag) => {
       try {
-        const response = await axios.post(`${process.env.REACT_APP_API_URL}MstEmp/getMstEmpdrp`, {
-          Flag: parseInt(1)
-        });
-        if (response.data.status === 0 && response.data.responseStatusCode === 1) {
+        const response = await axios.post(
+          `${process.env.REACT_APP_API_URL}MstEmp/getMstEmpdrp`,
+          {
+            Flag: parseInt(1),
+          },
+          AuthHeader()
+        );
+        if (
+          response.data.status === 0 &&
+          response.data.responseStatusCode === 1
+        ) {
           setHods(response.data.data);
         } else {
-          toast.error('Failed to fetch Hods');
+          toast.error("Failed to fetch Hods");
         }
       } catch (error) {
-        console.error('Error fetching Hods:', error);
-        toast.error('Error fetching Hods. Please try again.');
+        console.error("Error fetching Hods:", error);
+        toast.error("Error fetching Hods. Please try again.");
       }
     };
 
@@ -420,17 +500,24 @@ const StepperForm = () => {
   useEffect(() => {
     const fetchWardens = async (flag) => {
       try {
-        const response = await axios.post(`${process.env.REACT_APP_API_URL}MstEmp/getMstEmpdrp`, {
-          Flag: parseInt(2)
-        });
-        if (response.data.status === 0 && response.data.responseStatusCode === 1) {
+        const response = await axios.post(
+          `${process.env.REACT_APP_API_URL}MstEmp/getMstEmpdrp`,
+          {
+            Flag: parseInt(2),
+          },
+          AuthHeader()
+        );
+        if (
+          response.data.status === 0 &&
+          response.data.responseStatusCode === 1
+        ) {
           setWardens(response.data.data);
         } else {
-          toast.error('Failed to fetch Wardens');
+          toast.error("Failed to fetch Wardens");
         }
       } catch (error) {
-        console.error('Error fetching Wardens:', error);
-        toast.error('Error fetching Wardens. Please try again.');
+        console.error("Error fetching Wardens:", error);
+        toast.error("Error fetching Wardens. Please try again.");
       }
     };
 
@@ -440,17 +527,24 @@ const StepperForm = () => {
   useEffect(() => {
     const fetchWings = async (flag) => {
       try {
-        const response = await axios.post(`${process.env.REACT_APP_API_URL}WingMst/getMstWingdrp`, {
-          Flag: flag
-        });
-        if (response.data.status === 0 && response.data.responseStatusCode === 1) {
+        const response = await axios.post(
+          `${process.env.REACT_APP_API_URL}WingMst/getMstWingdrp`,
+          {
+            Flag: flag,
+          },
+          AuthHeader()
+        );
+        if (
+          response.data.status === 0 &&
+          response.data.responseStatusCode === 1
+        ) {
           setWings(response.data.data);
         } else {
-          toast.error('Failed to fetch Wings');
+          toast.error("Failed to fetch Wings");
         }
       } catch (error) {
-        console.error('Error fetching Wings:', error);
-        toast.error('Error fetching Wings. Please try again.');
+        console.error("Error fetching Wings:", error);
+        toast.error("Error fetching Wings. Please try again.");
       }
     };
 
@@ -460,17 +554,24 @@ const StepperForm = () => {
   useEffect(() => {
     const fetchFloors = async (flag) => {
       try {
-        const response = await axios.post(`${process.env.REACT_APP_API_URL}FloorMst/getFloorMstdrp`, {
-          Flag: flag
-        });
-        if (response.data.status === 0 && response.data.responseStatusCode === 1) {
+        const response = await axios.post(
+          `${process.env.REACT_APP_API_URL}FloorMst/getFloorMstdrp`,
+          {
+            Flag: flag,
+          },
+          AuthHeader()
+        );
+        if (
+          response.data.status === 0 &&
+          response.data.responseStatusCode === 1
+        ) {
           setFloors(response.data.data);
         } else {
-          toast.error('Failed to fetch Floors');
+          toast.error("Failed to fetch Floors");
         }
       } catch (error) {
-        console.error('Error fetching Floors:', error);
-        toast.error('Error fetching Floors. Please try again.');
+        console.error("Error fetching Floors:", error);
+        toast.error("Error fetching Floors. Please try again.");
       }
     };
 
@@ -480,15 +581,21 @@ const StepperForm = () => {
   useEffect(() => {
     const fetchAmenities = async () => {
       try {
-        const response = await axios.post(`${process.env.REACT_APP_API_URL}AmenityMst/getMstAmenitydrp`);
-        if (response.data.status === 0 && response.data.responseStatusCode === 1) {
+        const response = await axios.post(
+          `${process.env.REACT_APP_API_URL}AmenityMst/getMstAmenitydrp`,
+          AuthHeader()
+        );
+        if (
+          response.data.status === 0 &&
+          response.data.responseStatusCode === 1
+        ) {
           setAmenities(response.data.data);
         } else {
-          toast.error('Failed to fetch Amenities');
+          toast.error("Failed to fetch Amenities");
         }
       } catch (error) {
-        console.error('Error fetching Amenities:', error);
-        toast.error('Error fetching Amenities. Please try again.');
+        console.error("Error fetching Amenities:", error);
+        toast.error("Error fetching Amenities. Please try again.");
       }
     };
 
@@ -542,16 +649,16 @@ const StepperForm = () => {
   };
 
   const handleClick = () => {
-    navigate('/floor');
+    navigate("/floor");
   };
 
   const handleSearchChange = (columnId, value) => {
-    setSearchTerms(prev => ({ ...prev, [columnId]: value }));
+    setSearchTerms((prev) => ({ ...prev, [columnId]: value }));
     setPage(0);
   };
 
   const handleEditChange = (propertyId, columnId, newValue) => {
-    setEditState(prevState => ({
+    setEditState((prevState) => ({
       ...prevState,
       [propertyId]: {
         ...prevState[propertyId],
@@ -560,15 +667,14 @@ const StepperForm = () => {
     }));
   };
 
-
   const filteredRows = React.useMemo(() => {
-    return rows.filter(row => {
+    return rows.filter((row) => {
       return Object.entries(searchTerms).every(([columnId, term]) => {
         if (!term) return true;
         const value = row[columnId];
-        if (typeof value === 'string') {
+        if (typeof value === "string") {
           return value.toLowerCase().includes(term.toLowerCase());
-        } else if (typeof value === 'number') {
+        } else if (typeof value === "number") {
           return value.toString().includes(term);
         }
         return true;
@@ -577,13 +683,13 @@ const StepperForm = () => {
   }, [searchTerms, rows]);
 
   const filteredEntries = React.useMemo(() => {
-    return entries.filter(row => {
+    return entries.filter((row) => {
       return Object.entries(searchTerms).every(([columnId, term]) => {
         if (!term) return true;
         const value = row[columnId];
-        if (typeof value === 'string') {
+        if (typeof value === "string") {
           return value.toLowerCase().includes(term.toLowerCase());
-        } else if (typeof value === 'number') {
+        } else if (typeof value === "number") {
           return value.toString().includes(term);
         }
         return true;
@@ -592,46 +698,40 @@ const StepperForm = () => {
   }, [searchTerms, entries]);
 
   const handleRowDoubleClick = () => {
-
-    navigate('', { state: { mode: 'view' } });
+    navigate("", { state: { mode: "view" } });
   };
 
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
-    console.log('2', event.target.value)
-    setFormData(prevData => ({
+    console.log("2", event.target.value);
+    setFormData((prevData) => ({
       ...prevData,
       [name]: value,
-
     }));
-    setErrors(prevErrors => ({
+    setErrors((prevErrors) => ({
       ...prevErrors,
-      [name]: undefined
+      [name]: undefined,
     }));
   };
 
   const handleInputValue = (event) => {
     const { name, value } = event.target;
-    console.log('3', event.target.value)
-    setFormData1(prevData => ({
+    console.log("3", event.target.value);
+    setFormData1((prevData) => ({
       ...prevData,
       [name]: value,
-
     }));
-    
   };
 
   const handleChangeValue = (event) => {
     const { name, value } = event.target;
-    console.log('4', event.target.value)
-    setFormData2(prevData => ({
+    console.log("4", event.target.value);
+    setFormData2((prevData) => ({
       ...prevData,
       [name]: value,
-
     }));
-    
   };
 
   const validateStep = (step) => {
@@ -643,7 +743,7 @@ const StepperForm = () => {
         formSchema.parse(formData);
       } catch (error) {
         if (error instanceof z.ZodError) {
-          error.errors.forEach(err => {
+          error.errors.forEach((err) => {
             newErrors[err.path[0]] = err.message;
           });
           stepValid = false;
@@ -657,7 +757,7 @@ const StepperForm = () => {
 
   const changeHandler = (event) => {
     const { name, value } = event.target;
-    setFormData(prevData => ({
+    setFormData((prevData) => ({
       ...prevData,
       [name]: value,
     }));
@@ -665,27 +765,30 @@ const StepperForm = () => {
 
   const inputChangeHandler = (event) => {
     const { name, value } = event.target;
-    setFormData(prevData => ({
+    setFormData((prevData) => ({
       ...prevData,
-      [name]: value
+      [name]: value,
     }));
-    console.log('55', setFormData(prevData => ({
-      ...prevData,
-      [name]: value
-    })))
+    console.log(
+      "55",
+      setFormData((prevData) => ({
+        ...prevData,
+        [name]: value,
+      }))
+    );
   };
 
   const handleNextdata = async () => {
     if (propertyId) {
       await fetchPropertyData(propertyId, "N");
     }
-  }
+  };
 
   const handleBackdata = async () => {
     if (propertyId && propertyId > 1) {
       await fetchPropertyData(propertyId, "P");
     }
-  }
+  };
 
   const handleNext = () => {
     if (activeStep === steps.length - 1) {
@@ -795,20 +898,20 @@ const StepperForm = () => {
       wardenEmpId: parseInt(formData.wardenEmpName),
       propAdd: formData.propAdd,
       propGPSLoc: formData.propGPSLoc,
-      Status: formData.Status || '1',
-      Remark: formData.remark || '',
+      Status: formData.Status || "1",
+      Remark: formData.remark || "",
       CreatedBy: "1",
-      UpdatedBy: "1" // Include this for update operations
+      UpdatedBy: "1", // Include this for update operations
     };
 
-    console.log('formData', formData);
+    console.log("formData", formData);
 
     const payload1 = {
       PropId: propertyId || 0,
       wingId: parseInt(formData1.wingName),
       floorId: parseInt(formData1.floorName),
       totalRooms: parseInt(formData1.totalRooms),
-      startNo: parseInt(formData1.startNo)
+      startNo: parseInt(formData1.startNo),
     };
 
     // const jsonString = '{ "PropFloorConfig":[ { "propId": 4, "wingId": 2, "floorId": 5, "totalRooms": 50, "startNo":2 }, { "propId": 12, "wingId": 13, "floorId": 13, "totalRooms": 20, "startNo": 4001 } ]}';
@@ -817,136 +920,131 @@ const StepperForm = () => {
     // const parsedJson = JSON.parse(jsonString);
 
     const result = {
-      PropFloorConfig: [payload1]
+      PropFloorConfig: [payload1],
     };
 
-    console.log('formData1', formData1);
+    console.log("formData1", formData1);
 
     const payload2 = {
       PropId: propertyId || 0,
       amenityId: parseInt(formData2.amenityName),
     };
 
-    console.log('Payload2:', payload2);
+    console.log("Payload2:", payload2);
 
     let jsonData = JSON.stringify(result);
 
-    jsonData = jsonData.replace(/\\/g, '\\\\').replace(/\"/g, '\\"');
+    jsonData = jsonData.replace(/\\/g, "\\\\").replace(/\"/g, '\\"');
     jsonData = '"' + jsonData + '"';
 
     console.log(jsonData, "jsonData2");
 
     try {
       const response = await axios.post(
-        'http://43.230.196.21/api/MstPropFloorConfig/ManageMstPropFloorConfig',
+        "http://43.230.196.21/api/MstPropFloorConfig/ManageMstPropFloorConfig",
         jsonData,
         {
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
           },
-        }
+        },
+        AuthHeader()
       );
       toast.success(response.data.message);
-      setActiveStep(0)
+      setActiveStep(0);
       if (isEditing) {
         setIsEditing(false);
-        setMode('view');
+        setMode("view");
         setIsFormDisabled(true);
-
       } else {
         if (response.data.data && response.data.data.propId) {
           const newPropertyId = response.data.data.propId;
-          console.log('new', newPropertyId);
+          console.log("new", newPropertyId);
           setPropertyId(newPropertyId);
-          await fetchPropertyData(newPropertyId, 'R');
-          console.log('newPropertyId', newPropertyId);
+          await fetchPropertyData(newPropertyId, "R");
+          console.log("newPropertyId", newPropertyId);
         }
-        setMode('view');
+        setMode("view");
         setIsFormDisabled(true);
       }
     } catch (error) {
-      toast.error('Error submitting form');
+      toast.error("Error submitting form");
     }
   };
 
-
-
-
   const handleAdd = () => {
-    setMode('add');
+    setMode("add");
     setIsFormDisabled(false);
     setPropertyId(null);
     setFormData({
-      companyName: '',
-      branchName: '',
-      propName: '',
-      sqFt: '',
-      pinCode: '',
-      areaName: '',
-      cityName: '',
-      stateName: '',
-      countryName: '',
-      propEmail: '',
-      propTel: '',
-      propTypName: '',
-      propMob: '',
-      totalRooms: '',
-      totalBeds: '',
-      propImg: '',
-      hodEmpName: '',
-      wardenEmpName: '',
-      propAdd: '',
-      propGPSLoc: '',
-      Status: '1',
-      remark: '',
-      CreatedBy: '1'
+      companyName: "",
+      branchName: "",
+      propName: "",
+      sqFt: "",
+      pinCode: "",
+      areaName: "",
+      cityName: "",
+      stateName: "",
+      countryName: "",
+      propEmail: "",
+      propTel: "",
+      propTypName: "",
+      propMob: "",
+      totalRooms: "",
+      totalBeds: "",
+      propImg: "",
+      hodEmpName: "",
+      wardenEmpName: "",
+      propAdd: "",
+      propGPSLoc: "",
+      Status: "1",
+      remark: "",
+      CreatedBy: "1",
     });
 
     setFormData1({
-      wingName: '',
-      floorName: '',
-      totalRooms: '',
-      startNo: ''
+      wingName: "",
+      floorName: "",
+      totalRooms: "",
+      startNo: "",
     });
 
     setFormData2({
-      amenityName: ''
+      amenityName: "",
     });
     setActiveStep(0);
     setErrors({});
-    setPropImg('');
+    setPropImg("");
 
     toast.info("Form cleared for new entry");
   };
 
   const handleEdit = () => {
-    setMode('edit')
+    setMode("edit");
     setIsFormDisabled(false);
   };
 
   const handleSave = () => {
     // Implement save logic
-    setMode('view');
+    setMode("view");
   };
 
-
   const handleCancel = async () => {
-    if (mode === 'add') {
+    if (mode === "add") {
       try {
         await fetchPropertyData(1, "L");
-        setMode('view');
+        setMode("view");
         setIsFormDisabled(true);
       } catch (error) {
-        toast.error('Error occurred while cancelling. Please try again.');
+        toast.error("Error occurred while cancelling. Please try again.");
       }
-    } else if (mode === 'edit') {
+    } else if (mode === "edit") {
       if (propertyId) {
         await fetchPropertyData(propertyId);
       }
-      setMode('view');
+      setMode("view");
       setIsFormDisabled(true);
     }
-
   };
 
   const deleteItem = () => {
@@ -962,10 +1060,10 @@ const StepperForm = () => {
       await fetchPropertyData(propertyId, "D");
       // toast.success('Data deleted successfully');
       await fetchPropertyData(propertyId, "N");
-      setMode('view');
+      setMode("view");
       setIsFormDisabled(true);
     } catch (error) {
-      toast.error('Error deleting property. Please try again.');
+      toast.error("Error deleting property. Please try again.");
     }
     setOpenConfirmDialog(false);
   };
@@ -983,16 +1081,16 @@ const StepperForm = () => {
       await fetchPropertyData(propertyId, "D");
       // toast.success('Data deleted successfully');
       await fetchPropertyData(propertyId, "N");
-      setMode('view');
+      setMode("view");
       setIsFormDisabled(true);
     } catch (error) {
-      toast.error('Error deleting property. Please try again.');
+      toast.error("Error deleting property. Please try again.");
     }
     setIsConfirmDialogOpen(false);
   };
 
   const handleExit = () => {
-    navigate('/propertytable')
+    navigate("/propertytable");
   };
 
   // Handle file input change
@@ -1014,22 +1112,22 @@ const StepperForm = () => {
 
       // Read the file and update the state
       readFileAsBase64(file)
-        .then(base64String => {
-          setFormData(prevData => ({
+        .then((base64String) => {
+          setFormData((prevData) => ({
             ...prevData,
-            propImg: base64String
+            propImg: base64String,
           }));
         })
-        .catch(err => {
-          console.error('Error reading file:', err);
-          toast.error('Error reading file. Please try again.');
+        .catch((err) => {
+          console.error("Error reading file:", err);
+          toast.error("Error reading file. Please try again.");
         });
     }
   };
 
   const renderStepContent = (step) => {
     return (
-      <Box sx={{ height: '350px', overflowY: 'scroll', padding: '16px' }}>
+      <Box sx={{ height: "350px", overflowY: "scroll", padding: "16px" }}>
         {(() => {
           switch (step) {
             case 0:
@@ -1042,9 +1140,15 @@ const StepperForm = () => {
                           {/* <Grid container spacing={3}> */}
                           <Box display="flex" flexDirection="column" gap={2}>
                             <Grid container spacing={2}>
-                              <Grid item xs={12} md={6} className='form_field'>
-                                <FormControl variant="filled" fullWidth className="custom-select">
-                                  <InputLabel id="companyName-select-label">Company Name</InputLabel>
+                              <Grid item xs={12} md={6} className="form_field">
+                                <FormControl
+                                  variant="filled"
+                                  fullWidth
+                                  className="custom-select"
+                                >
+                                  <InputLabel id="companyName-select-label">
+                                    Company Name
+                                  </InputLabel>
                                   <Select
                                     labelId="companyName-select-label"
                                     id="companyName-select"
@@ -1054,16 +1158,25 @@ const StepperForm = () => {
                                     className="custom-textfield"
                                   >
                                     {companies.map((companyName) => (
-                                      <MenuItem key={companyName.id} value={companyName.id}>
+                                      <MenuItem
+                                        key={companyName.id}
+                                        value={companyName.id}
+                                      >
                                         {companyName.name}
                                       </MenuItem>
                                     ))}
                                   </Select>
                                 </FormControl>
                               </Grid>
-                              <Grid item xs={12} md={6} className='form_field'>
-                                <FormControl variant="filled" fullWidth className="custom-select">
-                                  <InputLabel id="branchName-select-label">Branch</InputLabel>
+                              <Grid item xs={12} md={6} className="form_field">
+                                <FormControl
+                                  variant="filled"
+                                  fullWidth
+                                  className="custom-select"
+                                >
+                                  <InputLabel id="branchName-select-label">
+                                    Branch
+                                  </InputLabel>
                                   <Select
                                     labelId="branchName-select-label"
                                     id="branchName-select"
@@ -1073,7 +1186,10 @@ const StepperForm = () => {
                                     className="custom-textfield"
                                   >
                                     {branch.map((branchName) => (
-                                      <MenuItem key={branchName.id} value={branchName.id}>
+                                      <MenuItem
+                                        key={branchName.id}
+                                        value={branchName.id}
+                                      >
                                         {branchName.name}
                                       </MenuItem>
                                     ))}
@@ -1082,7 +1198,6 @@ const StepperForm = () => {
                               </Grid>
                             </Grid>
                           </Box>
-
                         </Grid>
                         <Grid container spacing={2}>
                           <Grid item xs={12} md={6}>
@@ -1098,8 +1213,14 @@ const StepperForm = () => {
                             />
                           </Grid>
                           <Grid item xs={12} md={3}>
-                            <FormControl variant="filled" fullWidth className="custom-select">
-                              <InputLabel id="propTypName-select-label">Property Type</InputLabel>
+                            <FormControl
+                              variant="filled"
+                              fullWidth
+                              className="custom-select"
+                            >
+                              <InputLabel id="propTypName-select-label">
+                                Property Type
+                              </InputLabel>
                               <Select
                                 labelId="propTypName-select-label"
                                 id="propTypName-select"
@@ -1109,7 +1230,10 @@ const StepperForm = () => {
                                 className="custom-textfield"
                               >
                                 {propType.map((propTypeName) => (
-                                  <MenuItem key={propTypeName.id} value={propTypeName.id}>
+                                  <MenuItem
+                                    key={propTypeName.id}
+                                    value={propTypeName.id}
+                                  >
                                     {propTypeName.name}
                                   </MenuItem>
                                 ))}
@@ -1130,9 +1254,7 @@ const StepperForm = () => {
                           </Grid>
                         </Grid>
 
-
                         <Grid container spacing={2}>
-
                           <Grid item xs={12} md={6}>
                             <TextField
                               fullWidth
@@ -1146,9 +1268,15 @@ const StepperForm = () => {
                             />
                           </Grid>
 
-                          <Grid item xs={12} md={6} className='form_field'>
-                            <FormControl variant="filled" fullWidth className="custom-select">
-                              <InputLabel id="areaName-select-label">Area</InputLabel>
+                          <Grid item xs={12} md={6} className="form_field">
+                            <FormControl
+                              variant="filled"
+                              fullWidth
+                              className="custom-select"
+                            >
+                              <InputLabel id="areaName-select-label">
+                                Area
+                              </InputLabel>
                               <Select
                                 labelId="areaName-select-label"
                                 id="areaName-select"
@@ -1159,7 +1287,10 @@ const StepperForm = () => {
                               >
                                 {area.length > 0 ? (
                                   area.map((areaItem) => (
-                                    <MenuItem key={areaItem.id} value={areaItem.name}>
+                                    <MenuItem
+                                      key={areaItem.id}
+                                      value={areaItem.name}
+                                    >
                                       {areaItem.name}
                                     </MenuItem>
                                   ))
@@ -1174,7 +1305,15 @@ const StepperForm = () => {
                         </Grid>
                       </Box>
                     </Grid>
-                    <Grid item lg={4} md={4} xs={12} display="flex" alignItems="center" justifyContent="center">
+                    <Grid
+                      item
+                      lg={4}
+                      md={4}
+                      xs={12}
+                      display="flex"
+                      alignItems="center"
+                      justifyContent="center"
+                    >
                       <Box
                         display="flex"
                         flexDirection="column"
@@ -1193,16 +1332,16 @@ const StepperForm = () => {
                             src={formData.propImg}
                             alt="Uploaded Preview"
                             style={{
-                              width: '100%',
-                              height: '100%',
-                              objectFit: 'cover',
+                              width: "100%",
+                              height: "100%",
+                              objectFit: "cover",
                             }}
                           />
                         ) : (
                           <Typography
                             variant="body2"
                             color="textSecondary"
-                            style={{ textAlign: 'center' }}
+                            style={{ textAlign: "center" }}
                           >
                             Image Preview
                           </Typography>
@@ -1210,7 +1349,7 @@ const StepperForm = () => {
                       </Box>
                       <input
                         accept="image/*"
-                        style={{ display: 'none' }}
+                        style={{ display: "none" }}
                         id="upload-photo"
                         type="file"
                         onChange={handleImageChange}
@@ -1219,7 +1358,7 @@ const StepperForm = () => {
                         <Button
                           // variant="contained"
                           component="span"
-                          style={{ marginTop: '5px' }}
+                          style={{ marginTop: "5px" }}
                         >
                           Upload Image
                         </Button>
@@ -1227,7 +1366,6 @@ const StepperForm = () => {
                     </Grid>
                     <Grid item lg={12} md={12} xs={12}>
                       <Box display="flex" flexDirection="column" gap={2}>
-
                         <Grid container spacing={2}>
                           <Grid item xs={12} md={4}>
                             <TextField
@@ -1269,10 +1407,8 @@ const StepperForm = () => {
                       </Box>
                     </Grid>
                     <Grid item lg={12} md={12} xs={12}>
-
                       <Box display="flex" flexDirection="column" gap={2}>
                         <Grid container spacing={2}>
-
                           <Grid item xs={12} md={4}>
                             <TextField
                               fullWidth
@@ -1311,7 +1447,6 @@ const StepperForm = () => {
                           </Grid>
                         </Grid>
                       </Box>
-
                     </Grid>
 
                     <Grid item lg={8} md={8} xs={12}>
@@ -1346,12 +1481,17 @@ const StepperForm = () => {
                               </Grid>
                             </Grid>
                           </Box>
-
                         </Grid>
                         <Grid container spacing={2}>
-                          <Grid item xs={12} md={6} className='form_field'>
-                            <FormControl variant="filled" fullWidth className="custom-select">
-                              <InputLabel id="hodEmpName-select-label">HOD</InputLabel>
+                          <Grid item xs={12} md={6} className="form_field">
+                            <FormControl
+                              variant="filled"
+                              fullWidth
+                              className="custom-select"
+                            >
+                              <InputLabel id="hodEmpName-select-label">
+                                HOD
+                              </InputLabel>
                               <Select
                                 labelId="hodEmpName-select-label"
                                 id="hodEmpName-select"
@@ -1361,16 +1501,25 @@ const StepperForm = () => {
                                 className="custom-textfield"
                               >
                                 {hods.map((hodEmpName) => (
-                                  <MenuItem key={hodEmpName.id} value={hodEmpName.id}>
+                                  <MenuItem
+                                    key={hodEmpName.id}
+                                    value={hodEmpName.id}
+                                  >
                                     {hodEmpName.name}
                                   </MenuItem>
                                 ))}
                               </Select>
                             </FormControl>
                           </Grid>
-                          <Grid item xs={12} md={6} className='form_field'>
-                            <FormControl variant="filled" fullWidth className="custom-select">
-                              <InputLabel id="wardenEmpName-select-label">Warden</InputLabel>
+                          <Grid item xs={12} md={6} className="form_field">
+                            <FormControl
+                              variant="filled"
+                              fullWidth
+                              className="custom-select"
+                            >
+                              <InputLabel id="wardenEmpName-select-label">
+                                Warden
+                              </InputLabel>
                               <Select
                                 labelId="wardenEmpName-select-label"
                                 id="wardenEmpName-select"
@@ -1380,7 +1529,10 @@ const StepperForm = () => {
                                 className="custom-textfield"
                               >
                                 {wardens.map((wardenEmpName) => (
-                                  <MenuItem key={wardenEmpName.id} value={wardenEmpName.id}>
+                                  <MenuItem
+                                    key={wardenEmpName.id}
+                                    value={wardenEmpName.id}
+                                  >
                                     {wardenEmpName.name}
                                   </MenuItem>
                                 ))}
@@ -1388,12 +1540,15 @@ const StepperForm = () => {
                             </FormControl>
                           </Grid>
                         </Grid>
-
                       </Box>
                     </Grid>
 
-                    <Grid item display="flex" alignItems="center" justifyContent="center">
-
+                    <Grid
+                      item
+                      display="flex"
+                      alignItems="center"
+                      justifyContent="center"
+                    >
                       <Box>
                         <Grid container spacing={1}>
                           <Grid item xs={12} md={12} lg={12}>
@@ -1409,52 +1564,51 @@ const StepperForm = () => {
                               disabled={isFormDisabled}
                               className="custom-textfield"
                               sx={{
-                                '& .MuiInputBase-root': {
-                                  height: '100px',
-                                  width: '340px'
+                                "& .MuiInputBase-root": {
+                                  height: "100px",
+                                  width: "340px",
                                 },
-                                '& .MuiInputBase-input': {
-                                  resize: 'vertical',
+                                "& .MuiInputBase-input": {
+                                  resize: "vertical",
                                 },
-                                '& .MuiFilledInput-root': {
-                                  '&:hover': {
-                                    backgroundColor: 'transparent',
+                                "& .MuiFilledInput-root": {
+                                  "&:hover": {
+                                    backgroundColor: "transparent",
                                   },
-                                  '&.Mui-focused': {
-                                    backgroundColor: 'transparent',
+                                  "&.Mui-focused": {
+                                    backgroundColor: "transparent",
                                   },
                                 },
                               }}
                             />
                           </Grid>
-
                         </Grid>
                       </Box>
-
                     </Grid>
                   </Grid>
-
                 </Grid>
               );
             case 1:
               return (
                 <>
-                  <Box sx={{ maxWidth: '100vw', overflowX: 'hidden' }}>
-                    <Grid container gap={2}
+                  <Box sx={{ maxWidth: "100vw", overflowX: "hidden" }}>
+                    <Grid
+                      container
+                      gap={2}
                       sx={{
-                        padding: '20px 30px',
-                        justifyContent: 'center',
-                        alignItems: 'center'
+                        padding: "20px 30px",
+                        justifyContent: "center",
+                        alignItems: "center",
                       }}
                     >
                       <Button
                         variant="contained"
                         onClick={deleteItem}
                         sx={{
-                          backgroundColor: '#7c3aed ',
-                          color: 'white',
-                          '&:hover': {
-                            backgroundColor: '#7c3aed ',
+                          backgroundColor: "#7c3aed ",
+                          color: "white",
+                          "&:hover": {
+                            backgroundColor: "#7c3aed ",
                           },
                         }}
                       >
@@ -1464,42 +1618,61 @@ const StepperForm = () => {
                         variant="contained"
                         onClick={deleteItem}
                         sx={{
-                          backgroundColor: '#7c3aed ',
-                          color: 'white',
-                          '&:hover': {
-                            backgroundColor: '#7c3aed ',
+                          backgroundColor: "#7c3aed ",
+                          color: "white",
+                          "&:hover": {
+                            backgroundColor: "#7c3aed ",
                           },
                         }}
                       >
                         Clear All
                       </Button>
                     </Grid>
-                    <Paper sx={{ width: '100%', overflow: 'hidden', margin: '0px 0px 0px 0px', border: '1px solid lightgray' }}>
+                    <Paper
+                      sx={{
+                        width: "100%",
+                        overflow: "hidden",
+                        margin: "0px 0px 0px 0px",
+                        border: "1px solid lightgray",
+                      }}
+                    >
                       <TableContainer sx={{ maxHeight: 450 }}>
                         <Table stickyHeader aria-label="sticky table">
                           <TableHead>
                             <TableRow
                               sx={{
-                                '& > th': {
-                                  padding: '2px  10px 2px  24px',
+                                "& > th": {
+                                  padding: "2px  10px 2px  24px",
                                 },
                               }}
                             >
-                              {columns.map(column => (
-                                <TableCell key={column.id} align={column.align} style={{ minWidth: column.minWidth }}>
-                                  <Typography variant="subtitle1" fontWeight="bold">
+                              {columns.map((column) => (
+                                <TableCell
+                                  key={column.id}
+                                  align={column.align}
+                                  style={{ minWidth: column.minWidth }}
+                                >
+                                  <Typography
+                                    variant="subtitle1"
+                                    fontWeight="bold"
+                                  >
                                     {column.label}
                                   </Typography>
                                   <TextField
                                     size="small"
                                     variant="outlined"
                                     placeholder={`Search ${column.label}`}
-                                    onChange={e => handleSearchChange(column.id, e.target.value)}
+                                    onChange={(e) =>
+                                      handleSearchChange(
+                                        column.id,
+                                        e.target.value
+                                      )
+                                    }
                                     sx={{
                                       mt: 1,
-                                      margin: '0px',
-                                      '& .MuiOutlinedInput-input': {
-                                        padding: '2px 6px',
+                                      margin: "0px",
+                                      "& .MuiOutlinedInput-input": {
+                                        padding: "2px 6px",
                                       },
                                     }}
                                   />
@@ -1508,45 +1681,66 @@ const StepperForm = () => {
                             </TableRow>
                           </TableHead>
                           <TableBody>
-                            {filteredRows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(row => {
-                              return (
-                                <TableRow
-                                  hover
-                                  role="checkbox"
-                                  tabIndex={-1}
-                                  key={row.propertyId}
-                                  onDoubleClick={() => handleRowDoubleClick(row)}
-                                  style={{ cursor: 'pointer' }}
-                                  sx={{
-                                    '& > td': {
-                                      padding: '2px  14px 2px  24px',
-                                    },
-                                  }}
-                                >
-                                  {columns.map(column => {
-                                    const value = editState[row.propertyId]?.[column.id] ?? row[column.id];
-                                    return (
-                                      <TableCell key={column.id} align={column.align}>
-                                        {['totalRooms', 'startNo'].includes(column.id) ? (
-                                          <TextField
-                                            size="small"
-                                            value={value}
-                                            onChange={e => handleEditChange(row.propertyId, column.id, e.target.newValue)}
-                                            sx={{
-                                              '& .MuiOutlinedInput-input': {
-                                                padding: '2px 6px',
-                                              },
-                                            }}
-                                          />
-                                        ) : (
-                                          value
-                                        )}
-                                      </TableCell>
-                                    );
-                                  })}
-                                </TableRow>
-                              );
-                            })}
+                            {filteredRows
+                              .slice(
+                                page * rowsPerPage,
+                                page * rowsPerPage + rowsPerPage
+                              )
+                              .map((row) => {
+                                return (
+                                  <TableRow
+                                    hover
+                                    role="checkbox"
+                                    tabIndex={-1}
+                                    key={row.propertyId}
+                                    onDoubleClick={() =>
+                                      handleRowDoubleClick(row)
+                                    }
+                                    style={{ cursor: "pointer" }}
+                                    sx={{
+                                      "& > td": {
+                                        padding: "2px  14px 2px  24px",
+                                      },
+                                    }}
+                                  >
+                                    {columns.map((column) => {
+                                      const value =
+                                        editState[row.propertyId]?.[
+                                          column.id
+                                        ] ?? row[column.id];
+                                      return (
+                                        <TableCell
+                                          key={column.id}
+                                          align={column.align}
+                                        >
+                                          {["totalRooms", "startNo"].includes(
+                                            column.id
+                                          ) ? (
+                                            <TextField
+                                              size="small"
+                                              value={value}
+                                              onChange={(e) =>
+                                                handleEditChange(
+                                                  row.propertyId,
+                                                  column.id,
+                                                  e.target.newValue
+                                                )
+                                              }
+                                              sx={{
+                                                "& .MuiOutlinedInput-input": {
+                                                  padding: "2px 6px",
+                                                },
+                                              }}
+                                            />
+                                          ) : (
+                                            value
+                                          )}
+                                        </TableCell>
+                                      );
+                                    })}
+                                  </TableRow>
+                                );
+                              })}
                           </TableBody>
                         </Table>
                       </TableContainer>
@@ -1566,14 +1760,19 @@ const StepperForm = () => {
             case 2:
               return (
                 <>
-                  <Box sx={{ maxWidth: '100vw' }}>
+                  <Box sx={{ maxWidth: "100vw" }}>
                     <Grid item lg={12} md={12} xs={12}>
-
-                      <Box display="flex" justifyContent="space-between" gap={2}>
-                        <Grid container spacing={2} >
-                          <Grid item xs={12} md={2} className='form_field'>
+                      <Box
+                        display="flex"
+                        justifyContent="space-between"
+                        gap={2}
+                      >
+                        <Grid container spacing={2}>
+                          <Grid item xs={12} md={2} className="form_field">
                             <List>
-                              <ListItem style={{ height: '200px', width: '200px' }}>
+                              <ListItem
+                                style={{ height: "200px", width: "200px" }}
+                              >
                                 <div>
                                   <h3>Select Amenities</h3>
                                   <label>
@@ -1591,7 +1790,9 @@ const StepperForm = () => {
                                         <input
                                           type="checkbox"
                                           checked={item.isChecked}
-                                          onChange={() => amenityCheckboxChange(item.id)}
+                                          onChange={() =>
+                                            amenityCheckboxChange(item.id)
+                                          }
                                         />
                                         {item.name}
                                       </label>
@@ -1600,15 +1801,15 @@ const StepperForm = () => {
                                 </div>
                               </ListItem>
                             </List>
-                            <Grid sx={{ marginTop: '20px' }}>
+                            <Grid sx={{ marginTop: "20px" }}>
                               <Button
                                 sx={{
-                                  backgroundColor: '#635BFF',
-                                  color: 'white',
-                                  '&:hover': {
-                                    backgroundColor: '#1565c0',
-                                    color: 'white'
-                                  }
+                                  backgroundColor: "#635BFF",
+                                  color: "white",
+                                  "&:hover": {
+                                    backgroundColor: "#1565c0",
+                                    color: "white",
+                                  },
                                 }}
                                 onClick={amenitySelect}
                               >
@@ -1616,13 +1817,13 @@ const StepperForm = () => {
                               </Button>
                               <Button
                                 sx={{
-                                  backgroundColor: '#635BFF',
-                                  color: 'white',
-                                  '&:hover': {
-                                    backgroundColor: '#1565c0',
-                                    color: 'white'
+                                  backgroundColor: "#635BFF",
+                                  color: "white",
+                                  "&:hover": {
+                                    backgroundColor: "#1565c0",
+                                    color: "white",
                                   },
-                                  marginLeft: '10px'
+                                  marginLeft: "10px",
                                 }}
                                 onClick={closeConfirmation}
                               >
@@ -1630,16 +1831,23 @@ const StepperForm = () => {
                               </Button>
                             </Grid>
                           </Grid>
-                          <Grid item xs={12} md={10} className='form_field'>
-                            <Paper sx={{ width: '90%', overflow: 'hidden', margin: '0px 0px 0px 50px', border: '1px solid lightgray' }}>
+                          <Grid item xs={12} md={10} className="form_field">
+                            <Paper
+                              sx={{
+                                width: "90%",
+                                overflow: "hidden",
+                                margin: "0px 0px 0px 50px",
+                                border: "1px solid lightgray",
+                              }}
+                            >
                               <TableContainer sx={{ maxHeight: 450 }}>
                                 <Table stickyHeader aria-label="sticky table">
                                   <TableHead>
                                     <TableRow
                                       sx={{
-                                        '& > th': {
-                                          padding: '2px  10px 2px  10px'
-                                        }
+                                        "& > th": {
+                                          padding: "2px  10px 2px  10px",
+                                        },
                                       }}
                                     >
                                       {fields.map((column) => (
@@ -1648,20 +1856,29 @@ const StepperForm = () => {
                                           align={column.align}
                                           style={{ minWidth: column.minWidth }}
                                         >
-                                          <Typography variant="subtitle1" fontWeight="bold">
+                                          <Typography
+                                            variant="subtitle1"
+                                            fontWeight="bold"
+                                          >
                                             {column.label}
                                           </Typography>
                                           <TextField
                                             size="small"
                                             variant="outlined"
                                             placeholder={`Search ${column.label}`}
-                                            onChange={(e) => handleSearchChange(column.id, e.target.value)}
+                                            onChange={(e) =>
+                                              handleSearchChange(
+                                                column.id,
+                                                e.target.value
+                                              )
+                                            }
                                             sx={{
-                                              mt: 1, margin: '0px', '& .MuiOutlinedInput-input': {
-                                                padding: '2px 6px',
+                                              mt: 1,
+                                              margin: "0px",
+                                              "& .MuiOutlinedInput-input": {
+                                                padding: "2px 6px",
                                               },
                                             }}
-
                                           />
                                         </TableCell>
                                       ))}
@@ -1669,22 +1886,36 @@ const StepperForm = () => {
                                   </TableHead>
                                   <TableBody>
                                     {filteredEntries
-                                      .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                                      .slice(
+                                        page * rowsPerPage,
+                                        page * rowsPerPage + rowsPerPage
+                                      )
                                       .map((row) => {
                                         return (
-                                          <TableRow hover role="checkbox" tabIndex={-1} key={row.propertyId}
-                                            onDoubleClick={() => handleRowDoubleClick(row.propertyId)}
-                                            style={{ cursor: 'pointer' }}
+                                          <TableRow
+                                            hover
+                                            role="checkbox"
+                                            tabIndex={-1}
+                                            key={row.PropId}
+                                            onDoubleClick={() =>
+                                              handleRowDoubleClick(
+                                                row.PropId
+                                              )
+                                            }
+                                            style={{ cursor: "pointer" }}
                                             sx={{
-                                              '& > td': {
-                                                padding: '2px  14px 2px  19px'
-                                              }
+                                              "& > td": {
+                                                padding: "2px  14px 2px  19px",
+                                              },
                                             }}
                                           >
                                             {fields.map((column) => {
                                               const value = row[column.id];
                                               return (
-                                                <TableCell key={column.id} align={column.align}>
+                                                <TableCell
+                                                  key={column.id}
+                                                  align={column.align}
+                                                >
                                                   {value}
                                                 </TableCell>
                                               );
@@ -1720,35 +1951,45 @@ const StepperForm = () => {
     );
   };
   const handleStepClick = (step) => {
-    if (mode === 'view') {
+    if (mode === "view") {
       setActiveStep(step);
     }
   };
 
   return (
-    <Grid >
+    <Grid>
       <Box className="form-container">
         <ToastContainer />
-        <Grid container spacing={2} className='rasidant_grid'>
-          <Grid item xs={12} className='form_title' sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '20px' }}>
+        <Grid container spacing={2} className="rasidant_grid">
+          <Grid
+            item
+            xs={12}
+            className="form_title"
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              marginTop: "20px",
+            }}
+          >
             <Grid>
               <Button
                 variant="contained"
                 size="small"
-                sx={{ backgroundColor: '#635BFF' }}
-                className='three-d-button-previous'
+                sx={{ backgroundColor: "#635BFF" }}
+                className="three-d-button-previous"
                 onClick={handleBackdata}
-                disabled={activeStep.length === 0 || mode !== 'view'}
+                disabled={activeStep.length === 0 || mode !== "view"}
               >
                 <KeyboardArrowLeftIcon />
               </Button>
               <Button
                 variant="contained"
                 size="small"
-                className='three-d-button-next'
-                sx={{ backgroundColor: '#635BFF', margin: '0px 10px' }}
+                className="three-d-button-next"
+                sx={{ backgroundColor: "#635BFF", margin: "0px 10px" }}
                 onClick={handleNextdata}
-                disabled={activeStep === steps.length - 1 || mode !== 'view'}
+                disabled={activeStep === steps.length - 1 || mode !== "view"}
               >
                 <NavigateNextIcon />
               </Button>
@@ -1756,52 +1997,61 @@ const StepperForm = () => {
 
             <Typography variant="h5">Property Master</Typography>
 
-            <Grid sx={{ display: 'flex', justifyContent: 'end' }}>
+            <Grid sx={{ display: "flex", justifyContent: "end" }}>
               <Button
                 variant="contained"
                 size="small"
-                sx={{ backgroundColor: '#7c3aed' }}
+                sx={{ backgroundColor: "#7c3aed" }}
                 onClick={handleAdd}
-                disabled={mode !== 'view'}
+                disabled={mode !== "view"}
               >
                 <AddIcon />
               </Button>
               <Button
                 variant="contained"
                 size="small"
-                sx={{ backgroundColor: '#7c3aed', margin: '0px 10px' }}
+                sx={{ backgroundColor: "#7c3aed", margin: "0px 10px" }}
                 onClick={handleEdit}
-                disabled={mode !== 'view'}
+                disabled={mode !== "view"}
               >
                 <EditIcon />
               </Button>
               <Button
                 variant="contained"
                 size="small"
-                sx={{ backgroundColor: '#7c3aed' }}
+                sx={{ backgroundColor: "#7c3aed" }}
                 onClick={handleDelete}
-                disabled={mode !== 'view'}
+                disabled={mode !== "view"}
               >
                 <DeleteIcon />
               </Button>
               <Button
                 variant="contained"
                 size="small"
-                sx={{ backgroundColor: '#7c3aed', margin: '0px 10px' }}
+                sx={{ backgroundColor: "#7c3aed", margin: "0px 10px" }}
                 onClick={handleExit}
-                disabled={mode !== 'view'}
+                disabled={mode !== "view"}
               >
                 <CancelPresentationIcon />
               </Button>
             </Grid>
           </Grid>
-          <Grid item xs={12} >
-            <Stepper activeStep={activeStep} connector={<CustomStepConnector />} >
+          <Grid item xs={12}>
+            <Stepper
+              activeStep={activeStep}
+              connector={<CustomStepConnector />}
+            >
               {steps.map((label, index) => (
-                <Step key={label} onClick={() => handleStepClick(index)} style={{ cursor: mode === 'view' ? 'pointer' : 'default' }}>
+                <Step
+                  key={label}
+                  onClick={() => handleStepClick(index)}
+                  style={{ cursor: mode === "view" ? "pointer" : "default" }}
+                >
                   <CustomStepLabel
                     StepIconComponent={(props) => (
-                      <CustomStepIcon ownerState={{ ...props, active: activeStep === index }}>
+                      <CustomStepIcon
+                        ownerState={{ ...props, active: activeStep === index }}
+                      >
                         {index + 1}
                       </CustomStepIcon>
                     )}
@@ -1822,10 +2072,12 @@ const StepperForm = () => {
               variant="contained"
               size="small"
               // sx={{ backgroundColor: '#7c3aed', mr: 1 }}
-              sx={{ mr: 1, background: 'linear-gradient(290deg, #b9d0e9, #e9f2fa)' }}
+              sx={{
+                mr: 1,
+                background: "linear-gradient(290deg, #b9d0e9, #e9f2fa)",
+              }}
               onClick={handleBack}
-              disabled={activeStep === 0 || !mode === 'view'}
-
+              disabled={activeStep === 0 || !mode === "view"}
             >
               {/* {activeStep === steps.length - 1 ? 'Previous' : ''} */}
               Previous
@@ -1834,18 +2086,23 @@ const StepperForm = () => {
               variant="contained"
               onClick={handleNext}
               // sx={{ mr: 1 }}
-              sx={{ mr: 1, background: 'linear-gradient(290deg, #d4d4d4, #d4d4d4)' }}
+              sx={{
+                mr: 1,
+                background: "linear-gradient(290deg, #d4d4d4, #d4d4d4)",
+              }}
               disabled={!mode === "view"}
             >
-              {activeStep === steps.length - 1 ? 'Submit' : 'Next'}
-
+              {activeStep === steps.length - 1 ? "Submit" : "Next"}
             </Button>
             <Button
               variant="contained"
               onClick={handleCancel}
               // sx={{ mr: 1 }}
               disabled={mode === "view"}
-              sx={{ mr: 1, background: 'linear-gradient(290deg, #b9d0e9, #e9f2fa)' }}
+              sx={{
+                mr: 1,
+                background: "linear-gradient(290deg, #b9d0e9, #e9f2fa)",
+              }}
             >
               Cancel
             </Button>
@@ -1867,30 +2124,40 @@ const StepperForm = () => {
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
         sx={{
-          '& .MuiDialog-paper': {
+          "& .MuiDialog-paper": {
             // width: '500%',
             // height: '600px',
-            padding: '10px',
-            overflow: 'hidden'
-          }
+            padding: "10px",
+            overflow: "hidden",
+          },
         }}
       >
         <DialogTitle id="alert-dialog-title">
           <Grid item lg={12} md={12} xs={12}>
-
-            <Box display="flex" justifyContent="space-between"
+            <Box
+              display="flex"
+              justifyContent="space-between"
               style={{
-                border: '5px solid transparent',
-                backgroundImage: 'linear-gradient(to right, #3498db, #9b59b6)',
-                backgroundClip: 'padding-box',
-                borderRadius: '15px'
+                border: "5px solid transparent",
+                backgroundImage: "linear-gradient(to right, #3498db, #9b59b6)",
+                backgroundClip: "padding-box",
+                borderRadius: "15px",
               }}
-              gap={2}>
-              <Grid container spacing={2} >
-                <Grid item xs={12} md={6} className='form_field'>
+              gap={2}
+            >
+              <Grid container spacing={2}>
+                <Grid item xs={12} md={6} className="form_field">
                   <List>
                     <ListItem>
-                      <div style={{ height: '400px', width: '200px', overflowY: 'auto', position: 'relative', bottom: 10 }}>
+                      <div
+                        style={{
+                          height: "400px",
+                          width: "200px",
+                          overflowY: "auto",
+                          position: "relative",
+                          bottom: 10,
+                        }}
+                      >
                         <h3>Wings</h3>
                         <label>
                           <input
@@ -1917,10 +2184,18 @@ const StepperForm = () => {
                     </ListItem>
                   </List>
                 </Grid>
-                <Grid item xs={12} md={6} className='form_field'>
+                <Grid item xs={12} md={6} className="form_field">
                   <List>
                     <ListItem>
-                      <div style={{ height: '375px', width: '200px', overflowY: 'auto', position: 'relative', bottom: 10 }}>
+                      <div
+                        style={{
+                          height: "375px",
+                          width: "200px",
+                          overflowY: "auto",
+                          position: "relative",
+                          bottom: 10,
+                        }}
+                      >
                         <h3>Floors</h3>
                         <label>
                           <input
@@ -1955,12 +2230,12 @@ const StepperForm = () => {
         <DialogActions>
           <Button
             sx={{
-              backgroundColor: '#635BFF',
-              color: 'white',
-              '&:hover': {
-                backgroundColor: '#1565c0',
-                color: 'white'
-              }
+              backgroundColor: "#635BFF",
+              color: "white",
+              "&:hover": {
+                backgroundColor: "#1565c0",
+                color: "white",
+              },
             }}
             onClick={handleSelect}
           >
@@ -1968,12 +2243,12 @@ const StepperForm = () => {
           </Button>
           <Button
             sx={{
-              backgroundColor: '#635BFF',
-              color: 'white',
-              '&:hover': {
-                backgroundColor: '#1565c0',
-                color: 'white'
-              }
+              backgroundColor: "#635BFF",
+              color: "white",
+              "&:hover": {
+                backgroundColor: "#1565c0",
+                color: "white",
+              },
             }}
             onClick={closeConfirmation}
           >
@@ -1986,7 +2261,8 @@ const StepperForm = () => {
 };
 
 export default StepperForm;
-{/* <Button
+{
+  /* <Button
   variant="contained"
   onClick={handleClick}
   size='small'
@@ -2001,4 +2277,5 @@ export default StepperForm;
   }}
 >
   Delete
-</Button>  */}
+</Button>  */
+}

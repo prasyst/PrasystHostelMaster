@@ -79,6 +79,8 @@ import Complaint from './Components/Masters/Ticketing/Complaint';
 import ComplaintTable from './Components/Masters/Ticketing/ComplaintTable';
 import ComplaintType from './Components/Masters/Ticketing/ComplaintType';
 import ComplaintTypeTable from './Components/Masters/Ticketing/ComplaintTypeTable';
+import HKType from './Components/Masters/Operations/HKType'
+import HKTypeTable from './Components/Masters/Operations/HKTypeTable'
 
 const DashboardLayout = ({ children }) => (
   <SidebarDrawar>{children}</SidebarDrawar>
@@ -163,7 +165,9 @@ function App() {
     {/* <Route path="/HouseKeepingTableData" element={<DashboardLayout><HouseKeepingTabData /></DashboardLayout>} /> */}
     <Route path="/Company" element={<DashboardLayout><Company /></DashboardLayout>} />
     <Route path="/CompanyTable" element={<DashboardLayout><CompanyTable /></DashboardLayout>} />
-     
+    <Route path="/hkType" element={<DashboardLayout><HKType /></DashboardLayout>} />
+    <Route path="/hkTypeTable" element={<DashboardLayout><HKTypeTable /></DashboardLayout>} />
+    
 
     {/* <Route path="/group-master" element={<DashboardLayout><GroupMaster /></DashboardLayout>} />
     <Route path="/groupTable" element={<DashboardLayout><GroupTable /></DashboardLayout>} /> */}

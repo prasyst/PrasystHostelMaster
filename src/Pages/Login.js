@@ -31,13 +31,21 @@ const Login = () => {
 
 
     const handleLogin = async () => {
+        const token = 'eyJhbGciOiJIUzI1NiJ9.eyJWYWxpZElzc3VlciI6IlByYXN5c3QiLCJWYWxpZEF1ZGllbmNlIjoiUHJhc3lzdCJ9.gMMGQ74cWLoymeDv0D4c3UQKTEJSCzdkXoxlW4qF5QU';
         try {
             const response = await axios.post(`${process.env.REACT_APP_API_URL}Login/UserMst/GetuserLogin`, {
-                username: userId,
-                pwd: password
-            });
-
-            if (response.data.status === 0) { // Check for status 0 as success
+                Username: userId,
+                Pwd: password
+            },
+            {
+                headers :  {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                    
+                }
+            }); 
+        
+            if (response.data.Status === 0) { // Check for status 0 as success
                 const userName = response.data.userName || userId
                 localStorage.setItem('userName', userName);
                 localStorage.setItem('isLoggedIn', 'true');
